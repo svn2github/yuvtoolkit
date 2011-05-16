@@ -6,11 +6,7 @@
 #include <memory.h>
 
 #define __STDC_CONSTANT_MACROS
-#ifdef _MSC_VER
-#	include <stdint_msc.h>
-#else
-#	include <stdint.h>
-#endif
+#include <stdint.h>
 extern "C" {
 #include <libswscale/swscale.h>
 }
