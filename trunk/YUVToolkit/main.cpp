@@ -4,7 +4,6 @@
 #include "YT_InterfaceImpl.h"
 
 #include <QtGui/QApplication>
-#include <objbase.h>
 
 YT_HostImpl* g_Host = 0;
 YT_Host* GetHost()
