@@ -10,7 +10,6 @@ void RendererWidget::paintEvent( QPaintEvent* )
 {
 	if (m_Renderer)
 	{
-		// m_Renderer->Repaint();
 	}else
 	{
 		QRect rcClient = this->rect();

@@ -7,7 +7,7 @@ class QClickableSlider : public QSlider
 {
 	Q_OBJECT;
 public:
-	QClickableSlider(QWidget* parent) {;}
+	QClickableSlider(QWidget* parent) : QSlider(Qt::Horizontal, parent) {;}
 
 protected:
 	void mousePressEvent ( QMouseEvent * event )
