@@ -33,6 +33,15 @@ RESOURCES += YUVToolkit.qrc
 
 INCLUDEPATH += . \
      ../Plugins \
-     ../3rdparty/include
-LIBS += -L"$$PWD/../3rdparty/lib" -lswscale
+     ../3rdparty/ffmpeg/include
+
+win32 {
+     LIBS += -L"$$PWD/../3rdparty/ffmpeg/lib_win32"
+ }
+
+macx {
+     LIBS += -L"$$PWD/../3rdparty/ffmpeg/lib_osx"
+ }
+
+LIBS += -lswscale
 win32:RC_FILE = YUVToolkit.rc
