@@ -42,6 +42,9 @@ win32 {
 
 macx {
      LIBS += -L"$$PWD/../3rdparty/ffmpeg/lib_osx"
+	 ffmpeg.path = YUVToolkit.app/Contents/Frameworks
+	 ffmpeg.files = $$PWD/../3rdparty/ffmpeg/lib_osxdata/*.dylib
+	 INSTALLS += ffmpeg
  }
 
 LIBS += -lswscale
