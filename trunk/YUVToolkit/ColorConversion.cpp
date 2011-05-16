@@ -6,6 +6,9 @@
 #include <memory.h>
 
 #define __STDC_CONSTANT_MACROS
+#ifdef _STDINT_H
+#	undef _STDINT_H
+#endif
 #include <stdint.h>
 extern "C" {
 #include <libswscale/swscale.h>

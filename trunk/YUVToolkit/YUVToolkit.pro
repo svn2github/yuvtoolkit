@@ -14,7 +14,8 @@ HEADERS += ./ColorConversion.h \
     ./UI/TextLabel.h \
     ./VideoView.h \
     ./VideoViewList.h \
-    ./YT_InterfaceImpl.h
+	./YT_InterfaceImpl.h \
+	../Plugins/YT_Interface.h
 SOURCES += \
     ./ColorConversion.cpp \
     ./Layout.cpp \

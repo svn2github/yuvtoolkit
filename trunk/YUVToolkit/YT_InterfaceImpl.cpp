@@ -462,7 +462,13 @@ YT_HostImpl::YT_HostImpl() : m_LogFile(this)
 
 	QDir pluginsDir(qApp->applicationDirPath());
 	QStringList files;
+#if defined(Q_WS_WIN)
 	files.append(QString("YT*.dll"));
+#elif defined(Q_WS_MACX)
+	files.append(QString("libYT*.dylib"));
+#else
+#	error Unsupported platform
+#endif
 	foreach (QString fileName, pluginsDir.entryList(files, QDir::Files)) {
 		QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
 
@@ -561,6 +567,11 @@ YT_PlugIn* YT_HostImpl::FindRenderPlugin( const QString& type )
 		}
 	}
 
+	if (m_RendererList.size()>0)
+	{
+		return m_RendererList.at(0)->plugin;
+	}
+
 	return NULL;
 }
 
@@ -596,7 +607,7 @@ void YT_HostImpl::Logging(void* ptr,  YT_LOGGING_LEVELS level, const char* fmt, 
 					break;
 			}
 
-			showbase(hex(stream)) << (unsigned int)ptr;
+			showbase(hex(stream)) << (uintptr_t)ptr;
 			stream << " " << msg << "\n";
 		}
 	}
