@@ -4,8 +4,13 @@
 #include "YT_interfaceImpl.h"
 #include <stdlib.h>
 #include <memory.h>
+
 #define __STDC_CONSTANT_MACROS
-#include <stdint.h>
+#ifdef _MSC_VER
+#	include <stdint_msc.h>
+#else
+#	include <stdint.h>
+#endif
 extern "C" {
 #include <libswscale/swscale.h>
 }

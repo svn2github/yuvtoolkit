@@ -21,7 +21,12 @@
 #ifndef AVUTIL_MATHEMATICS_H
 #define AVUTIL_MATHEMATICS_H
 
-#include <stdint.h>
+#ifdef _MSC_VER
+#	include <stdint_msc.h>
+#else
+#	include <stdint.h>
+#endif
+
 #include <math.h>
 #include "common.h"
 #include "rational.h"

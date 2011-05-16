@@ -28,7 +28,11 @@
 
 #include <ctype.h>
 #include <errno.h>
-#include <inttypes.h>
+#ifdef _MSC_VER
+#	include <inttypes_msc.h>
+#else
+#	include <inttypes.h>
+#endif
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>

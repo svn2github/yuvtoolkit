@@ -21,7 +21,11 @@
 #ifndef AVUTIL_INTFLOAT_READWRITE_H
 #define AVUTIL_INTFLOAT_READWRITE_H
 
-#include <stdint.h>
+#ifdef _MSC_VER
+#	include <stdint_msc.h>
+#else
+#	include <stdint.h>
+#endif
 #include "common.h"
 
 /* IEEE 80 bits extended float */

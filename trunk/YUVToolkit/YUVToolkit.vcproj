@@ -42,8 +42,8 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="C:\Dev\FrameWave\trunk\include;C:\Dev\OpenCV\2.0\include;c:\Dev\SDL\1.2.14\include;c:\Dev\FFMpeg\trunk\include;&quot;$(SolutionDir)\baseclasses&quot;;c:\Dev\msc_int;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;&quot;$(SolutionDir)\Plugins&quot;"
-				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Plugins&quot;;&quot;$(SolutionDir)\3rdparty\include&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtScript&quot;;&quot;$(QTDIR)\include\QtScriptTools&quot;;"
+				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_DLL;QT_SCRIPT_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
 				DebugInformationFormat="3"
@@ -59,10 +59,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib fwImage.lib fwBase.lib swscale.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib swscale.lib QtScript4.lib QtScriptTools4.lib"
 				OutputFile="$(OutDir)\YUVToolkit.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;c:\Dev\SDL\1.2.14\lib;c:\Dev\FFMpeg\trunk\lib;C:\Dev\OpenCV\2.0\lib\release;C:\Dev\FrameWave\trunk\lib;C:\Dev\Windows\7.0\baseclasses"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;&quot;$(SolutionDir)\3rdparty\lib&quot;;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				GenerateMapFile="false"
@@ -118,8 +118,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Dev\FrameWave\trunk\include;C:\Dev\OpenCV\2.0\include;c:\Dev\SDL\1.2.14\include;c:\Dev\FFMpeg\trunk\include;&quot;$(SolutionDir)\baseclasses&quot;;c:\Dev\msc_int;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;.\;&quot;$(SolutionDir)\Plugins&quot;"
-				PreprocessorDefinitions="_DEBUG;DEBUG;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Plugins&quot;;&quot;$(SolutionDir)\3rdparty\include&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtScript&quot;;&quot;$(QTDIR)\include\QtScriptTools&quot;;"
+				PreprocessorDefinitions="_DEBUG;DEBUG;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_DLL;QT_SCRIPT_LIB"
 				RuntimeLibrary="3"
 				StructMemberAlignment="0"
 				TreatWChar_tAsBuiltInType="false"
@@ -136,9 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib fwImage.lib fwBase.lib swscale.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib swscale.lib QtScriptd4.lib QtScriptToolsd4.lib"
 				OutputFile="$(OutDir)\YUVToolkit.exe"
-				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;c:\Dev\SDL\1.2.14\lib;c:\Dev\FFMpeg\trunk\lib;C:\Dev\OpenCV\2.0\lib\release;C:\Dev\FrameWave\trunk\lib;C:\Dev\Windows\7.0\baseclasses"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;&quot;$(SolutionDir)\3rdparty\lib&quot;;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -178,10 +178,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\UI\ClickableSlider.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ColorConversion.cpp"
 				>
 			</File>
@@ -207,14 +203,6 @@
 			</File>
 			<File
 				RelativePath=".\SourceThread.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\UI\TextLabel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\TuningWidget.cpp"
 				>
 			</File>
 			<File
@@ -248,7 +236,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\UI\ClickableSlider.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE  &quot;-IC:\Dev\FrameWave\trunk\include&quot; &quot;-IC:\Dev\OpenCV\2.0\include&quot; &quot;-Ic:\Dev\SDL\1.2.14\include&quot; &quot;-Ic:\Dev\FFMpeg\trunk\include&quot; &quot;-I$(SolutionDir)\baseclasses&quot; &quot;-Ic:\Dev\msc_int&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;-I$(SolutionDir)\Plugins&quot; &quot;.\UI\ClickableSlider.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -259,7 +247,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\UI\ClickableSlider.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE  &quot;-IC:\Dev\FrameWave\trunk\include&quot; &quot;-IC:\Dev\OpenCV\2.0\include&quot; &quot;-Ic:\Dev\SDL\1.2.14\include&quot; &quot;-Ic:\Dev\FFMpeg\trunk\include&quot; &quot;-I$(SolutionDir)\baseclasses&quot; &quot;-Ic:\Dev\msc_int&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;-I$(SolutionDir)\Plugins&quot; &quot;.\UI\ClickableSlider.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -278,7 +266,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\Layout.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\Layout.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -289,7 +277,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\Layout.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\Layout.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -304,7 +292,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -315,7 +303,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\MainWindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -330,7 +318,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_UNICODE -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\RendererWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -341,7 +329,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_DEBUG -D_UNICODE -DDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\RendererWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -356,7 +344,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_UNICODE -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\RenderThread.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -367,7 +355,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_DEBUG -D_UNICODE -DDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\RenderThread.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -382,7 +370,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_UNICODE -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\SourceThread.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -393,7 +381,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_DEBUG -D_UNICODE -DDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\SourceThread.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -408,7 +396,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\UI\TextLabel.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE  &quot;-IC:\Dev\FrameWave\trunk\include&quot; &quot;-IC:\Dev\OpenCV\2.0\include&quot; &quot;-Ic:\Dev\SDL\1.2.14\include&quot; &quot;-Ic:\Dev\FFMpeg\trunk\include&quot; &quot;-I$(SolutionDir)\baseclasses&quot; &quot;-Ic:\Dev\msc_int&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;-I$(SolutionDir)\Plugins&quot; &quot;.\UI\TextLabel.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -419,33 +407,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\UI\TextLabel.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\TuningWidget.h"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\TuningWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
-						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\TuningWidget.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -D_UNICODE  &quot;-IC:\Dev\FrameWave\trunk\include&quot; &quot;-IC:\Dev\OpenCV\2.0\include&quot; &quot;-Ic:\Dev\SDL\1.2.14\include&quot; &quot;-Ic:\Dev\FFMpeg\trunk\include&quot; &quot;-I$(SolutionDir)\baseclasses&quot; &quot;-Ic:\Dev\msc_int&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I.&quot; &quot;-I$(SolutionDir)\Plugins&quot; &quot;.\UI\TextLabel.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -464,7 +426,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\VideoView.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\VideoView.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -475,7 +437,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\VideoView.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\VideoView.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -490,7 +452,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_UNICODE -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\VideoViewList.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -501,7 +463,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot; -D_DEBUG -D_UNICODE -DDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DUNICODE -DWIN32 -I&quot;$(QTDIR)\include&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;$(SolutionDir)\Plugins&quot; -I&quot;.&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\VideoViewList.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -516,7 +478,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\YT_InterfaceImpl.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\YT_InterfaceImpl.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -527,7 +489,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -D_UNICODE  -I&quot;C:\Dev\FrameWave\trunk\include&quot; -I&quot;C:\Dev\OpenCV\2.0\include&quot; -I&quot;c:\Dev\SDL\1.2.14\include&quot; -I&quot;c:\Dev\FFMpeg\trunk\include&quot; -I&quot;$(SolutionDir)\baseclasses&quot; -I&quot;c:\Dev\msc_int&quot; -I&quot;.\GeneratedFiles&quot; -I&quot;$(QTDIR)\include&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)&quot; -I&quot;$(QTDIR)\include\QtCore&quot; -I&quot;$(QTDIR)\include\QtGui&quot; -I&quot;.&quot; -I&quot;$(SolutionDir)\Plugins&quot; &quot;.\YT_InterfaceImpl.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DDEBUG -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_DLL -DQT_SCRIPT_LIB -D_UNICODE  &quot;-I$(SolutionDir)\Plugins&quot; &quot;-I$(SolutionDir)\3rdparty\include&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include\QtScript&quot; &quot;-I$(QTDIR)\include\QtScriptTools&quot; &quot;-I.&quot; &quot;.\YT_InterfaceImpl.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -703,18 +665,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\release\moc_TuningWidget.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\generatedfiles\release\moc_VideoView.cpp"
 					>
 					<FileConfiguration
@@ -874,18 +824,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\generatedfiles\debug\moc_TuningWidget.cpp"
-					>
-					<FileConfiguration
-						Name="Release|Win32"
-						ExcludedFromBuild="true"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath=".\generatedfiles\debug\moc_VideoView.cpp"
 					>
 					<FileConfiguration
@@ -947,7 +885,7 @@
 		/>
 		<Global
 			Name="QtVersion Win32"
-			Value="4.6.2-lite"
+			Value="$(DefaultQtVersion)"
 		/>
 		<Global
 			Name="RccDir"

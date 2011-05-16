@@ -13,6 +13,7 @@ Optimization
 Log the time took for reading a frame, log time took for rendering
 
 Bugs
+- Player doesn't always start by displaying frame 0, but at the end of the video.
 [9:19:05 AM] Pontus Carlsson: bug: when changing FPS, only one clip is played at the new FPS in case of multiple clips
 playback speed wrong after maximizing the window
 Crash when wrong stride is used
@@ -23,6 +24,8 @@ Double click one file and then you can drag same file back to player window
 Flickers when continuously seeking in one direction
 
 Features	
+- Displaying the difference of two videos.
+- HOME and END keys for beginning and end of video.
 [9:17:36 AM] Pontus Carlsson: request1: if playback cursor is changed during play, continue playing from the new position
 [9:18:19 AM] Pontus Carlsson: request2: looped playback of a selected time interval
 Center video options in middle of VideoView
