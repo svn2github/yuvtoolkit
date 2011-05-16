@@ -32,8 +32,7 @@ RESOURCES += YUVToolkit.qrc
 
 
 INCLUDEPATH += . \
-	 ../Plugins \
-	 ../3rdparty/include
-LIBS += -L"../3rdparty/lib" \
-	-lswscale
+     ../Plugins \
+     ../3rdparty/include
+LIBS += -L"$$PWD/../3rdparty/lib" -lswscale
 win32:RC_FILE = YUVToolkit.rc
