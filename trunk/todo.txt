@@ -1,0 +1,54 @@
+DONE auto resize window reset window size
+DONE u/v componet resolution strangeness
+DONE UV componet view checkbox not set properly when closed
+DONE Changing YUV resolution is not working properly
+DONE Move tuning panel to source options / pop out by default
+DONE 60 FPS playback
+DONE Scripting / video list (text file with several files at same time)
+DONE Show YUV, or each plane separately
+DONE Show actual playback speed
+DONE Logging to file
+
+Optimization
+Log the time took for reading a frame, log time took for rendering
+
+Bugs
+[9:19:05 AM] Pontus Carlsson: bug: when changing FPS, only one clip is played at the new FPS in case of multiple clips
+playback speed wrong after maximizing the window
+Crash when wrong stride is used
+error when file is not accessible
+reset current play time stamp after all video is closed
+Drag-drop two files when one file is already playing
+Double click one file and then you can drag same file back to player window
+Flickers when continuously seeking in one direction
+
+Features	
+[9:17:36 AM] Pontus Carlsson: request1: if playback cursor is changed during play, continue playing from the new position
+[9:18:19 AM] Pontus Carlsson: request2: looped playback of a selected time interval
+Center video options in middle of VideoView
+Make the backbuffer size at least VGA
+Compute PSNR, SSIM measures
+Make SSIM, MSE maps
+video positioning algorithm
+Drag and drop to reposition the video
+Zoom in on mouse over
+File association
+reading other YUV files (UYVY/UYNV/Y422/IUYV/YUYV/YUNV/V422/YUY2/YVYU/IYU2/YV16/YV12/IYUV/I420)
+File Format History (remember the format of earlier opened YUV files)
+reading y4m files
+reading ivf/vp8 files
+reading reading h264 files via ffmpeg
+reading png/bmp/jpeg
+reading directory of images
+Data analysis and plotting (QWT)
+Video Convertion --> different YUV / raw avi format
+Save frames to images
+Stride support
+Editing 
+- join, split, cut 
+- crop/resize/flip/rotate/padding
+- separate/join components 
+Visualization layer
+- plot motion vectors
+- plot blocks
+View and edit YUV pixels
