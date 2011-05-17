@@ -82,14 +82,17 @@ macx {
 	EXTRA_DLLS += \
 		$${FFMPEG_DIR}/lib_osx/libswscale.dylib \
 		$${FFMPEG_DIR}/lib_osx/libavutil.dylib
+
+	QMAKE_POST_LINK += mkdir -p $${DESTDIR}/$${TARGET}.app/Contents/lib;
+	QMAKE_POST_LINK += mkdir -p $${DESTDIR}/$${TARGET}.app/Contents/Frameworks;
 	
 	# Copy libs
 	for(FILE,EXTRA_DLLS){
-		QMAKE_POST_LINK += cp -f $${FILE} $${DESTDIR_TARGET}.app/Contents/lib;
+		QMAKE_POST_LINK += cp -f $${FILE} $${DESTDIR}/$${TARGET}.app/Contents/lib;
 	}
 	
 	# Deploy QT framework
-	QMAKE_POST_LINK += macdeployqt $${DESTDIR_TARGET}.app -dmg;
+		QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -no-plugins -dmg;
 
 	# Icon
 	ICON = YUVToolkit.icns
