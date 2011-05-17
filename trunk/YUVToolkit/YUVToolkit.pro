@@ -96,8 +96,7 @@ macx {
 		}
 	}
 	
-	# Deploy QT framework, not working, crashes on start up when used
-	# QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
+	QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
 	# Icon
 	ICON = YUVToolkit.icns

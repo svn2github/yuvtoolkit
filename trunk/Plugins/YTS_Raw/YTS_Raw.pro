@@ -1,7 +1,3 @@
-! include( ../common.pri ) {
-	error( common.pri not found )
-}
-
 TARGET   = YTS_Raw
 
 DEFINES += 
@@ -15,3 +11,6 @@ HEADERS += RawFormatWidget.h\
 		
 FORMS   += RawFormatWidget.ui
 
+! include( ../common.pri ) {
+	error( common.pri not found )
+}
