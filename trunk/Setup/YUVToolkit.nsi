@@ -82,18 +82,19 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File "..\release\avutil-50.dll"
-File "..\release\msvcp100.dll"
-File "..\release\msvcr100.dll"
-File "..\release\QtCore4.dll"
-File "..\release\QtScript4.dll"
-File "..\release\QtScriptTools4.dll"
-File "..\release\QtGui4.dll"
-File "..\release\swscale-0.dll"
-File "..\release\YT_TransformsBasic.dll"
-File "..\release\YTR_D3D.dll"
-File "..\release\YTS_Raw.dll"
-File "..\release\YUVToolkit.exe"
+File "..\Release\avutil-50.dll"
+File "..\Release\msvcp80.dll"
+File "..\Release\msvcr80.dll"
+File "..\Release\QtCore4.dll"
+File "..\Release\QtScript4.dll"
+File "..\Release\QtScriptTools4.dll"
+File "..\Release\QtGui4.dll"
+File "..\Release\swscale-0.dll"
+File "..\Release\YT_TransformsBasic.dll"
+File "..\Release\YT_QPaintRenderer.dll"
+File "..\Release\YTR_D3D.dll"
+File "..\Release\YTS_Raw.dll"
+File "..\Release\YUVToolkit.exe"
 
 
 

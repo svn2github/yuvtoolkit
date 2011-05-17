@@ -1,7 +1,8 @@
-QT      += core gui
+! include( ../common.pri ) {
+	error( common.pri not found )
+}
 
-TARGET = YT_QPaintRenderer
-TEMPLATE = lib
+TARGET   = YT_QPaintRenderer
 
 DEFINES += 
 
@@ -9,8 +10,3 @@ SOURCES += YT_QPaintRenderer.cpp
 
 HEADERS += YT_QPaintRenderer.h
 		
-# FORMS += RawFormatWidget.ui
-
-INCLUDEPATH += . \
-     ../Plugins \
-     ../3rdparty/include
