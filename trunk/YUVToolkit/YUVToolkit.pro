@@ -79,20 +79,25 @@ win32 {
 macx {
 	LIBS += -L"$$PWD/../3rdparty/ffmpeg/lib_osx"
 	
-	EXTRA_DLLS += \
-		$${FFMPEG_DIR}/lib_osx/libswscale.dylib \
-		$${FFMPEG_DIR}/lib_osx/libavutil.dylib
+	DYLIB_NEW = @executable_path/../Frameworks
+	DYLIB_DIR = $${FFMPEG_DIR}/lib_osx
+	DYLIBS = libswscale.dylib \
+		libavutil.dylib
 
-	QMAKE_POST_LINK += mkdir -p $${DESTDIR}/$${TARGET}.app/Contents/lib;
 	QMAKE_POST_LINK += mkdir -p $${DESTDIR}/$${TARGET}.app/Contents/Frameworks;
 	
-	# Copy libs
-	for(FILE,EXTRA_DLLS){
-		QMAKE_POST_LINK += cp -f $${FILE} $${DESTDIR}/$${TARGET}.app/Contents/lib;
+	# Copy libs and update reference
+	for(DYLIB,DYLIBS){
+		QMAKE_POST_LINK += cp -f $${DYLIB_DIR}/$${DYLIB} $${DESTDIR}/$${TARGET}.app/Contents/Frameworks;
+		QMAKE_POST_LINK += install_name_tool -id $${DYLIB_NEW}/$${DYLIB} $${DESTDIR}/$${TARGET}.app/Contents/Frameworks/$${DYLIB};
+		QMAKE_POST_LINK += install_name_tool -change ../lib/$${DYLIB} $${DYLIB_NEW}/$${DYLIB} $${DESTDIR}/$${TARGET}.app/Contents/MacOS/$${TARGET};
+		for(DYLIB2,DYLIBS){
+			QMAKE_POST_LINK += install_name_tool -change ../lib/$${DYLIB2} $${DYLIB_NEW}/$${DYLIB2} $${DESTDIR}/$${TARGET}.app/Contents/Frameworks/$${DYLIB};
+		}
 	}
 	
-	# Deploy QT framework
-		QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -no-plugins -dmg;
+	# Deploy QT framework, not working, crashes on start up when used
+	# QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
 	# Icon
 	ICON = YUVToolkit.icns
