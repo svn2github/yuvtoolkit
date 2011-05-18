@@ -98,6 +98,8 @@ macx {
 	
 	QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
+	QMAKE_POST_LINK += mv $${DESTDIR}/$${TARGET}.dmg $${DESTDIR}/$${TARGET}-`date +%Y%m%d_%H%M%S`.dmg;
+
 	# Icon
 	ICON = YUVToolkit.icns
  }
