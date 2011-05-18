@@ -38,9 +38,7 @@ void YT_QPaintRendererPlugin::ReleaseRenderer( YT_Renderer* parent )
 YT_QPaintRenderer::YT_QPaintRenderer(YT_Host* host, QWidget* widget, const QString& name) 
 : m_Host(host), QWidget(widget), m_RenderList(NULL)
 {
-	QTimer *timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(OnPaintTimer()));
-	timer->start(17);
+	show();
 }
 
 
@@ -52,9 +50,11 @@ YT_RESULT YT_QPaintRenderer::RenderScene(QList<YT_Render_Frame>& frameList)
 {
 	m_RenderList = &frameList;
 
+	this->update();
+
 	QMutexLocker locker(&m_MutexFramesRendered);
 	m_FramesRendered.wait(&m_MutexFramesRendered, 100);
-
+	
 	m_RenderList = NULL;
 
 	return YT_OK;
@@ -127,7 +127,8 @@ void YT_QPaintRenderer::OnPaintTimer()
 
 void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 {
-	if (m_RenderList)
+	QList<YT_Render_Frame>* renderList = m_RenderList;
+	if (renderList)
 	{
 		int width = QWidget::width();
 		int height = QWidget::height();
@@ -139,9 +140,9 @@ void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 			painter.setBrush(Qt::black);
 			painter.drawRect(rcClient);
 
-			for (int i=0; i<m_RenderList->size(); ++i) 
+			for (int i=0; i<renderList->size(); ++i) 
 			{
-				const YT_Render_Frame& rf = m_RenderList->at(i);
+				const YT_Render_Frame& rf = renderList->at(i);
 
 				QRect srcRect(rf.srcRect[0], rf.srcRect[1], rf.srcRect[2]-rf.srcRect[0], rf.srcRect[3]-rf.srcRect[1]);
 				QRect dstRect(rf.dstRect[0], rf.dstRect[1], rf.dstRect[2]-rf.dstRect[0], rf.dstRect[3]-rf.dstRect[1]);
@@ -153,9 +154,4 @@ void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 		m_RenderList = NULL;
 		m_FramesRendered.wakeAll();
 	}
-}
-
-void YT_QPaintRenderer::closeEvent( QCloseEvent* )
-{
-	int i=0;
 }

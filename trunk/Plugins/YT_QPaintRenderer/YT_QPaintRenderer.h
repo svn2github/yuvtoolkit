@@ -43,7 +43,6 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent*);
-	void closeEvent(QCloseEvent*);
 
 	QMutex m_MutexFramesRendered;
 	QWaitCondition m_FramesRendered;
