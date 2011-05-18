@@ -516,6 +516,7 @@ void MainWindow::autoResizeWindow()
 
 	if (isMaximized() || isMinimized())
 	{
+		m_VideoViewList->OnUpdateRenderWidgetPosition();
 		return;
 	}
 	
@@ -855,10 +856,10 @@ void MainWindow::OnRendererSelected()
 
 		m_RenderType = action->objectName();
 
-		openFiles(fileList);
-
 		QSettings settings;
 		settings.setValue("main/renderer", m_RenderType);
+
+		openFiles(fileList);
 
 		UpdateActiveVideoView();
 	}

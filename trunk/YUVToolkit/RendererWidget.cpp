@@ -60,6 +60,13 @@ void RendererWidget::Init(const QString& renderType)
 
 	m_Plugin = GetHostImpl()->FindRenderPlugin(renderType);	
 	m_Renderer = m_Plugin->NewRenderer(this, renderType);
+
+	QWidget* widget = m_Renderer->GetWidget();
+	if (widget)
+	{
+		widget->show();
+		widget->resize(size());
+	}
 }
 
 void RendererWidget::UnInit()
@@ -85,10 +92,13 @@ void RendererWidget::mouseReleaseEvent( QMouseEvent* e )
 
 void RendererWidget::resizeEvent( QResizeEvent* e)
 {
-	QWidget* widget = childAt(1,1);
-	if (widget && widget->paintEngine()==0)
+	if (m_Renderer)
 	{
-		widget->resize(e->size());
+		QWidget* widget = m_Renderer->GetWidget();
+		if (widget)
+		{
+			widget->resize(e->size());
+		}
 	}
 
 	emit repositioned();

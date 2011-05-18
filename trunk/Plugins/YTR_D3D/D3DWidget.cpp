@@ -9,8 +9,7 @@ d3DDevice(NULL), resizeTimer(NULL), bufferWidth(0), bufferHeight(0)
 	// setAttribute(Qt::WA_NativeWindow, true);
 	setAttribute(Qt::WA_PaintOnScreen);
 
-	setGeometry(0,0,parent->width(),parent->height());
-	show();
+	setGeometry(0,0,640,480);
 
 	InitD3D();
 }

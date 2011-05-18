@@ -32,6 +32,7 @@ public:
 	YTR_D3D(YT_Host* host, QWidget* widget, const QString& name);
 	~YTR_D3D();
 
+	virtual QWidget* GetWidget() {return this;}
 	virtual YT_RESULT RenderScene(QList<YT_Render_Frame>& frameList);
 
 	// Allocate render specific buffers

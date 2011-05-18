@@ -245,7 +245,10 @@ class YT_Renderer
 public:
 	virtual ~YT_Renderer() {}
 
-	virtual YT_RESULT RenderScene(QList<YT_Render_Frame>& frameList) = 0;
+	// returns the widget pointer in case you need to show and position the widget in the render region
+	virtual QWidget* GetWidget() = 0;
+
+	virtual YT_RESULT RenderScene(QList<YT_Render_Frame>& frameList) = 0;	
 
 	// Allocate render specific buffers
 	virtual YT_RESULT Allocate(YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat) = 0;

@@ -22,6 +22,8 @@ public:
 	YT_QPaintRenderer(YT_Host* host, QWidget* widget, const QString& name);
 	~YT_QPaintRenderer();
 
+	virtual QWidget* GetWidget() {return this;}
+
 	virtual YT_RESULT RenderScene(QList<YT_Render_Frame>& frameList);
 
 	// Allocate render specific buffers

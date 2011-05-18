@@ -38,7 +38,6 @@ void YT_QPaintRendererPlugin::ReleaseRenderer( YT_Renderer* parent )
 YT_QPaintRenderer::YT_QPaintRenderer(YT_Host* host, QWidget* widget, const QString& name) 
 : m_Host(host), QWidget(widget), m_RenderList(NULL)
 {
-	show();
 }
 
 
