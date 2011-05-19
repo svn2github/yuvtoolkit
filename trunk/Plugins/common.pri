@@ -1,5 +1,6 @@
 QT       = core gui
 TEMPLATE = lib
+CONFIG  += plugin
 
 INCLUDEPATH += . ..
 
@@ -11,7 +12,7 @@ CONFIG(debug, debug|release) {
 
 macx {
 	DYLIB_NEW = @executable_path/../MacOS
-        DYLIB = lib$${TARGET}.1.0.0.dylib
+		DYLIB = lib$${TARGET}.dylib
         QMAKE_POST_LINK += mkdir -p $${DESTDIR}/YUVToolkit.app/Contents/MacOS;
         QMAKE_POST_LINK += cp -f $${DESTDIR}/$${DYLIB} $${DESTDIR}/YUVToolkit.app/Contents/MacOS;
         QMAKE_POST_LINK += install_name_tool -id $${DYLIB_NEW}/$${TARGET}.dylib $${DESTDIR}/YUVToolkit.app/Contents/MacOS/$${DYLIB};

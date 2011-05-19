@@ -92,7 +92,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy QT binaries"
-				CommandLine="copy /y &quot;$(QTDIR)\bin\QtCore4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtGui4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScript4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScriptTools4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcp80.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcr80.dll&quot; &quot;$(TargetDir)&quot;"
+				CommandLine="copy /y &quot;$(ProjectDir)\..\3rdparty\ffmpeg\bin\avutil-50.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(ProjectDir)\..\3rdparty\ffmpeg\bin\swscale-0.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtCore4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtGui4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScript4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScriptTools4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcp80.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcr80.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest&quot; &quot;$(TargetDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -169,7 +169,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy QT binaries"
-				CommandLine="copy /y &quot;$(QTDIR)\bin\QtCored4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtGuid4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScriptd4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScriptToolsd4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcp80.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcr80.dll&quot; &quot;$(TargetDir)&quot;"
+				CommandLine="copy /y &quot;$(ProjectDir)\..\3rdparty\ffmpeg\bin\avutil-50.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(ProjectDir)\..\3rdparty\ffmpeg\bin\swscale-0.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtCored4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtGuid4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScriptd4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(QTDIR)\bin\QtScriptToolsd4.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcp80.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\msvcr80.dll&quot; &quot;$(TargetDir)&quot;&#x0D;&#x0A;copy /y &quot;$(VCInstallDir)\redist\x86\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest&quot; &quot;$(TargetDir)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
