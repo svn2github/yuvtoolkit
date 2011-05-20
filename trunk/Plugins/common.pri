@@ -19,5 +19,5 @@ macx {
 	
 	DYLIB_NEW = @executable_path/../Frameworks
         QMAKE_POST_LINK += install_name_tool -change QtGui.framework/Versions/4/QtGui $${DYLIB_NEW}/QtGui.framework/Versions/4/QtGui $${DESTDIR}/YUVToolkit.app/Contents/MacOS/$${DYLIB};
-        QMAKE_POST_LINK += install_name_tool -change QtGui.framework/Versions/4/QtCore $${DYLIB_NEW}/QtGui.framework/Versions/4/QtCore $${DESTDIR}/YUVToolkit.app/Contents/MacOS/$${DYLIB};
+        QMAKE_POST_LINK += install_name_tool -change QtCore.framework/Versions/4/QtCore $${DYLIB_NEW}/QtCore.framework/Versions/4/QtCore $${DESTDIR}/YUVToolkit.app/Contents/MacOS/$${DYLIB};
 }
