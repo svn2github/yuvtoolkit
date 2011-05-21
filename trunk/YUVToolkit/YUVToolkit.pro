@@ -1,4 +1,4 @@
-QT       = core gui script scripttools
+QT       = core gui script scripttools opengl
 
 TARGET = YUVToolkit
 TEMPLATE = app
@@ -48,7 +48,7 @@ VERSION_4 = $$cat(../Setup/VERSION_4)
 VERSION = $${VERSION_1}.$${VERSION_2}.$${VERSION_3}.$${VERSION_4}
 
 FFMPEG_DIR = $$PWD/../3rdparty/ffmpeg
-QT_LIBS = Core Gui Script ScriptTools
+QT_LIBS = Core Gui Script ScriptTools OpenGL
 win32 {
 	LIBS += -L"$${FFMPEG_DIR}/lib_win32"
 
@@ -102,7 +102,7 @@ macx {
 		}
 	}
 	
-	QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
+        QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
 	SETUPDIR = $$PWD/../Setup
 	QMAKE_POST_LINK += mv $${DESTDIR}/$${TARGET}.dmg $${SETUPDIR}/$${TARGET}-$${VERSION}-`date +%Y%m%d_%H%M%S`.dmg;

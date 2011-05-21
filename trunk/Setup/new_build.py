@@ -15,6 +15,6 @@ if platform.system() == "Windows":
     os.system("\""+nsis+"\" YUVToolkit.nsi")
 elif platform.system() == "Darwin":
     os.chdir("..")
-    os.system("qmake YUVToolkitProject.pro")
+    os.system("qmake YUVToolkitProject.pro -r -spec macx-g++ -config release")
     os.system("make clean")
     os.system("make")
