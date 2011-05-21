@@ -41,6 +41,10 @@ CONFIG(debug, debug|release) {
 	DESTDIR = $$PWD/../Release
 }
 
+VERSION = $$cat(../VERSION)
+BUILD = $$cat(../BUILD)
+VERSION_BUILD = $${VERSION}.$${BUILD}
+
 FFMPEG_DIR = $$PWD/../3rdparty/ffmpeg
 QT_LIBS = Core Gui Script ScriptTools
 win32 {
@@ -98,7 +102,8 @@ macx {
 	
 	QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
-	QMAKE_POST_LINK += mv $${DESTDIR}/$${TARGET}.dmg $${DESTDIR}/$${TARGET}-`date +%Y%m%d_%H%M%S`.dmg;
+	SETUPDIR = $$PWD/../Setup
+	QMAKE_POST_LINK += mv $${DESTDIR}/$${TARGET}.dmg $${SETUPDIR}/$${TARGET}-$${VERSION_BUILD}-`date +%Y%m%d_%H%M%S`.dmg;
 
 	# Icon
 	ICON = YUVToolkit.icns

@@ -6,13 +6,15 @@
 
 !define /date NOW "%Y%m%d-%H%M%S"
 !define APP_NAME "YUVToolkit"
-!define COMP_NAME "Yocto.net"
-!define WEB_SITE "http://www.yocto.net"
-!define VERSION "0.0.1.1"
-!define COPYRIGHT "David Zhao © 2010"
+!define COMP_NAME "http://www.yuvtoolkit.com"
+!define WEB_SITE "http://www.yuvtoolkit.com"
+!define /file VERSION ../VERSION
+!define /file BUILD ../BUILD
+!define VERSION_BUILD "${VERSION}.${BUILD}"
+!define COPYRIGHT "David Yuheng Zhao © 2010-2011"
 !define DESCRIPTION "YUV video player"
 !define LICENSE_TXT "license.txt"
-!define INSTALLER_NAME "YUVToolkit-${VERSION}-${NOW}.exe"
+!define INSTALLER_NAME "YUVToolkit-${VERSION_BUILD}-${NOW}.exe"
 !define MAIN_APP_EXE "YUVToolkit.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
@@ -21,7 +23,7 @@
 
 ######################################################################
 
-VIProductVersion  "${VERSION}"
+VIProductVersion  "${VERSION_BUILD}"
 VIAddVersionKey "ProductName"  "${APP_NAME}"
 VIAddVersionKey "CompanyName"  "${COMP_NAME}"
 VIAddVersionKey "LegalCopyright"  "${COPYRIGHT}"
@@ -137,7 +139,7 @@ WriteRegStr ${REG_ROOT} "${REG_APP_PATH}" "" "$INSTDIR\${MAIN_APP_EXE}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayName" "${APP_NAME}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "UninstallString" "$INSTDIR\uninstall.exe"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\${MAIN_APP_EXE}"
-WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayVersion" "${VERSION}"
+WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "DisplayVersion" "${VERSION_BUILD}"
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "Publisher" "${COMP_NAME}"
 
 !ifdef WEB_SITE
