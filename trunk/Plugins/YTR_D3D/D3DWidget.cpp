@@ -3,7 +3,7 @@
 #include <assert.h>
 
 D3DWidget::D3DWidget( QWidget* parent ) : QWidget(parent), d3D(NULL),
-d3DDevice(NULL), resizeTimer(NULL), bufferWidth(0), bufferHeight(0)
+d3DDevice(NULL), bufferWidth(0), bufferHeight(0)
 {
 	// setAttribute(Qt::WA_NoSystemBackground, true);
 	// setAttribute(Qt::WA_NativeWindow, true);

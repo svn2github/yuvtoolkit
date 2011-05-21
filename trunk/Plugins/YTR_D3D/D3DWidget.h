@@ -28,15 +28,11 @@ protected:
 	int bufferWidth;
 	int bufferHeight;
 
-	// QMutex mutex;
-
 	IDirect3D9*                  d3D;
 	IDirect3DDevice9*            d3DDevice;
 	UINT                         adapter;
 	UINT                         resetToken;
 	D3DPRESENT_PARAMETERS        d3dpp;
-
-	QTimer*                      resizeTimer;
 };
 
 

@@ -63,8 +63,6 @@ YT_RESULT YT_OpenGLRenderer::RenderScene(QList<YT_Render_Frame>& frameList)
 	{
 		makeCurrent();
 
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);     // Background => dark blue
-
 		if (m_BufferSizeChanged) {
 			glViewport(0, 0, m_BufferWidth, m_BufferHeight);
 			// Set up 2D view, and map topleft to 0,0
@@ -78,6 +76,7 @@ YT_RESULT YT_OpenGLRenderer::RenderScene(QList<YT_Render_Frame>& frameList)
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);     // Background => dark blue
 		for (int i=0; i<frameList.size(); ++i) 
 		{
 			const YT_Render_Frame& rf = frameList.at(i);

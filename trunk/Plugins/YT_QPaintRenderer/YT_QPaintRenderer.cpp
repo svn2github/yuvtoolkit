@@ -104,26 +104,6 @@ YT_RESULT YT_QPaintRenderer::ReleaseFrame( YT_Frame_Ptr frame )
 	return YT_OK;
 }
 
-void YT_QPaintRenderer::OnPaintTimer()
-{
-	if (m_RenderList)
-	{
-		if (!isVisible())
-		{
-			show();
-		}
-
-		QRect rc = parentWidget()->rect();
-		if (rc != rect())
-		{
-			move(rc.left(), rc.top());
-			resize(rc.width(), rc.height());
-		}
-		
-		repaint();
-	}
-}
-
 void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 {
 	QList<YT_Render_Frame>* renderList = m_RenderList;

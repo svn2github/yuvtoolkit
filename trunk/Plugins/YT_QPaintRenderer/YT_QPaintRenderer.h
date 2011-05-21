@@ -50,8 +50,6 @@ protected:
 	QWaitCondition m_FramesRendered;
 
 	QList<YT_Render_Frame>* m_RenderList;
-public slots:
-	void OnPaintTimer();
 protected:
 	YT_Host* m_Host;
 };
