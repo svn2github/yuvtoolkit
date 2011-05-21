@@ -1,4 +1,4 @@
-QT       = core gui
+QT      += core gui
 TEMPLATE = lib
 CONFIG  += plugin
 

@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS  = \
+		   Plugins/YT_GLRenderer \
 		   Plugins/YT_QPaintRenderer \
 		   Plugins/YTS_Raw
 
