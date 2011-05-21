@@ -41,9 +41,11 @@ CONFIG(debug, debug|release) {
 	DESTDIR = $$PWD/../Release
 }
 
-VERSION = $$cat(../VERSION)
-BUILD = $$cat(../BUILD)
-VERSION_BUILD = $${VERSION}.$${BUILD}
+VERSION_1 = $$cat(../Setup/VERSION_1)
+VERSION_2 = $$cat(../Setup/VERSION_2)
+VERSION_3 = $$cat(../Setup/VERSION_3)
+VERSION_4 = $$cat(../Setup/VERSION_4)
+VERSION = $${VERSION_1}.$${VERSION_2}.$${VERSION_3}.$${VERSION_4}
 
 FFMPEG_DIR = $$PWD/../3rdparty/ffmpeg
 QT_LIBS = Core Gui Script ScriptTools
@@ -103,7 +105,7 @@ macx {
 	QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
 	SETUPDIR = $$PWD/../Setup
-	QMAKE_POST_LINK += mv $${DESTDIR}/$${TARGET}.dmg $${SETUPDIR}/$${TARGET}-$${VERSION_BUILD}-`date +%Y%m%d_%H%M%S`.dmg;
+	QMAKE_POST_LINK += mv $${DESTDIR}/$${TARGET}.dmg $${SETUPDIR}/$${TARGET}-$${VERSION}-`date +%Y%m%d_%H%M%S`.dmg;
 
 	# Icon
 	ICON = YUVToolkit.icns

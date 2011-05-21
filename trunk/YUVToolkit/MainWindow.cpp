@@ -603,6 +603,15 @@ void MainWindow::on_action_About_triggered()
 
 	QString str;
 	QTextStream(&str) << "<H1>YUV Toolkit</H1>"
+		<< "<B> Version " <<
+#include "../Setup/VERSION_1"
+		<< "." << 
+#include "../Setup/VERSION_2"
+		<< "." << 
+#include "../Setup/VERSION_3"
+		<< " Build " <<
+#include "../Setup/VERSION_4"
+		<< "</B><BR><BR>"
 		<< "<I>Compiled " << __DATE__ << " "  << __TIME__ << "</I>"
 		<< "<BR><BR>Copyright David Zhao (C) 2009-2011"
 		<< "<BR>All Rights Reserved";
