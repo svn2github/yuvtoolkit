@@ -58,7 +58,8 @@ void RenderThread::run()
 			}
 		}else
 		{
-			sleepTime = 17;
+			// Paused
+			sleepTime = 100;
 		}
 
 		int displayInterval = 16;

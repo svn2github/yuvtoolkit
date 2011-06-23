@@ -134,25 +134,7 @@ void VideoViewList::CheckRenderReset()
 				vv->GetVideoQueue()->InitBuffers();
 			}
 
-			for (int i=0; i<m_VideoList.size(); ++i) 
-			{
-				VideoView* vv = m_VideoList.at(i);
-				if (vv->GetType() == YT_PLUGIN_SOURCE)
-				{
-					SourceThread* st = vv->GetSourceThread();
-
-					if (IsPlaying())
-					{
-						// st->Play();
-					}else if (m_CurrentPTS != INVALID_PTS)
-					{
-						// st->Seek(m_CurrentPTS);
-					}else
-					{
-						// st->Seek(0);
-					}
-				}
-			}
+			Seek(m_CurrentPTS, IsPlaying());
 
 			m_RenderThread->Start();
 		}
