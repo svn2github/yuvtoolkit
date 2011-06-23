@@ -3,11 +3,16 @@
 
 #include <QtGui>
 #include <math.h>
+#include <assert.h>
 
 Q_EXPORT_PLUGIN2(YTS_Raw, YT_RawPlugin)
 
 #ifndef MyMin
 #	define MyMin(x,y) ((x>y)?y:x)
+#endif
+
+#ifndef MyMax
+#	define MyMax(x,y) ((x<y)?y:x)
 #endif
 
 YT_Host* g_Host = 0;
@@ -134,6 +139,7 @@ void YTS_Raw::InitInternal()
 	if (frame_size > 0)
 	{
 		m_NumFrames = file_info.size()/frame_size;
+		m_NumFrames = MyMax(m_NumFrames, 1);
 		
 		m_Duration = IndexToPTS(m_NumFrames);
 	}
@@ -147,6 +153,7 @@ YT_RESULT YTS_Raw::GetInfo( YT_Source_Info& info )
 	info.format = m_Format;
 	info.duration = m_Duration;
 	info.num_frames = m_NumFrames;
+	info.lastPTS = IndexToPTS(m_NumFrames-1);
 	info.fps = m_FPS;
 
 	return YT_OK;
@@ -161,23 +168,28 @@ YT_RESULT YTS_Raw::UnInit()
 
 YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
 {
-	int file_status = 0;
+	QMutexLocker locker(&m_Mutex);
+
 	if (PTS == INVALID_PTS)
 	{
 		return YT_ERROR;
 	}
 
-	if (PTS != NEXT_PTS)
+	if (PTS < NEXT_PTS)
 	{
 		m_FrameIndex = PTSToIndex(PTS);
 		m_FrameIndex = MyMin(m_FrameIndex, m_NumFrames-1);
+	}
 
-		unsigned int frame_size = 0;
-		for (int i=0; i<4 && file_status == 0; i++)
-		{
-			frame_size += m_Format->PlaneSize(i);
-		}
+	unsigned int frame_size = 0;
+	for (int i=0; i<4; i++)
+	{
+		frame_size += m_Format->PlaneSize(i);
+	}
 
+	int file_status = 0;
+	if (ftell(m_File) != frame_size * m_FrameIndex) 
+	{
 		file_status = fseek(m_File, frame_size*m_FrameIndex, SEEK_SET);
 	}
 
@@ -193,8 +205,8 @@ YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
 
 	if (file_status == 0)
 	{
-		PTS = (unsigned int)(1000/m_FPS*m_FrameIndex);
-		frame->SetPTS(PTS);
+		unsigned int pts = IndexToPTS(m_FrameIndex);
+		frame->SetPTS(pts);
 		frame->SetFrameNumber(m_FrameIndex);
 		m_FrameIndex++;
 
@@ -208,12 +220,17 @@ YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
 
 unsigned int YTS_Raw::IndexToPTS( unsigned int frame_idx )
 {
-	return (unsigned int)(1000.0/m_FPS*frame_idx);
+	frame_idx = MyMin(frame_idx, m_NumFrames-1);
+
+	return (unsigned int)floor(1000.0*frame_idx/m_FPS);
 }
 
 unsigned int YTS_Raw::PTSToIndex( unsigned int PTS )
 {
-	return (unsigned int)ceil(PTS*m_FPS/1000);
+	unsigned int frame_idx = (unsigned int)ceil(PTS*m_FPS/1000.0);
+	frame_idx = MyMin(frame_idx, m_NumFrames-1);
+
+	return frame_idx;
 }
 
 bool YTS_Raw::HasGUI()
@@ -229,6 +246,8 @@ QWidget* YTS_Raw::CreateGUI( QWidget* parent )
 
 void YTS_Raw::ReInit( const YT_Format& format, double FPS )
 {
+	QMutexLocker locker(&m_Mutex);
+	
 	unsigned int pts = IndexToPTS(m_FrameIndex);
 
 	*m_Format = format;
@@ -248,8 +267,12 @@ void YTS_Raw::ReInit( const YT_Format& format, double FPS )
 
 		m_Duration = IndexToPTS(m_NumFrames);
 	}
+}
 
-	pts = qMin(pts, m_Duration);
+unsigned int YTS_Raw::SeekPTS( unsigned int pts )
+{
+	unsigned int index = PTSToIndex(pts);	
+	unsigned ptsNew = IndexToPTS(index);
 
-	SeekTo(pts);
+	return ptsNew;
 }

@@ -221,12 +221,21 @@ void MainWindow::openFiles( const QStringList& fileList )
 	{
 		return;
 	}
+
+	bool playNow = true;
+	if (m_VideoViewList->size()>0)
+	{
+		playNow = m_VideoViewList->IsPlaying();
+		m_VideoViewList->Seek(INVALID_PTS, false);
+	}
 	
 	for ( int i=0; i<fileList2.size(); i++) // if at least one QUrl is present in list
 	{
 		const QString& fName = fileList2[i];
-		openFile(fName);
+		openFileInternal(fName);
 	}
+
+	m_VideoViewList->Seek(INVALID_PTS, playNow);
 }
 
 
@@ -388,6 +397,20 @@ void MainWindow::SetZoomMode( int mode )
 
 void MainWindow::openFile( QString strPath)
 {
+	bool playNow = true;
+	if (m_VideoViewList->size()>0)
+	{
+		playNow = m_VideoViewList->IsPlaying();
+		m_VideoViewList->Seek(INVALID_PTS, false);
+	}
+
+	openFileInternal(strPath);
+	
+	m_VideoViewList->Seek(INVALID_PTS, playNow);
+}
+
+void MainWindow::openFileInternal( QString strPath)
+{
 	QStringList fileList;
 	for (int i=0; i<m_VideoViewList->size(); ++i) 
 	{
@@ -408,41 +431,19 @@ void MainWindow::openFile( QString strPath)
 		return;
 	}
 
-	unsigned int currPts = m_VideoViewList->GetCurrentPTS();
-	bool playNow = true;
-	if (m_VideoViewList->size()>0)
-	{
-		playNow = m_VideoViewList->IsPlaying();
-		if (playNow)
-		{
-			m_VideoViewList->PauseAll();
-		}
-	}
-
 	VideoView* vv = m_VideoViewList->NewVideoView(this, strPath.toAscii());
-	vv->Init(strPath.toAscii());
-	
+	vv->Init(strPath.toAscii(), m_VideoViewList->GetCurrentPTS());
+
 	m_VideoViewList->UpdateDuration();
-	m_VideoViewList->Seek(currPts);
 
 	EnableButtons(true);
-
-	if (playNow)
-	{
-		m_VideoViewList->PlayAll();
-	}
 }
+
 
 
 void MainWindow::play( bool play )
 {
-	if (play)
-	{
-		m_VideoViewList->PlayAll();		
-	}else
-	{
-		m_VideoViewList->PauseAll();		
-	}
+	m_VideoViewList->Seek(INVALID_PTS, play);
 }
 
 
@@ -659,7 +660,7 @@ void MainWindow::seekVideo(int)
 		unsigned int pts = qFloor(idx_new * 1000 / info.fps);
 		if (qRound(pts * info.fps / 1000) == idx_new)
 		{
-			m_VideoViewList->Seek(pts);
+			m_VideoViewList->Seek(pts, false);
 
 			return;
 		}
@@ -787,8 +788,6 @@ void MainWindow::OnTimer()
 
 void MainWindow::stepVideo( int step )
 {
-	m_VideoViewList->PauseAll();
-
 	YT_Source* source = 0;
 	VideoView* longest = m_VideoViewList->longest();
 	YT_Frame_Ptr lastFrame = 0;
@@ -809,7 +808,7 @@ void MainWindow::stepVideo( int step )
 	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), info.num_frames-1);
 	unsigned int pts = source->IndexToPTS(frame_num);
 
-	m_VideoViewList->Seek(pts);
+	m_VideoViewList->Seek(pts, false);
 
 	bool old = m_Slider->blockSignals(true);
 	m_Slider->setSliderPosition(frame_num);

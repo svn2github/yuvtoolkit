@@ -41,6 +41,7 @@ public:
 
 	virtual YT_RESULT GetInfo(YT_Source_Info& info);
 	virtual unsigned int IndexToPTS(unsigned int frame_idx);
+	virtual unsigned int SeekPTS(unsigned int pts);
 
 	virtual bool HasGUI();
 	virtual QWidget* CreateGUI(QWidget* parent);
@@ -52,7 +53,7 @@ protected:
 
 	void InitInternal();
 private:
-	float			m_FPS;
+	double			m_FPS;
 	unsigned int	m_FrameIndex;
 	
 	unsigned int	m_NumFrames;
@@ -63,6 +64,8 @@ private:
 	YT_Format* m_Format;
 	QString m_Path;
 	RawFormatWidget* m_RawFormatWidget;
+
+	QMutex m_Mutex;
 };
 
 #endif // YTS_RAW_H

@@ -44,7 +44,7 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent) :
 	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(OnClose()));
 }
 
-void VideoView::Init( const char* path)
+void VideoView::Init( const char* path, unsigned int pts)
 {
 	m_Type = YT_PLUGIN_SOURCE;
 	m_SourceThread = new SourceThread(m_VideoQueue, path);
@@ -70,7 +70,12 @@ void VideoView::Init( const char* path)
 		source->GUINeeded.connect(this, &VideoView::OnSourceGUINeeded);
 	}
 
-	m_SourceThread->Init();
+	m_SourceThread->InitAndRun(pts);
+	connect(m_VideoQueue, SIGNAL(BufferAvailable()), m_SourceThread, SLOT(ReadFrame()));
+	connect(m_VideoQueue, SIGNAL(SeekPTS(unsigned int)), m_SourceThread, SLOT(Seek(unsigned int)));
+	m_SourceThread->ReadFrame();
+	m_SourceThread->ReadFrame();
+	m_SourceThread->ReadFrame();
 }
 
 void VideoView::Init( YT_Transform* transform, VideoQueue* source, QString outputName )
@@ -100,7 +105,7 @@ void VideoView::UnInit()
 	if (st)
 	{
 
-		st->Stop();
+		st->StopAndUninit();
 
 		SAFE_DELETE(st);
 	}

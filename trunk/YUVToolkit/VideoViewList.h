@@ -30,14 +30,12 @@ public:
 	VideoView* NewVideoView(QMainWindow*, const char* title);
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 
-	void PlayAll();
-	void PauseAll();
-	void Seek(unsigned int pts);
+	void Seek(unsigned int pts, bool playAfterSeek);
 
 	bool IsPlaying();
 
 	unsigned int GetCurrentPTS() {return m_CurrentPTS; }
-	bool GetRenderFrameList(QList<YT_Render_Frame>& list, unsigned int& pts, bool& carePTS); // carePTS set to false when seeking and ignore time stamp and time stamp difference
+	bool GetRenderFrameList(QList<YT_Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
 	unsigned int GetSeekingPTS() {return m_SeekingPTS; }
 	void CheckRenderReset();
@@ -57,14 +55,16 @@ signals:
 private:
 	RenderThread* m_RenderThread;
 	unsigned int m_Duration;
-	unsigned int m_CurrentPTS;
+	volatile unsigned int m_CurrentPTS;
 	unsigned int m_VideoCount;
 	VideoView* m_LongestVideoView;
 	volatile bool m_Paused;
+	bool m_EndOfFile;
 
 	volatile unsigned int  m_SeekingPTS;
 	volatile unsigned int  m_SeekingPTSNext;
 	volatile bool m_PlayAfterSeeking;
+	volatile bool m_NeedSeekingRequest;
 
 	QMutex m_MutexAddRemoveAndSeeking;
 };

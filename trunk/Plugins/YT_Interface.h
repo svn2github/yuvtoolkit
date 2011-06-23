@@ -189,6 +189,7 @@ struct YT_Source_Info
 	float fps;
 	unsigned int num_frames;
 	unsigned int duration; // in ms
+	unsigned int lastPTS; // PTS of last frame
 };
 
 
@@ -216,14 +217,18 @@ public:
 	// Requesting source info
 	virtual YT_RESULT GetInfo(YT_Source_Info& info) = 0;
 
+	// Convert frame index to PTS
 	virtual unsigned int IndexToPTS(unsigned int frame_idx) = 0;
+
+	// Convert seeking PTS to nearest frame PTS
+	// This function is used to sync video of different FPS and irregular FPS
+	virtual unsigned int SeekPTS(unsigned int pts) = 0;
 
 	virtual bool HasGUI() = 0;
 	virtual QWidget* CreateGUI(QWidget* parent) = 0;
 
 	// Signal when GUI is needed and should be popped up
 	sigslot::signal0<> GUINeeded;
-	sigslot::signal1<unsigned int> SeekTo;
 };
 
 

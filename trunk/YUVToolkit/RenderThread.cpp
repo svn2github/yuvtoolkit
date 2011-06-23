@@ -31,8 +31,7 @@ void RenderThread::run()
 		// PTS time passed is smaller than actual time passed, reading cannot keep rendering speed, slow down rendering
 		// else, sleep for the difference in PTS (converted to actual time)
 		unsigned int pts = INVALID_PTS;
-		bool carePTS = false;
-		bool shouldRender = m_VideoViewList->GetRenderFrameList(frameList, pts, carePTS);
+		bool shouldRender = m_VideoViewList->GetRenderFrameList(frameList, pts);
 
 		if (!shouldRender)
 		{
@@ -42,9 +41,10 @@ void RenderThread::run()
 		m_Renderer->RenderScene(frameList);
 
 		unsigned sleepTime = 0;
-		int diffPts = DIFF_PTS(pts, lastPTS);
-		if (carePTS)
+		if (pts<NEXT_PTS)
 		{
+			int diffPts = DIFF_PTS(pts, lastPTS);
+
 			int elapsed = time.elapsed();
 			if (pts>lastPTS && elapsed < diffPts)
 			{
@@ -56,6 +56,9 @@ void RenderThread::run()
 					sleepTime = 0;
 				}
 			}
+		}else
+		{
+			sleepTime = 17;
 		}
 
 		int displayInterval = 16;
@@ -63,8 +66,9 @@ void RenderThread::run()
 			msleep(sleepTime);
 
 		// Compute render speed ratio
-		if (carePTS && pts != INVALID_PTS && lastPTS != INVALID_PTS)
+		if (pts != INVALID_PTS && lastPTS != INVALID_PTS)
 		{
+			int diffPts = DIFF_PTS(pts, lastPTS);
 			elapsedSinceLastPTS += time.elapsed();
 
 			if (diffPts > 0 && elapsedSinceLastPTS>0)
@@ -87,34 +91,6 @@ void RenderThread::Stop()
 	wait();
  }
 
-/*void RenderThread::AddSource( VideoView* vv, VideoQueue* s )
-{
-	QMutexLocker locker(&m_Mutex);
-	
-	Video* v = new Video;
-	memset(v, 0, sizeof(Video));
-	v->vv = vv;
-	v->source = s;
-
-	m_Videos.append(v);
-}
-
-void RenderThread::RemoveVideo( VideoView* vv )
-{
-	QMutexLocker locker(&m_Mutex);
-
-	Video* v;
-	for (int i=0; i<m_Videos.size(); i++)
-	{
-		if (m_Videos.at(i)->vv == vv)
-		{
-			v = m_Videos.at(i);
-		}
-	}
-
-	m_Videos.removeOne(v);
-}
-*/
 void RenderThread::Start()
 {
 	exit = false;

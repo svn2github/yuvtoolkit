@@ -13,7 +13,7 @@ Optimization
 Log the time took for reading a frame, log time took for rendering
 
 Bugs
-- Player doesn't always start by displaying frame 0, but at the end of the video.
+DONE Player doesn't always start by displaying frame 0, but at the end of the video.
 [9:19:05 AM] Pontus Carlsson: bug: when changing FPS, only one clip is played at the new FPS in case of multiple clips
 playback speed wrong after maximizing the window
 Crash when wrong stride is used

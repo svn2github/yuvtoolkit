@@ -53,7 +53,7 @@ class VideoView : public QObject, public sigslot::has_slots<>
 	void UpdateTransformActionList();
 public:
 	VideoView(QMainWindow* _mainWin, RendererWidget* _parent);
-	void Init(const char* path); // for source view
+	void Init(const char* path, unsigned int pts); // for source view
 	void Init(YT_Transform* transform, VideoQueue* source, QString outputName); // for tranform view
 	void Init(YT_Measure* measure, VideoQueue* source, VideoQueue* source1); // for measure view
 	void UnInit();

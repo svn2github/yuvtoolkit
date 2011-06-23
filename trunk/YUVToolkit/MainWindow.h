@@ -45,6 +45,7 @@ public slots:
 	void stepVideo(int step);
 protected:
 	void openScript(QString strPath, bool debug);
+	void openFileInternal(QString strPath);
 private:
 	VideoViewList* m_VideoViewList;
 	

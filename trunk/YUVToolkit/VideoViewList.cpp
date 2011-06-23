@@ -9,7 +9,7 @@
 
 #include <assert.h>
 
-VideoViewList::VideoViewList(RendererWidget* rw) : m_RenderThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(false), m_CurrentPTS(INVALID_PTS), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false)
+VideoViewList::VideoViewList(RendererWidget* rw) : m_RenderThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(true), m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), m_EndOfFile(false), m_NeedSeekingRequest(false)
 {
 	m_RenderWidget = rw;
 	
@@ -99,6 +99,9 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 		m_RenderWidget->UnInit();
 		m_RenderWidget->repaint();
+
+		m_CurrentPTS = 0;
+		m_SeekingPTS = m_SeekingPTSNext = INVALID_PTS;
 	}else
 	{
 		m_RenderThread->Start();
@@ -140,13 +143,13 @@ void VideoViewList::CheckRenderReset()
 
 					if (IsPlaying())
 					{
-						st->Play();
+						// st->Play();
 					}else if (m_CurrentPTS != INVALID_PTS)
 					{
-						st->Seek(m_CurrentPTS);
+						// st->Seek(m_CurrentPTS);
 					}else
 					{
-						st->Seek(0);
+						// st->Seek(0);
 					}
 				}
 			}
@@ -156,7 +159,7 @@ void VideoViewList::CheckRenderReset()
 	}
 }
 
-bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsigned int& pts, bool& carePTS )
+bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsigned int& renderPTS )
 {
 	// INFO_LOG("VideoViewList::GetRenderFrameList");
 
@@ -170,18 +173,11 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 	while (frameList.size() < m_VideoList.size())
 	{
 		YT_Render_Frame rf;
-		frameList.append(rf);				
+		frameList.append(rf);
 	}
 
-	if (m_Paused || m_SeekingPTS != INVALID_PTS)
-	{
-		carePTS = false;
-	}else
-	{
-		carePTS = true; // in playback mode
-	}
 
-	pts = INVALID_PTS;
+	unsigned int pts = NEXT_PTS; // Next pts to read from video queue
 	// If paused, get the most recent item in the queue (flush queue)
 	// If playing, find the closest frame in the future
 	if (m_SeekingPTS != INVALID_PTS)
@@ -193,6 +189,8 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 	}else
 	{
 		// Get next pts to render
+		unsigned int minPTS = INVALID_PTS;
+		unsigned int maxPTS = 0;
 		for (int i=0; i<m_VideoList.size(); ++i) 
 		{
 			VideoView* vv = m_VideoList.at(i);
@@ -200,25 +198,29 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 			{
 				SourceThread* st = vv->GetSourceThread();
 				VideoQueue* vq = vv->GetVideoQueue();
-				if (!(st && vq))
+				
+				bool isLastFrame = false;
+				unsigned int currentPTS = vv->GetSource()->SeekPTS(m_CurrentPTS);
+				unsigned int nextPts = vq->GetNextPTS(currentPTS, isLastFrame);
+				if (nextPts!=INVALID_PTS &&  nextPts<minPTS && !isLastFrame)
 				{
-					continue;
+					minPTS = nextPts;
 				}
 
-				unsigned int nextPts = vq->GetNextPTS();
-				if (!(st->IsEndOfFile()) &&  nextPts<pts)
+				if (nextPts!=INVALID_PTS &&  nextPts>maxPTS)
 				{
-					pts = nextPts;
+					maxPTS = nextPts;
 				}
 			}
 		}
-
-		if (pts == INVALID_PTS)
+		if (minPTS < NEXT_PTS)
 		{
-			// End of file for all video
-			pts = 0;
-			carePTS = false;
+			pts = minPTS;
+		}else
+		{
+			pts = maxPTS;
 		}
+		assert(pts < NEXT_PTS);
 	}
 
 	m_CurrentPTS = pts;
@@ -238,26 +240,47 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 			shouldRender = false;
 		}else if (vv->GetType() == YT_PLUGIN_SOURCE)
 		{
-			VideoQueue::Frame* vqf = vv->GetVideoQueue()->GetRenderFrame(pts, m_SeekingPTS != INVALID_PTS);
+			VideoQueue::Frame* vqf = NULL;
+			YT_Source* source = vv->GetSource();
+			unsigned int sourcePTS = pts;
+			
+			if (source)
+			{
+ 				sourcePTS = source->SeekPTS(pts);
+			
+				vqf = vv->GetVideoQueue()->GetRenderFrame(sourcePTS);
+			}
+
 			if (vqf)
 			{
 				YT_Render_Frame& rf = frameList[i];
-				rf.frame = vqf->render;				
+				rf.frame = vqf->render;
 				COPY_RECT(rf.srcRect, vv->srcRect);
 				COPY_RECT(rf.dstRect, vv->dstRect);
 
-				if (vqf->seekingPts != m_SeekingPTS)
+				if (m_SeekingPTS != INVALID_PTS)
 				{
-					seekingDone = false;
+					if (vqf->source->PTS() != sourcePTS)
+					{
+						seekingDone = false;
+					}
 				}
 			}else
 			{
 				// Some frames are black, will cause flickering
 				shouldRender = false;
 				seekingDone = false;
+
+				if (m_NeedSeekingRequest)
+				{
+					SourceThread* st = vv->GetSourceThread();
+					QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, sourcePTS));	
+				}
 			}
 		}
 	}
+
+	m_NeedSeekingRequest = false;
 
 	if (seekingDone && m_SeekingPTS != INVALID_PTS)
 	{
@@ -289,19 +312,26 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 				VideoQueue::RenderFrame(vqf);
 
 				vv->GetVideoQueue()->ReleaseSourceFrame(vqf);
-				vv->GetVideoQueue()->GetRenderFrame(INVALID_PTS, false);
+
+				/// Just to flush queue and make more source buffer available
+				bool b;
+				unsigned int ptsNext = vv->GetVideoQueue()->GetNextPTS(INVALID_PTS, b); // find the PTS of next frame in the queue
 
 				YT_Render_Frame& rf = frameList[i];
-				rf.frame = vqf->render;				
+				rf.frame = vqf->render;
 				COPY_RECT(rf.srcRect, vv->srcRect);
 				COPY_RECT(rf.dstRect, vv->dstRect);
 			}
 		}
 	}
 
-	assert(!(shouldRender && pts == INVALID_PTS && carePTS));
-
-	// INFO_LOG("VideoViewList::GetRenderFrameList shouldRender=%d pts=%d carePTS=%d", shouldRender, pts, carePTS);
+	if (m_Paused || m_SeekingPTS != INVALID_PTS)
+	{
+		renderPTS  = INVALID_PTS;
+	}else
+	{
+		renderPTS  = pts;
+	}
 
 	return shouldRender;
 }
@@ -314,95 +344,66 @@ public:
 	}
 };
 
-void VideoViewList::PlayAll()
+void VideoViewList::Seek( unsigned int pts, bool playAfterSeek)
 {
-	if (m_SeekingPTS != INVALID_PTS || m_SeekingPTSNext != INVALID_PTS)
-	{
-		m_PlayAfterSeeking = true;
-	}else
-	{
-		m_Paused = false;
-		for (int i=0; i<m_VideoList.size(); ++i) 
-		{
-			SourceThread* st = m_VideoList.at(i)->GetSourceThread();
-			if (st)
-			{
-				st->Play();
-			}
-		}
-	}
-}
+	QMutexLocker locker(&m_MutexAddRemoveAndSeeking);
 
-void VideoViewList::PauseAll()
-{
-	if (m_SeekingPTS != INVALID_PTS || m_SeekingPTSNext != INVALID_PTS)
-	{
-		m_PlayAfterSeeking = false;
-	}else
-	{
-		INFO_LOG("VideoViewList::PauseAll()");
-		for (int i=0; i<m_VideoList.size(); ++i) 
-		{
-			SourceThread* st = m_VideoList.at(i)->GetSourceThread();
-			if (st)
-			{
-				st->Pause();
-			}
-		}
-
-		m_Paused = true;
-	}
-}
-
-void VideoViewList::Seek( unsigned int pts )
-{
 	INFO_LOG("VideoViewList::Seek %d - m_SeekingPTS %d", pts, m_SeekingPTS);
 
 	assert(m_VideoList.size()>0);
 
-	if (m_SeekingPTS == INVALID_PTS)
+	m_Paused = true;
+	m_PlayAfterSeeking = playAfterSeek;
+
+	if (pts != INVALID_PTS)
 	{
-		PauseAll();
-
-		m_SeekingPTS = pts;
-
-		for (int i=0; i<m_VideoList.size(); ++i) 
+		if (m_SeekingPTS == INVALID_PTS)
 		{
-			SourceThread* st = m_VideoList.at(i)->GetSourceThread();
-			if (st)
+			m_SeekingPTS = pts;
+			m_NeedSeekingRequest = true;
+
+			/*
+			for (int i=0; i<m_VideoList.size(); ++i) 
 			{
-				st->Seek(pts);
+			VideoView* vv = m_VideoList.at(i);
+			VideoQueue* vq = vv->GetVideoQueue();
+			SourceThread* st = vv->GetSourceThread();
+
+			VideoQueue::Frame * frame = vq->GetLastRenderFrame();
+			if (!frame || frame->source->PTS() != pts)
+			{
+			QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, pts));
 			}
+			}*/
+		}else
+		{
+			// Already seeking
+			m_SeekingPTSNext = pts;
 		}
-	}else
-	{
-		// Already seeking
-		m_SeekingPTSNext = pts;
 	}
 }
 
 void VideoViewList::CheckLoopFromStart()
 {
-	assert(m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext == INVALID_PTS);
-
-	bool stillRunning = false;
-	for (int i=0; i<m_VideoList.size(); ++i) 
+	if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext == INVALID_PTS)
 	{
-		SourceThread* st = m_VideoList.at(i)->GetSourceThread();
-		if (st)
+		VideoView* vv = m_LongestVideoView;
+		
+		YT_Source* src = vv->GetSource();
+		VideoQueue* queue = vv->GetVideoQueue();
+		VideoQueue::Frame* lastFrame = queue->GetLastRenderFrame();
+
+		YT_Source_Info info;
+		src->GetInfo(info);
+
+		bool endOfFile = (lastFrame && lastFrame->source->PTS() == info.lastPTS);
+
+		if (!m_EndOfFile && endOfFile)
 		{
-			if (!st->IsEndOfFile())
-			{
-				stillRunning = true;
-			}
+			Seek(0, true);
 		}
-	}
 
-	if (!stillRunning)
-	{
-		Seek(0);
-
-		PlayAll();
+		m_EndOfFile = endOfFile;
 	}
 }
 
@@ -480,14 +481,14 @@ void VideoViewList::CheckSeeking()
 		unsigned int pts = m_SeekingPTSNext;
 		m_SeekingPTSNext = INVALID_PTS;
 
-		Seek(pts);
+		Seek(pts, m_PlayAfterSeeking);
 	}
 
 	if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext == INVALID_PTS)
 	{
 		if (m_PlayAfterSeeking)
 		{
-			PlayAll();
+			m_Paused = false;
 		}
 
 		m_PlayAfterSeeking = false;

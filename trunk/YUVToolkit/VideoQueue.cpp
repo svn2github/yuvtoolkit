@@ -5,7 +5,7 @@
 #define RELEASE_SURFACE(rqf) if (rqf->surface) {rqf->surface->Release(); rqf->surface = NULL;}
 
 VideoQueue::VideoQueue(YT_Renderer* render) :
-	m_LastRenderedFrame(NULL), m_Renderer(render)
+	m_LastRenderedFrame(NULL), m_Renderer(render), m_RenderQueueLastPTS(INVALID_PTS)
 {
 	InitBuffers();
 }
@@ -21,13 +21,6 @@ VideoQueue::Frame* VideoQueue::GetSourceFrame(YT_Format_Ptr format)
 	unsigned int size2 = m_RenderQueue.countItems();
 
 	// INFO_LOG("VideoQueue::GetSourceFrame items %d - %d", size, size2);
-
-	if (m_EmptyQueue.isEmpty())
-	{
-		QMutexLocker locker(&m_MutexBufferAvailable);
-		m_BufferAvailable.wait(&m_MutexBufferAvailable, 500);
-	}
-
 	if (m_EmptyQueue.isEmpty())
 	{
 		// wake up by stop signal
@@ -60,7 +53,7 @@ VideoQueue::Frame* VideoQueue::GetSourceFrame(YT_Format_Ptr format)
 			return NULL;
 		}
 	}
-	
+ 	
 	if (m_Renderer->GetFrame(rqf->render) != YT_OK)
 	{
 		return NULL;
@@ -85,84 +78,112 @@ void VideoQueue::ReleaseSourceFrame(VideoQueue::Frame* rqf)
 		m_LastRenderedFrame = rqf;
 	}
 
+	if (rqf->shouldRender)
+	{
+		m_RenderQueueLastPTS = rqf->source->PTS();
+	}
+
 	m_CurSourceFrame = NULL;
+
+	WARNING_LOG("VideoQueue::ReleaseSourceFrame %d", m_RenderQueueLastPTS);
 
 	m_SourceReleased.wakeAll();
 }
 
-unsigned int VideoQueue::GetNextPTS()
+unsigned int VideoQueue::GetNextPTS(unsigned int currentPTS, bool& isLastFrame)
 {
 	VideoQueue::Frame* rqfNext;
+
+	DEBUG_LOG("VideoQueue size %d lastShown %d peekNext %d lastQueue %d", m_RenderQueue.countItems(), 
+		(m_LastRenderedFrame)?m_LastRenderedFrame->source->PTS():INVALID_PTS, 
+		(m_RenderQueue.peek(rqfNext))?rqfNext->source->PTS():INVALID_PTS, 
+		m_RenderQueueLastPTS);
+
+	// Remove all frames that are any of 1) should not render
+	// 2) pts bigger than last item 3) smaller than currentPTS	
+	while (m_RenderQueue.peek(rqfNext))
+	{
+		if ( (!rqfNext->shouldRender) || 
+			(rqfNext->source->PTS()>m_RenderQueueLastPTS) ||
+			(rqfNext->source->PTS() < currentPTS)) 
+		{
+			m_RenderQueue.pop(rqfNext);
+			m_EmptyQueue.push(rqfNext);
+		}else
+		{
+			break;
+		}
+	}
+
+	if (!m_EmptyQueue.isEmpty())
+	{
+		emit BufferAvailable();
+	}
+
 	if (m_RenderQueue.peek(rqfNext))
 	{
+		isLastFrame = rqfNext->isLastFrame;
+
+		DEBUG_LOG("VideoQueue::GetNextPTS next queue item %d", rqfNext->source->PTS());
 		return rqfNext->source->PTS();
 	}else
 	{
-		if (m_LastRenderedFrame)
+		if (m_LastRenderedFrame && m_LastRenderedFrame->source->PTS() == currentPTS)
 		{
-			return m_LastRenderedFrame->source->PTS();
+			isLastFrame = m_LastRenderedFrame->isLastFrame;
+
+			DEBUG_LOG("VideoQueue::GetNextPTS last shown item %d", currentPTS);
+			return currentPTS;
 		}else
 		{
+			DEBUG_LOG("VideoQueue::GetNextPTS return invalid");
 			return INVALID_PTS;
 		}
 	}
 }
 
-// If PTS == INVALID_PTS, just jump to next frame
-// If seeking == true, remove item from queue till seeking frame is found
-VideoQueue::Frame* VideoQueue::GetRenderFrame(unsigned int PTS, bool seeking)
+VideoQueue::Frame* VideoQueue::GetRenderFrame(unsigned int PTS)
 {
+	if (m_LastRenderedFrame && m_LastRenderedFrame->source->PTS() == PTS)
+	{
+		if (!m_EmptyQueue.isEmpty())
+		{
+			emit BufferAvailable();
+		}
+
+		return m_LastRenderedFrame;
+	}
+
 	VideoQueue::Frame* rqfNext;
-	if (!m_RenderQueue.peek(rqfNext))
+	while (m_RenderQueue.pop(rqfNext))
 	{
-		// Render queue empty
-		return m_LastRenderedFrame;
-	}
-
-	if (seeking)
-	{
-		if (m_LastRenderedFrame->seekingPts == PTS)
+		if (rqfNext->source->PTS() ==  PTS)
 		{
-			return m_LastRenderedFrame;
-		}
-
-		while (m_RenderQueue.pop(rqfNext))
-		{
-			if (rqfNext->seekingPts == PTS)
+			if (m_LastRenderedFrame)
 			{
-				if (m_LastRenderedFrame)
-				{
-					m_EmptyQueue.push(m_LastRenderedFrame);
-					m_BufferAvailable.wakeAll();
-				}
-
-				m_LastRenderedFrame = rqfNext;
-				break;
-			}else
-			{
-				m_EmptyQueue.push(rqfNext);
-				m_BufferAvailable.wakeAll();
+				m_EmptyQueue.push(m_LastRenderedFrame);
 			}
-		}
 
-		return m_LastRenderedFrame;
+			m_LastRenderedFrame = rqfNext;
+			break;
+		}else
+		{
+			rqfNext->shouldRender = false;
+			m_EmptyQueue.push(rqfNext);
+		}
 	}
 
-	if (rqfNext->source->PTS()<=PTS || PTS == INVALID_PTS)
+	if (!m_EmptyQueue.isEmpty())
 	{
-		if (m_LastRenderedFrame)
-		{
-			m_EmptyQueue.push(m_LastRenderedFrame);
-			m_BufferAvailable.wakeAll();
-		}
+		emit BufferAvailable();
+	}
 
-		m_RenderQueue.pop(rqfNext);
-		m_LastRenderedFrame = rqfNext;
-
+	if (m_LastRenderedFrame && m_LastRenderedFrame->source->PTS() == PTS)
+	{
 		return m_LastRenderedFrame;
 	}else
 	{
-		return m_LastRenderedFrame;
+		return NULL;
 	}
 }
 
@@ -246,7 +267,7 @@ void VideoQueue::ReleaseBuffers()
 		delete rqf;
 	}
 
-	m_BufferAvailable.wakeAll();
+	emit BufferAvailable();
 }
 
 void VideoQueue::InitBuffers()
@@ -259,7 +280,7 @@ void VideoQueue::InitBuffers()
 		m_EmptyQueue.push(rf);
 	}
 
-	m_BufferAvailable.wakeAll();
+	emit BufferAvailable();
 }
 
 void VideoQueue::RenderFrame( Frame* vqf)
