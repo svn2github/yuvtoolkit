@@ -23,6 +23,11 @@ SourceThread::~SourceThread(void)
 
 void SourceThread::run()
 {
+	QTimer* timer = new QTimer(this);
+	timer->setInterval(50);
+	connect(timer, SIGNAL(timeout()), this, SLOT(ReadFrame()), Qt::DirectConnection);
+	timer->start();
+
 	exec();
 }
 
@@ -37,7 +42,8 @@ void SourceThread::ReadFrame()
 	m_Source->GetInfo(info);
 
 	VideoQueue::Frame* vqf = m_VideoQueue->GetSourceFrame(info.format);
-	if (vqf && vqf->source && vqf->render)
+	int counter = 0;
+	while (vqf && vqf->source && vqf->render)
 	{
 		vqf->shouldRender = true;
 		vqf->isLastFrame = false;
@@ -70,6 +76,8 @@ void SourceThread::ReadFrame()
 		}
 
 		m_VideoQueue->ReleaseSourceFrame(vqf);
+
+		vqf = m_VideoQueue->GetSourceFrame(info.format);
 	}
 }
 
@@ -103,6 +111,4 @@ void SourceThread::Seek(unsigned int pts)
 {
 	m_ReadFramePTS = pts;
 	m_EndOfFile = false;
-
-	ReadFrame();
 }

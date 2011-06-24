@@ -31,11 +31,10 @@ public:
 
 	void ReleaseBuffers();
 	void InitBuffers();
-
 	
 signals:
 	void BufferAvailable();
-	void SeekPTS(unsigned int PTS);
+	// void SeekPTS(unsigned int PTS);
 protected:
 	YT_Renderer* m_Renderer;
 	Frame* m_CurSourceFrame;
@@ -48,6 +47,8 @@ protected:
 	CircularFifo<Frame*, RENDER_QUEUE_SIZE> m_EmptyQueue;
 	Frame* m_LastRenderedFrame; // Buffer kept in here before push back to empty Queue
 	// Frame* m_PrevToRenderFrame; // render frame keep here before pushed to RenderQueue
+
+//	QTime m_LastBufferAvailable;
 };
 
 #endif // RENDER_QUEUE_H

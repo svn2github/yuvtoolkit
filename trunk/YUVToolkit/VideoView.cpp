@@ -72,10 +72,6 @@ void VideoView::Init( const char* path, unsigned int pts)
 
 	m_SourceThread->InitAndRun(pts);
 	connect(m_VideoQueue, SIGNAL(BufferAvailable()), m_SourceThread, SLOT(ReadFrame()));
-	connect(m_VideoQueue, SIGNAL(SeekPTS(unsigned int)), m_SourceThread, SLOT(Seek(unsigned int)));
-	m_SourceThread->ReadFrame();
-	m_SourceThread->ReadFrame();
-	m_SourceThread->ReadFrame();
 }
 
 void VideoView::Init( YT_Transform* transform, VideoQueue* source, QString outputName )

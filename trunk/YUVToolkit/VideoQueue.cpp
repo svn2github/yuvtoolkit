@@ -105,7 +105,7 @@ unsigned int VideoQueue::GetNextPTS(unsigned int currentPTS, bool& isLastFrame)
 	{
 		if ( (!rqfNext->shouldRender) || 
 			(rqfNext->source->PTS()>m_RenderQueueLastPTS) ||
-			(rqfNext->source->PTS() < currentPTS)) 
+			(rqfNext->source->PTS() <= currentPTS)) 
 		{
 			m_RenderQueue.pop(rqfNext);
 			m_EmptyQueue.push(rqfNext);
@@ -115,10 +115,11 @@ unsigned int VideoQueue::GetNextPTS(unsigned int currentPTS, bool& isLastFrame)
 		}
 	}
 
+	/*
 	if (!m_EmptyQueue.isEmpty())
 	{
 		emit BufferAvailable();
-	}
+	}*/
 
 	if (m_RenderQueue.peek(rqfNext))
 	{
@@ -144,12 +145,18 @@ unsigned int VideoQueue::GetNextPTS(unsigned int currentPTS, bool& isLastFrame)
 
 VideoQueue::Frame* VideoQueue::GetRenderFrame(unsigned int PTS)
 {
+	/*if (!m_EmptyQueue.isEmpty() && m_LastBufferAvailable.elapsed()>50)
+	{
+		emit BufferAvailable();
+		m_LastBufferAvailable.restart();
+	}*/
+
 	if (m_LastRenderedFrame && m_LastRenderedFrame->source->PTS() == PTS)
 	{
-		if (!m_EmptyQueue.isEmpty())
+		/*if (!m_EmptyQueue.isEmpty())
 		{
 			emit BufferAvailable();
-		}
+		}*/
 
 		return m_LastRenderedFrame;
 	}
@@ -171,12 +178,7 @@ VideoQueue::Frame* VideoQueue::GetRenderFrame(unsigned int PTS)
 			rqfNext->shouldRender = false;
 			m_EmptyQueue.push(rqfNext);
 		}
-	}
-
-	if (!m_EmptyQueue.isEmpty())
-	{
-		emit BufferAvailable();
-	}
+	}	
 
 	if (m_LastRenderedFrame && m_LastRenderedFrame->source->PTS() == PTS)
 	{

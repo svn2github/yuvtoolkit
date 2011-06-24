@@ -121,10 +121,16 @@ void VideoViewList::CheckRenderReset()
 		for (int i=0; i<m_VideoList.size(); ++i) 
 		{
 			VideoView* vv = m_VideoList.at(i);
+			if (vv->GetType() == YT_PLUGIN_SOURCE)
+			{
+				SourceThread* st = vv->GetSourceThread();
+				st->quit();
+			}
 			vv->GetVideoQueue()->ReleaseBuffers();
 		}
 
 		YT_RESULT res = m_RenderWidget->GetRenderer()->Reset();
+		assert(res == YT_OK);
 
 		if (res == YT_OK)
 		{
@@ -132,6 +138,12 @@ void VideoViewList::CheckRenderReset()
 			{
 				VideoView* vv = m_VideoList.at(i);
 				vv->GetVideoQueue()->InitBuffers();
+
+				if (vv->GetType() == YT_PLUGIN_SOURCE)
+				{
+					SourceThread* st = vv->GetSourceThread();
+					st->start();
+				}
 			}
 
 			Seek(m_CurrentPTS, IsPlaying());
@@ -256,7 +268,8 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 				if (m_NeedSeekingRequest)
 				{
 					SourceThread* st = vv->GetSourceThread();
-					QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, sourcePTS));	
+					st->Seek(sourcePTS);
+					// QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, sourcePTS));	
 				}
 			}
 		}
