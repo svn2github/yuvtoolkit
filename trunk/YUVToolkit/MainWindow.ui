@@ -133,11 +133,13 @@ background-color: rgb(0, 0, 0);
     <property name="title">
      <string>&amp;Playback</string>
     </property>
+    <addaction name="action_Seek_Beginning"/>
     <addaction name="action_Play_Pause"/>
     <addaction name="action_Step_Back"/>
     <addaction name="action_Step_Back_Fast"/>
     <addaction name="action_Step_Forward"/>
     <addaction name="action_Step_Forward_Fast"/>
+    <addaction name="action_Seek_End"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -179,11 +181,13 @@ background-color: rgb(0, 0, 0);
    </attribute>
    <addaction name="action_Open"/>
    <addaction name="separator"/>
+   <addaction name="action_Seek_Beginning"/>
    <addaction name="action_Step_Back_Fast"/>
    <addaction name="action_Step_Back"/>
    <addaction name="action_Play_Pause"/>
    <addaction name="action_Step_Forward"/>
    <addaction name="action_Step_Forward_Fast"/>
+   <addaction name="action_Seek_End"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="sizeGripEnabled">
@@ -542,6 +546,48 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="text">
     <string>&amp;Enable Logging</string>
+   </property>
+  </action>
+  <action name="action_Seek_Beginning">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/go-first.png</normaloff>:/RawVideoToolkit/Resources/go-first.png</iconset>
+   </property>
+   <property name="text">
+    <string>Seek Be&amp;ginning</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek beginning of video</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek beginning of video</string>
+   </property>
+   <property name="shortcut">
+    <string>Home</string>
+   </property>
+  </action>
+  <action name="action_Seek_End">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/go-last.png</normaloff>:/RawVideoToolkit/Resources/go-last.png</iconset>
+   </property>
+   <property name="text">
+    <string>Seek &amp;End</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek end of video</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek end of video</string>
+   </property>
+   <property name="shortcut">
+    <string>End</string>
    </property>
   </action>
  </widget>

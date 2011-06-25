@@ -39,9 +39,9 @@ public slots:
 	void infoMsg(QString title, QString msg);
 	void openFile(QString strPath);
 	void play(bool play);
-
-	void seekVideo(int pos); // change to pts
 	void stepVideo(int step);
+
+	void seekVideoFromSlider(); // change to pts
 protected:
 	void openScript(QString strPath, bool debug);
 	void openFileInternal(QString strPath);
@@ -104,6 +104,8 @@ private slots:
 	void on_action_Step_Back_triggered();
 	void on_action_Step_Forward_Fast_triggered();
 	void on_action_Step_Back_Fast_triggered();
+	void on_action_Seek_Beginning_triggered();
+	void on_action_Seek_End_triggered();
 
 	void on_actionShowLogging_triggered();
 	void on_action_Enable_Logging_triggered();

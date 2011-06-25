@@ -33,8 +33,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	windowCounter++;
 
 	ui.setupUi(this);
-	setMinimumWidth(240);
-	setMinimumHeight(180);
+	setMinimumWidth(320);
+	setMinimumHeight(240);
 	setCentralWidget(ui.rendererWidget);
 	setAcceptDrops(TRUE);
 
@@ -50,8 +50,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	connect(m_VideoViewList, SIGNAL(VideoViewClosed(VideoView*)), this, SLOT(OnVideoViewClosed(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
 
-	ui.mainToolBar->insertWidget(ui.action_Step_Back_Fast, m_Slider);
-	ui.mainToolBar->insertSeparator(ui.action_Step_Back_Fast);
+	ui.mainToolBar->insertWidget(ui.action_Seek_Beginning, m_Slider);
+	ui.mainToolBar->insertSeparator(ui.action_Seek_Beginning);
 
 	autoResizeWindow();
 
@@ -60,7 +60,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	connect(m_UpdateTimer, SIGNAL(timeout()), this, SLOT(OnTimer()));
 	m_UpdateTimer->start();
 
-	connect(m_Slider, SIGNAL(valueChanged(int)), this, SLOT(seekVideo(int)));
+	connect(m_Slider, SIGNAL(valueChanged(int)), this, SLOT(seekVideoFromSlider()));
 	connect(this, SIGNAL(activeVideoViewChanged(VideoView*)), this, SLOT(OnActiveVideoViewChanged(VideoView*)));
 	connect(ui.rendererWidget, SIGNAL(repositioned()), m_VideoViewList, SLOT(OnUpdateRenderWidgetPosition()));
 	// ui.action_Step_Forward->setEnabled(true);
@@ -561,7 +561,7 @@ void MainWindow::autoResizeWindow()
 		// adjustSize();
 	}else
 	{
-		resize(360, 320);
+		resize(480, 420);
 	}
 
 	m_VideoViewList->OnUpdateRenderWidgetPosition();
@@ -642,7 +642,7 @@ void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int p
 	}
 }
 
-void MainWindow::seekVideo(int)
+void MainWindow::seekVideoFromSlider()
 {
 	VideoView* longest = m_VideoViewList->longest();
 	if (!longest)
@@ -689,6 +689,25 @@ void MainWindow::on_action_Step_Back_Fast_triggered()
 	stepVideo(-10);
 }
 
+void MainWindow::on_action_Seek_Beginning_triggered()
+{
+	m_VideoViewList->Seek(0, false);
+}
+
+void MainWindow::on_action_Seek_End_triggered()
+{
+	VideoView* longest = m_VideoViewList->longest();
+	if (longest)
+	{
+		YT_Source* source = longest->GetSource();
+		
+		YT_Source_Info info;
+		source->GetInfo(info);
+
+		m_VideoViewList->Seek(info.duration, false);
+	}
+}
+
 void MainWindow::OnTimer()
 {
 	if (m_VideoViewList->size()>0)
@@ -706,7 +725,19 @@ void MainWindow::OnTimer()
 
 	VideoView* active = m_ActiveVideoView;
 	VideoView* longest = m_VideoViewList->longest();
-	QString str;
+	if (longest)
+	{
+		YT_Source* source = VV_SOURCE(longest);
+		YT_Frame_Ptr frame = VV_LASTFRAME(longest);
+		
+		if (source && frame)
+		{
+			YT_Source_Info info;
+			source->GetInfo(info);
+
+			OnUpdateSlider(info.duration, info.fps, frame->PTS());
+		}
+	}
 
 	if (active)
 	{
@@ -716,6 +747,7 @@ void MainWindow::OnTimer()
 		active = longest;
 	}
 
+	QString str;
 	if (active)
 	{
 		YT_Source* source = VV_SOURCE(active);
@@ -725,9 +757,7 @@ void MainWindow::OnTimer()
 		{
 			YT_Source_Info info;
 			source->GetInfo(info);
-			
-			OnUpdateSlider(info.duration, info.fps, frame->PTS());
-					
+
 			str.clear();
 			QTextStream(&str) << "" << frame->FrameNumber() << " / " << info.num_frames << "";
 			m_TimeLabel1->setText(str);
@@ -822,6 +852,8 @@ void MainWindow::EnableButtons( bool enable )
 	ui.action_Step_Back_Fast->setEnabled(enable);
 	ui.action_Step_Forward->setEnabled(enable);
 	ui.action_Step_Forward_Fast->setEnabled(enable);
+	ui.action_Seek_Beginning->setEnabled(enable);
+	ui.action_Seek_End->setEnabled(enable);
 	m_Slider->setEnabled(enable);
 
 	if (!enable)
