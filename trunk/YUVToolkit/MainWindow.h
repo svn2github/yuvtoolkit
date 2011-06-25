@@ -29,14 +29,13 @@ public:
 	virtual void dropEvent(QDropEvent *event);
 	virtual void closeEvent(QCloseEvent *event);
 
-	void openFiles(const QStringList& fileList);
-
 	void EnableButtons(bool enable);
 
 signals:
 	void activeVideoViewChanged(VideoView*);
 	
 public slots:
+	void openFiles(const QStringList& fileList);
 	void infoMsg(QString title, QString msg);
 	void openFile(QString strPath);
 	void play(bool play);

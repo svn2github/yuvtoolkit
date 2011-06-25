@@ -87,7 +87,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 		QMutexLocker locker(&m_MutexAddRemoveAndSeeking);
 
 		m_RenderWidget->layout->RemoveView(vv);
-		m_VideoList.removeOne(vv);		
+		m_VideoList.removeOne(vv);
 	}
 	
 	UpdateDuration();

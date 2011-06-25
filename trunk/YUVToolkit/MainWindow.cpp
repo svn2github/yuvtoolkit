@@ -823,6 +823,11 @@ void MainWindow::EnableButtons( bool enable )
 	ui.action_Step_Forward->setEnabled(enable);
 	ui.action_Step_Forward_Fast->setEnabled(enable);
 	m_Slider->setEnabled(enable);
+
+	if (!enable)
+	{
+		m_Slider->setSliderPosition(0);
+	}
 }
 
 
@@ -981,6 +986,11 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 				}
 			}
 		}
+	}
+
+	if (m_VideoViewList->size() == 0)
+	{
+		EnableButtons(false);
 	}
 
 	autoResizeWindow();	
