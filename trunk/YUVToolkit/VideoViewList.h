@@ -10,6 +10,8 @@ class RenderThread;
 class SourceThread;
 class QMainWindow;
 class QAction;
+class MeasureWindow;
+class QDockWidget;
 
 class VideoViewList : public QObject
 {
@@ -17,8 +19,10 @@ class VideoViewList : public QObject
 	RendererWidget* m_RenderWidget;
 	QList<VideoView*> m_VideoList;
 	QMainWindow* m_MainWindow;
+	QList<MeasureWindow*> m_MeasureWindowList;
+	QList<QDockWidget*> m_DockWidgetList;
 public:
-	VideoViewList(RendererWidget*);
+	VideoViewList(QMainWindow*, RendererWidget*);
 	virtual ~VideoViewList();
 
 	int size() const {return m_VideoList.size();}
@@ -27,7 +31,7 @@ public:
 	VideoView* last() const {return m_VideoList.last();}
 	VideoView* longest() const;
 
-	VideoView* NewVideoView(QMainWindow*, const char* title);
+	VideoView* NewVideoView(const char* title);
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 
 	void Seek(unsigned int pts, bool playAfterSeek);
@@ -42,6 +46,8 @@ public:
 	void CheckLoopFromStart();
 	void CheckResolutionChanged();
 	void CheckSeeking();
+	void UpdateMeasureWindows();
+	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
 		
 public slots:
 	void UpdateDuration();

@@ -109,6 +109,7 @@ class YT_HostImpl : public QObject, public YT_Host
 	QList<PlugInInfo*> m_SourceList;
 	QList<PlugInInfo*> m_RendererList;
 	QList<PlugInInfo*> m_TransformList;
+	QList<PlugInInfo*> m_MeasureList;
 
 	volatile bool m_LoggingEnabled;
 	QFile m_LogFile;
@@ -145,6 +146,7 @@ public:
 
 	const QList<PlugInInfo*>& GetRenderPluginList() {return m_RendererList; }
 	const QList<PlugInInfo*>& GetTransformPluginList() {return m_TransformList; }
+	const QList<PlugInInfo*>& GetMeasurePluginList() {return m_MeasureList; }
 };
 
 extern YT_HostImpl* GetHostImpl();

@@ -525,6 +525,8 @@ YT_RESULT YT_HostImpl::RegisterPlugin( YT_PlugIn* plugin, YT_PLUGIN_TYPE type, c
 		m_TransformList.append(info);
 		break;
 	case YT_PLUGIN_MEASURE:
+		m_MeasureList.append(info);
+		break;
 	case YT_PLUGIN_UNKNOWN:
 		break;
 	}

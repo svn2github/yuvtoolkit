@@ -45,7 +45,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_Slider->setTickInterval(1000);
 	m_Slider->setSingleStep(1);
 	
-	m_VideoViewList = new VideoViewList(ui.rendererWidget);
+	m_VideoViewList = new VideoViewList(this, ui.rendererWidget);
 	connect(m_VideoViewList, SIGNAL(ResolutionDurationChanged()), this, SLOT(OnAutoResizeWindow()));
 	connect(m_VideoViewList, SIGNAL(VideoViewClosed(VideoView*)), this, SLOT(OnVideoViewClosed(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
@@ -134,6 +134,15 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	}
 
 	SetZoomMode(m_ZoomMode);
+
+	ui.menu_Tools->addSeparator();
+	const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
+	for (int i=0; i<dockList.size(); ++i) 
+	{
+		QDockWidget* dock = dockList.at(i);
+
+		ui.menu_Tools->addAction(dock->toggleViewAction());
+	}
 }
 
 MainWindow::~MainWindow()
@@ -431,7 +440,7 @@ void MainWindow::openFileInternal( QString strPath)
 		return;
 	}
 
-	VideoView* vv = m_VideoViewList->NewVideoView(this, strPath.toAscii());
+	VideoView* vv = m_VideoViewList->NewVideoView(strPath.toAscii());
 	vv->Init(strPath.toAscii(), m_VideoViewList->GetCurrentPTS());
 
 	m_VideoViewList->UpdateDuration();
@@ -719,6 +728,11 @@ void MainWindow::OnTimer()
 		if (m_VideoViewList->IsPlaying())
 		{
 			m_VideoViewList->CheckLoopFromStart();
+		}
+
+		if (m_VideoViewList->size()>1)
+		{
+			m_VideoViewList->UpdateMeasureWindows();
 		}
 	}
 	UpdateActiveVideoView();
@@ -1033,4 +1047,8 @@ void MainWindow::OnVideoViewCreated( VideoView* vv)
 	vv->SetZoomLevel(m_ZoomMode);
 }
 
+void MainWindow::on_action_Quality_Measures_triggered()
+{
+	
+}
 

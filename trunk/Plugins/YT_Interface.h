@@ -286,18 +286,40 @@ public:
 	virtual YT_RESULT Process(const YT_Frame_Ptr input, QMap<QString, YT_Frame_Ptr>& outputs, QMap<QString, QVariant>& stats) = 0;
 };
 
+#define ALL_PLANES	-1
+
 class YT_Measure
 {
 public:
+	struct YT_Measure_Item
+	{
+		int measureType;
+		int plane;
+
+		bool operator < (const YT_Measure_Item& ref) const
+		{
+			if (measureType==ref.measureType)
+			{
+				return plane < ref.plane;
+			}
+
+			return measureType < ref.measureType;
+		}
+
+	};
+
 	virtual ~YT_Measure() {}
 
+	virtual YT_RESULT GetMeasureString(YT_Measure_Item item, YT_Format_Ptr sourceFormat1, YT_Format_Ptr sourceFormat2, QString& str) = 0;
+
 	// Returns what format that is supported	
-	virtual YT_RESULT GetSupportedModes(YT_Format_Ptr sourceFormat, QList<QString>& outputNames, QList<QString>& measureNames) = 0;
+	virtual YT_RESULT GetSupportedModes(YT_Format_Ptr sourceFormat1, YT_Format_Ptr sourceFormat2, 
+		QList<YT_Measure_Item>& outputViewItems, QList<YT_Measure_Item>& outputMeasureItems) = 0;
 
 	// Process
 	virtual YT_RESULT Process(const YT_Frame_Ptr input1, const YT_Frame_Ptr input2, 
-		const QList<QString>* outputNames, QMap<QString, YT_Frame_Ptr>* outputs, 
-		const QList<QString>* measureNames, QMap<QString, QVariant>* measures) = 0;
+		QMap<YT_Measure_Item, YT_Frame_Ptr>& outputViewItems,
+		QMap<YT_Measure_Item, QVariant>& outputMeasureItems) = 0;
 };
 
 

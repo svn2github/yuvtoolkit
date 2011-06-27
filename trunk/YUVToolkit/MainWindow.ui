@@ -149,9 +149,15 @@ background-color: rgb(0, 0, 0);
     <addaction name="separator"/>
     <addaction name="action_About"/>
    </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Tool"/>
    <addaction name="menu_Play"/>
+   <addaction name="menu_Tools"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -588,6 +594,14 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="shortcut">
     <string>End</string>
+   </property>
+  </action>
+  <action name="action_Quality_Measures">
+   <property name="text">
+    <string>&amp;Quality Measures (MSE etc)</string>
+   </property>
+   <property name="statusTip">
+    <string>Quality Measures (MSE etc)</string>
    </property>
   </action>
  </widget>

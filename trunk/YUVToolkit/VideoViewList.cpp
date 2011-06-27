@@ -6,14 +6,34 @@
 #include "SourceThread.h"
 #include "Layout.h"
 #include "ColorConversion.h"
+#include "MeasureWindow.h"
 
 #include <assert.h>
 
-VideoViewList::VideoViewList(RendererWidget* rw) : m_RenderThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(true), m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), m_EndOfFile(false), m_NeedSeekingRequest(false)
+VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(true), m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), m_EndOfFile(false), m_NeedSeekingRequest(false)
 {
 	m_RenderWidget = rw;
+	m_MainWindow = mainWindow;
 	
 	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
+
+	for (int i=0; i<4; i++)
+	{
+		QDockWidget* dock;
+		
+		QString str;
+		QTextStream(&str) << "Quality Measures Window " << i+1;
+
+		dock = new QDockWidget(str, m_MainWindow );
+		dock->setAllowedAreas(NULL);
+		dock->setVisible(false);
+		dock->setFloating(true);
+		m_DockWidgetList.append(dock);
+
+		MeasureWindow* win = new MeasureWindow(this, dock);
+		dock->setWidget(win);
+		m_MeasureWindowList.append(win);
+	}
 }
 
 VideoViewList::~VideoViewList()
@@ -21,10 +41,8 @@ VideoViewList::~VideoViewList()
 
 }
 
-VideoView* VideoViewList::NewVideoView( QMainWindow* win, const char* title )
+VideoView* VideoViewList::NewVideoView( const char* title )
 {
-	m_MainWindow = win;
-
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
 		QSettings settings;
@@ -36,7 +54,7 @@ VideoView* VideoViewList::NewVideoView( QMainWindow* win, const char* title )
 
 	m_RenderThread->Stop();
 
-	VideoView* vv = new VideoView(win, m_RenderWidget);
+	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
 
 	{
@@ -320,6 +338,15 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 		}
 	}
 
+	for (int i=0; i<m_MeasureWindowList.size(); ++i) 
+	{
+		MeasureWindow* measureWin = m_MeasureWindowList.at(i);
+		if (measureWin->isVisible())
+		{
+			measureWin->UpdateMeasure();
+		}
+	}
+
 	if (m_Paused || m_SeekingPTS != INVALID_PTS)
 	{
 		renderPTS  = INVALID_PTS;
@@ -459,7 +486,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 
 	if (!hasView)
 	{
-		VideoView* planeVv = NewVideoView(m_MainWindow, data->outputName.toAscii());
+		VideoView* planeVv = NewVideoView(data->outputName.toAscii());
 
 		YT_Transform* transform = data->transformPlugin->NewTransform(data->transformName);
 
@@ -501,3 +528,14 @@ VideoView* VideoViewList::longest() const
 	return m_LongestVideoView;
 }
 
+void VideoViewList::UpdateMeasureWindows()
+{
+	for (int i=0; i<m_MeasureWindowList.size(); i++)
+	{
+		MeasureWindow* win = m_MeasureWindowList.at(i);
+		if (win->isVisible())
+		{
+			win->UpdateMeasureWindow();
+		}
+	}
+}
