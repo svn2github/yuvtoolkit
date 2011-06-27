@@ -1,7 +1,8 @@
-#include "YT_interface.h"
+#include "YT_Interface.h"
 #include "YT_InterfaceImpl.h"
 #include "MainWindow.h"
 
+#include <stdint.h>
 #include <string.h>
 
 YT_HostImpl* GetHostImpl()
@@ -51,6 +52,11 @@ void YT_FormatImpl::SetColor( YT_COLOR_FORMAT value )
 		break;
 	case YT_YUY2:
 	case YT_UYVY:
+	case YT_NODATA:
+	case YT_GRAYSCALE8:
+	case YT_RGB24:
+	case YT_RGBX32:
+	case YT_XRGB32:
 		break;
 	}
 }
@@ -139,6 +145,8 @@ size_t YT_FormatImpl::PlaneSize( int plane )
 			case YT_GRAYSCALE8:
 				stride[0] = width;
 				break;
+			case YT_NODATA:
+				break;
 			}
 		}
 
@@ -151,7 +159,14 @@ size_t YT_FormatImpl::PlaneSize( int plane )
 		case YT_NV12:
 			vstride[1] = height/2;
 			vstride[2] = height/2;
-
+			break;
+		case YT_NODATA:
+		case YT_GRAYSCALE8:
+		case YT_RGB24:
+		case YT_RGBX32:
+		case YT_XRGB32:
+		case YT_YUY2:
+		case YT_UYVY:
 			break;
 		}
 
@@ -285,9 +300,9 @@ int YT_FormatImpl::PlaneHeight( int plane )
 	return 0;
 }
 
-YT_FrameImpl::YT_FrameImpl() : allocated_size(0), 
-	pts(0), frame_num(0), allocated_data(0),
-	format(new YT_FormatImpl), externData(0)
+YT_FrameImpl::YT_FrameImpl() : pts(0), frame_num(0), externData(0),
+	allocated_data(0), allocated_size(0),
+	format(new YT_FormatImpl)
 {
 	memset(data, 0, sizeof(data));
 }
@@ -466,6 +481,8 @@ YT_HostImpl::YT_HostImpl() : m_LogFile(this)
 	files.append(QString("YT*.dll"));
 #elif defined(Q_WS_MACX)
 	files.append(QString("libYT*.dylib"));
+#elif defined(Q_OS_LINUX)
+	files.append(QString("libYT*.so"));
 #else
 #	error Unsupported platform
 #endif
@@ -506,6 +523,9 @@ YT_RESULT YT_HostImpl::RegisterPlugin( YT_PlugIn* plugin, YT_PLUGIN_TYPE type, c
 		break;
 	case YT_PLUGIN_TRANSFORM:
 		m_TransformList.append(info);
+		break;
+	case YT_PLUGIN_MEASURE:
+	case YT_PLUGIN_UNKNOWN:
 		break;
 	}
 

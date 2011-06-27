@@ -1,7 +1,6 @@
-#include "YT_interface.h"
-
+#include "YT_Interface.h"
 #include "ColorConversion.h"
-#include "YT_interfaceImpl.h"
+#include "YT_InterfaceImpl.h"
 #include <stdlib.h>
 #include <memory.h>
 

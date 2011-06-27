@@ -1,4 +1,4 @@
-#include "../PlugIns/YT_Interface.h"
+#include "YT_Interface.h"
 #include "RenderThread.h"
 #include "VideoQueue.h"
 #include "VideoViewList.h"

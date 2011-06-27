@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../PlugIns/YT_Interface.h"
+#include "YT_Interface.h"
 
 class VideoViewList;
 

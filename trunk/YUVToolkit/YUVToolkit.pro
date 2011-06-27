@@ -111,4 +111,8 @@ macx {
 	ICON = YUVToolkit.icns
  }
 
+linux-g++ {
+	LIBS += -lX11
+}
+
 LIBS += -lswscale

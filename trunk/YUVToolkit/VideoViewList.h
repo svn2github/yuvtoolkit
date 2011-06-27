@@ -1,7 +1,7 @@
 #ifndef VIDEO_VIEW_LIST_H
 #define VIDEO_VIEW_LIST_H
 
-#include "../PlugIns/YT_Interface.h"
+#include "YT_Interface.h"
 
 class VideoView;
 struct TransformActionData;

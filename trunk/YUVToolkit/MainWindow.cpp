@@ -3,7 +3,7 @@
 
 #include "YT_InterfaceImpl.h"
 #include "RendererWidget.h"
-#include "ui/ClickableSlider.h"
+#include "UI/ClickableSlider.h"
 #include "VideoView.h"
 #include "Layout.h"
 #include "RenderThread.h"

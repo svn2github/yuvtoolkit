@@ -1,4 +1,4 @@
-#include "../PlugIns/YT_Interface.h"
+#include "YT_Interface.h"
 #include <QtGui>
 
 #include "VideoView.h"

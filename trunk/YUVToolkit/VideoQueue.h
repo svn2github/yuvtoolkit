@@ -1,7 +1,7 @@
 #ifndef RENDER_QUEUE_H
 #define RENDER_QUEUE_H
 
-#include "../PlugIns/YT_Interface.h"
+#include "YT_Interface.h"
 #include "circularfifo.h"
 
 #define RENDER_QUEUE_SIZE 4

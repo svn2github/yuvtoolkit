@@ -1,8 +1,9 @@
-#include "../PlugIns/YT_Interface.h"
-
+#include "YT_Interface.h"
 #include "MainWindow.h"
 #include "YT_InterfaceImpl.h"
-
+#if defined(Q_WS_X11)
+#	include <X11/Xlib.h>
+#endif
 #include <QtGui/QApplication>
 
 YT_HostImpl* g_Host = 0;
@@ -13,6 +14,10 @@ YT_Host* GetHost()
 
 int main(int argc, char *argv[])
 {
+#if defined(Q_WS_X11)
+        XInitThreads();
+#endif
+
 	// CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 
 	QApplication app(argc, argv);

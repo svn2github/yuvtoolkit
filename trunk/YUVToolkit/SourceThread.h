@@ -1,7 +1,7 @@
 #ifndef YT_GRAPH_H
 #define YT_GRAPH_H
 
-#include "YT_interface.h"
+#include "YT_Interface.h"
 #include <QtGui>
 #include <QThread>
 #include <QMutex>
