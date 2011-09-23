@@ -8,6 +8,7 @@ HEADERS += ./ColorConversion.h \
 	./UI/ClickableSlider.h \
 	./Layout.h \
 	./MainWindow.h \
+        ./MeasureWindow.h \
 	./RendererWidget.h \
 	./RenderThread.h \
 	./SourceThread.h \
@@ -21,6 +22,7 @@ SOURCES += \
 	./Layout.cpp \
 	./main.cpp \
 	./MainWindow.cpp \
+        ./MeasureWindow.cpp \
 	./RendererWidget.cpp \
 	./RenderThread.cpp \
 	./SourceThread.cpp \
@@ -28,7 +30,8 @@ SOURCES += \
 	./VideoView.cpp \
 	./VideoViewList.cpp \
 	./YT_InterfaceImpl.cpp
-FORMS += ./MainWindow.ui
+FORMS += ./MainWindow.ui \
+         ./MeasureWindow.ui
 RESOURCES += YUVToolkit.qrc
 
 INCLUDEPATH += . \
