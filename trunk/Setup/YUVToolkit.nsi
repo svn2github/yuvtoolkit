@@ -16,7 +16,7 @@
 !define COPYRIGHT "David Yuheng Zhao © 2010-2011"
 !define DESCRIPTION "YUV video player"
 !define LICENSE_TXT "license.txt"
-!define INSTALLER_NAME "YUVToolkit-${VERSION}-${NOW}.exe"
+!define INSTALLER_NAME "YUVToolkit-${VERSION}.exe"
 !define MAIN_APP_EXE "YUVToolkit.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
@@ -86,26 +86,11 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File "..\Release\Microsoft.VC90.CRT.manifest"
-File "..\Release\msvcp90.dll"
-File "..\Release\msvcr90.dll"
-File "..\Release\swscale-0.dll"
-File "..\Release\avutil-50.dll"
-File "..\Release\QtCore4.dll"
-File "..\Release\QtGui4.dll"
-File "..\Release\QtOpenGL4.dll"
-File "..\Release\QtScript4.dll"
-File "..\Release\QtScriptTools4.dll"
-File "..\Release\YT_TransformsBasic.dll"
-File "..\Release\YT_GLRenderer.dll"
-File "..\Release\YT_QPaintRenderer.dll"
-File "..\Release\YTR_D3D.dll"
-File "..\Release\YTS_Raw.dll"
-File "..\Release\YUVToolkit.exe"
 
-
+!include "file_list.txt"
 
 SectionEnd
+
 
 ######################################################################
 
