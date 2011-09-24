@@ -86,9 +86,9 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File "..\Release\Microsoft.VC80.CRT.manifest"
-File "..\Release\msvcp80.dll"
-File "..\Release\msvcr80.dll"
+File "..\Release\Microsoft.VC90.CRT.manifest"
+File "..\Release\msvcp90.dll"
+File "..\Release\msvcr90.dll"
 File "..\Release\swscale-0.dll"
 File "..\Release\avutil-50.dll"
 File "..\Release\QtCore4.dll"

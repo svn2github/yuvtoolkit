@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YUVToolkit", "YUVToolkit\YUVToolkit.vcproj", "{0FD21E9B-A7A3-4915-B382-13C8670D74D1}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{158B7D24-7D52-4F9B-B90A-DD728DA91A70}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YUVToolkit", "YUVToolkit\YUVToolkit.vcproj", "{0FD21E9B-A7A3-4915-B382-13C8670D74D1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YT_TransformsBasic", "Plugins\YT_TransformsBasic\YT_TransformsBasic.vcproj", "{2A9B4030-3BD0-4E32-8960-3B1620DCD969}"
 EndProject
