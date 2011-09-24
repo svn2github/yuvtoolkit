@@ -15,7 +15,7 @@
 !define VERSION "${VERSION_1}.${VERSION_2}.${VERSION_3}.${VERSION_4}"
 !define COPYRIGHT "David Yuheng Zhao © 2010-2011"
 !define DESCRIPTION "YUV video player"
-!define LICENSE_TXT "license.txt"
+!define LICENSE_TXT "..\Doc\license.txt"
 !define INSTALLER_NAME "YUVToolkit-${VERSION}.exe"
 !define MAIN_APP_EXE "YUVToolkit.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
@@ -70,6 +70,7 @@ InstallDir "$PROGRAMFILES\YUVToolkit"
 !insertmacro MUI_PAGE_INSTFILES
 
 # !define MUI_FINISHPAGE_RUN "$INSTDIR\${MAIN_APP_EXE}"
+!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\readme.txt
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
