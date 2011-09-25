@@ -1,0 +1,54 @@
+Bugs
+===================
+Double clicking YUV file in OsX doesnt start playback
+When changing FPS, only one clip is played at the new FPS in case of multiple clips
+Sometimes playback speed is wrong after maximizing the window
+Crash when wrong stride is used
+Drag-drop two files when one file is already playing
+Double click one file and then you can drag same file back to player window
+Flickers when continuously seeking in one direction
+
+
+0.0.2 
+===================
+Tools -> Compare Window
+- Compare videos frame by frame and compute objective measures like MSE and PSNR
+- Visualize frame difference
+- Can support more objective measures and visualization through plugin system
+
+HOME and END keys for beginning and end of video
+Looped playback of a selected time interval (Set using Ctrl-HOME and Ctrl-END)
+Option to continue playback after seeking to a new frame during play
+Logging av average/max/min time took for reading a frame
+Logging av average/max/min time took for rendering
+Center video options in middle of VideoView
+
+0.0.3
+===================
+Support all commonly used YUV format (Y4M/UYVY/UYNV/Y422/IUYV/YUYV/YUNV/V422/YUY2/YVYU/IYU2/YV16/YV12/IYUV/I420)
+Support reading a list of image files as video
+File Format History (remember the format of earlier opened YUV files)
+Support for setting file format in javascript
+Tools -> Options, new UI to set options
+UI to set file associations
+View -> Zoom Window
+- Show 2-8x zoom in of pixels under mouse pointer
+
+0.0.4
+===================
+Format conversion (YUV->raw AVI)
+Save frames to images
+Editing mode
+- Join, Split and cut
+- Crop, resize, flip, rotate and padding
+- separate/join components 
+- edit YUV pixels
+Drag and drop to reposition the video
+
+0.0.5 -> 1.0 Gold
+===================
+Data analysis and plotting (QWT), e.g., plot PSNR per frame
+Overlay visualization
+- plot motion vectors
+- plot blocks
+Support for compressed video format (h.264/vp8)
