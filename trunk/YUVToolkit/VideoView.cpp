@@ -35,9 +35,9 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent) :
 	m_Measure = 0; 
 	m_SourceThread = 0;
 
-	m_RenderFormat = new YT_FormatImpl;
-	m_SourceFormat = new YT_FormatImpl; 
-	m_EmptyFrame = new YT_FrameImpl;
+	m_RenderFormat = YT_Format_Ptr(new YT_FormatImpl);
+	m_SourceFormat = YT_Format_Ptr(new YT_FormatImpl); 
+	m_EmptyFrame = YT_Frame_Ptr(new YT_FrameImpl);
 	m_VideoQueue = new VideoQueue(_parent->GetRenderer());
 
 	m_CloseAction = new QAction("Close", this);
@@ -113,9 +113,6 @@ VideoView::~VideoView()
 {
 	// TODO Clean up action list
 	delete m_VideoQueue;
-	delete m_RenderFormat;
-	delete m_SourceFormat;
-	delete m_EmptyFrame;
 }
 
 
@@ -248,7 +245,10 @@ void VideoView::SetTitle( const char* title )
 bool VideoView::CheckResolutionDurationChanged()
 {
 	YT_Source* source = VV_SOURCE(this);
-	YT_Frame_Ptr frame = VV_LASTFRAME(this);
+	YT_Frame_Ptr frame;
+	if (_VV_LASTFRAME(this)) {
+		frame = _VV_LASTFRAME(this)->source;
+	}
 
 	UpdateTransformActionList();
 
@@ -265,8 +265,8 @@ bool VideoView::CheckResolutionDurationChanged()
 		duration = info.duration;
 	}else if (frame)
 	{
-		width = frame->Format().Width();
-		height = frame->Format().Height();
+		width = frame->Format()->Width();
+		height = frame->Format()->Height();
 	}
 	
 	if (m_VideoWidth != width || m_VideoHeight != height || m_Duration != duration)

@@ -57,10 +57,7 @@ RawFormatWidget::RawFormatWidget(YTS_Raw* r, QWidget *parent) : rawSource(r), QW
 
 RawFormatWidget::~RawFormatWidget()
 {
-	if (m_Format)
-	{
-		GetHost()->ReleaseFormat(m_Format);
-	}
+	m_Format.clear();
 }
 
 void RawFormatWidget::OnApply()
@@ -75,7 +72,7 @@ void RawFormatWidget::OnApply()
 
 	double fps = ui.FPS->value();
 
-	rawSource->ReInit(*m_Format, fps);
+	rawSource->ReInit(m_Format, fps);
 }
 
 void RawFormatWidget::showEvent( QShowEvent *event )

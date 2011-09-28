@@ -69,9 +69,39 @@ public:
 	virtual YT_Format& operator= (YT_Format &f) = 0;
 };
 
-typedef YT_Format* YT_Format_Ptr;
+typedef QSharedPointer<YT_Format> YT_Format_Ptr;
 
-class YT_Frame;
+class YT_Frame
+{
+public:
+	virtual ~YT_Frame() {}
+
+	virtual const YT_Format_Ptr Format() const = 0;
+	virtual YT_Format_Ptr Format() = 0;
+	virtual void SetFormat(const YT_Format_Ptr) = 0;
+
+	// Get/Set data pointers of each plane
+	virtual unsigned char* Data(int plane) const = 0;
+	virtual void SetData(int plane, unsigned char* value) = 0;
+	virtual unsigned char** Data() const = 0;
+
+	virtual void SetExternData(void* data) = 0;
+	virtual void* ExternData() const = 0;
+
+	// presentation timestamp in miliseconds
+	virtual unsigned int PTS() const = 0;
+	virtual void SetPTS(unsigned int) = 0;
+
+	virtual unsigned int FrameNumber() const = 0;
+	virtual void SetFrameNumber(unsigned int value) = 0;
+
+	// Given the format, allocate the memory and populate Data
+	virtual YT_RESULT Allocate() = 0; 
+	// Reset the internal buffer, call me before changing the format
+	virtual YT_RESULT Reset() = 0;
+};
+
+typedef QSharedPointer<YT_Frame> YT_Frame_Ptr;
 
 enum YT_PLUGIN_TYPE {
 	YT_PLUGIN_UNKNOWN       = -1,
@@ -96,11 +126,9 @@ class YT_Host
 public:
 	virtual ~YT_Host() {}
 
-	virtual YT_Frame* NewFrame() = 0;
-	virtual void ReleaseFrame(YT_Frame*) = 0;
+	virtual YT_Frame_Ptr NewFrame() = 0;
 
-	virtual YT_Format* NewFormat() = 0;
-	virtual void ReleaseFormat(YT_Format*) = 0;
+	virtual YT_Format_Ptr NewFormat() = 0;
 
 	enum YT_LOGGING_LEVELS {
 		LL_INFO    = 0,
@@ -143,38 +171,6 @@ public:
 
 Q_DECLARE_INTERFACE(YT_PlugIn, "net.yocto.YUVToolkit.PlugIn/1.0")
 
-class YT_Frame
-{
-public:
-	virtual ~YT_Frame() {}
-
-	virtual const YT_Format& Format() const = 0;
-	virtual YT_Format& Format() = 0;
-	virtual void SetFormat(const YT_Format&) = 0;
-	
-	// Get/Set data pointers of each plane
-	virtual unsigned char* Data(int plane) const = 0;
-	virtual void SetData(int plane, unsigned char* value) = 0;
-	virtual unsigned char** Data() const = 0;
-
-	virtual void SetExternData(void* data) = 0;
-	virtual void* ExternData() const = 0;
-
-	// presentation timestamp in miliseconds
-	virtual unsigned int PTS() const = 0;
-	virtual void SetPTS(unsigned int) = 0;
-
-	virtual unsigned int FrameNumber() const = 0;
-	virtual void SetFrameNumber(unsigned int value) = 0;
-
-	// Given the format, allocate the memory and populate Data
-	virtual YT_RESULT Allocate() = 0; 
-	// Reset the internal buffer, call me before changing the format
-	virtual YT_RESULT Reset() = 0;
-};
-
-typedef YT_Frame* YT_Frame_Ptr;
-
 // Each module below should manage memory of its own
 typedef enum _YT_SOURCE_TYPE {
 	YT_FILE_SOURCE,
@@ -185,7 +181,7 @@ typedef void* YT_HANDLE;
 
 struct YT_Source_Info
 {
-	YT_Format* format;
+	YT_Format_Ptr format;
 	float fps;
 	unsigned int num_frames;
 	unsigned int duration; // in ms

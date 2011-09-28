@@ -169,16 +169,16 @@ YT_RESULT YTR_D3D::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat )
 	// surface->GetDesc(&d3d_sd);
 
 	frame = m_Host->NewFrame();
-	frame->SetFormat(*sourceFormat);
+	frame->SetFormat(sourceFormat);
 
 	frame->SetExternData((void*) surface);
 	// support only rgb24
-	frame->Format().SetStride(0, d3d_lr.Pitch);
-	frame->Format().SetStride(1,0);
-	frame->Format().SetStride(2,0);
-	frame->Format().SetStride(3,0);
+	frame->Format()->SetStride(0, d3d_lr.Pitch);
+	frame->Format()->SetStride(1,0);
+	frame->Format()->SetStride(2,0);
+	frame->Format()->SetStride(3,0);
 
-	frame->Format().SetColor(YT_XRGB32);
+	frame->Format()->SetColor(YT_XRGB32);
 	
 	return YT_OK;
 }
@@ -188,7 +188,7 @@ YT_RESULT YTR_D3D::Deallocate( YT_Frame_Ptr frame )
 {
 	RELEASE_SURFACE(frame);
 
-	m_Host->ReleaseFrame(frame);
+	frame.clear();
 
 	return YT_OK;
 }

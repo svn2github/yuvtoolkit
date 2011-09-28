@@ -43,7 +43,7 @@
 				Optimization="3"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Plugins&quot;;&quot;$(SolutionDir)\3rdparty\msc&quot;;&quot;$(SolutionDir)\3rdparty\ffmpeg\include&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtScript&quot;;&quot;$(QTDIR)\include\QtScriptTools&quot;;"
+				AdditionalIncludeDirectories="$(SolutionDir)\Plugins;$(SolutionDir)\3rdparty\msc;$(SolutionDir)\3rdparty\ffmpeg\include;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtScript;$(QTDIR)\include\QtScriptTools;"
 				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_DLL;QT_SCRIPT_LIB"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"
@@ -120,7 +120,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\Plugins&quot;;&quot;$(SolutionDir)\3rdparty\msc&quot;;&quot;$(SolutionDir)\3rdparty\ffmpeg\include&quot;;&quot;.\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtScript&quot;;&quot;$(QTDIR)\include\QtScriptTools&quot;;"
+				AdditionalIncludeDirectories="$(SolutionDir)\Plugins;$(SolutionDir)\3rdparty\msc;$(SolutionDir)\3rdparty\ffmpeg\include;.\GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtScript;$(QTDIR)\include\QtScriptTools;"
 				PreprocessorDefinitions="_DEBUG;DEBUG;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_DLL;QT_SCRIPT_LIB"
 				RuntimeLibrary="3"
 				StructMemberAlignment="0"

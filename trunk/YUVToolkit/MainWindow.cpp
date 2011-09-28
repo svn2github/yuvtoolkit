@@ -742,7 +742,10 @@ void MainWindow::OnTimer()
 	if (longest)
 	{
 		YT_Source* source = VV_SOURCE(longest);
-		YT_Frame_Ptr frame = VV_LASTFRAME(longest);
+		YT_Frame_Ptr frame;
+		if (_VV_LASTFRAME(longest)) {
+			frame = _VV_LASTFRAME(longest)->source;
+		}
 		
 		if (source && frame)
 		{
@@ -765,7 +768,10 @@ void MainWindow::OnTimer()
 	if (active)
 	{
 		YT_Source* source = VV_SOURCE(active);
-		YT_Frame_Ptr frame = VV_LASTFRAME(active);
+		YT_Frame_Ptr frame;
+		if (_VV_LASTFRAME(active)) {
+			frame = _VV_LASTFRAME(active)->source;
+		}
 
 		if (source && frame)
 		{
@@ -834,7 +840,7 @@ void MainWindow::stepVideo( int step )
 {
 	YT_Source* source = 0;
 	VideoView* longest = m_VideoViewList->longest();
-	YT_Frame_Ptr lastFrame = 0;
+	YT_Frame_Ptr lastFrame;
 	if (longest)
 	{
 		source = longest->GetSource();

@@ -193,7 +193,7 @@ YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
 		file_status = fseek(m_File, frame_size*m_FrameIndex, SEEK_SET);
 	}
 
-	frame->SetFormat(*m_Format);
+	frame->SetFormat(m_Format);
 	frame->Allocate();
 
 	for (int i=0; i<4 && file_status == 0; i++)
@@ -244,13 +244,13 @@ QWidget* YTS_Raw::CreateGUI( QWidget* parent )
 	return widget;
 }
 
-void YTS_Raw::ReInit( const YT_Format& format, double FPS )
+void YTS_Raw::ReInit( const YT_Format_Ptr format, double FPS )
 {
 	QMutexLocker locker(&m_Mutex);
 	
 	unsigned int pts = IndexToPTS(m_FrameIndex);
 
-	*m_Format = format;
+	*m_Format = *format;
 	m_FPS = FPS;
 
 	unsigned int frame_size = 0;

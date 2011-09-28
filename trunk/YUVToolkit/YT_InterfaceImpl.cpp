@@ -311,7 +311,7 @@ YT_FrameImpl::~YT_FrameImpl()
 {
 	Deallocate();
 
-	SAFE_DELETE(format);
+	format.clear();
 }
 
 void YT_FrameImpl::Deallocate()
@@ -327,20 +327,20 @@ void YT_FrameImpl::Deallocate()
 	}
 }
 
-YT_Format& YT_FrameImpl::Format()
+YT_Format_Ptr YT_FrameImpl::Format()
 {
-	return *format;
+	return format;
 }
 
 
-void YT_FrameImpl::SetFormat( const YT_Format& f)
+void YT_FrameImpl::SetFormat( const YT_Format_Ptr f)
 {
-	*format = f;
+	*format = *f;
 }
 
-const YT_Format& YT_FrameImpl::Format() const
+const YT_Format_Ptr YT_FrameImpl::Format() const
 {
-	return *format;
+	return format;
 }
 unsigned char* YT_FrameImpl::Data( int plane ) const
 {
@@ -448,24 +448,14 @@ void* YT_FrameImpl::ExternData() const
 	return externData;
 }
 
-YT_Frame* YT_HostImpl::NewFrame()
+YT_Frame_Ptr YT_HostImpl::NewFrame()
 {
-	return new YT_FrameImpl;
+	return YT_Frame_Ptr(new YT_FrameImpl);
 }
 
-void YT_HostImpl::ReleaseFrame( YT_Frame* frame )
+YT_Format_Ptr YT_HostImpl::NewFormat()
 {
-	delete frame;
-}
-
-YT_Format* YT_HostImpl::NewFormat()
-{
-	return new YT_FormatImpl;
-}
-
-void YT_HostImpl::ReleaseFormat( YT_Format* f)
-{
-	delete f;
+	return YT_Format_Ptr(new YT_FormatImpl);
 }
 
 YT_HostImpl::YT_HostImpl() : m_LogFile(this)

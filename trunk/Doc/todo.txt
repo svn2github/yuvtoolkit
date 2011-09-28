@@ -25,14 +25,16 @@ Center video options in middle of VideoView
 
 0.0.3
 ===================
+Playback speed up and down 
 Support all commonly used YUV format (Y4M/UYVY/UYNV/Y422/IUYV/YUYV/YUNV/V422/YUY2/YVYU/IYU2/YV16/YV12/IYUV/I420)
 Support reading a list of image files as video
 File Format History (remember the format of earlier opened YUV files)
 Support for setting file format in javascript
 Tools -> Options, new UI to set options
 UI to set file associations
-View -> Zoom Window
+View -> Pixel Window
 - Show 2-8x zoom in of pixels under mouse pointer
+- Show pixel values 
 
 0.0.4
 ===================

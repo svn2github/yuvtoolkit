@@ -31,21 +31,19 @@ VideoQueue::Frame* VideoQueue::GetSourceFrame(YT_Format_Ptr format)
 	m_EmptyQueue.pop(rqf);
 	assert(rqf!=0);
 
-	if (rqf->source && rqf->source->Format() != *format)
+	if (rqf->source && *rqf->source->Format() != *format)
 	{
 		if (m_Renderer->Deallocate(rqf->render) != YT_OK)
 		{
 			return NULL;
 		}
-
-		GetHost()->ReleaseFrame(rqf->source);
-		rqf->source = NULL;
+		rqf->source.clear();
 	}
 
 	if (rqf->source == NULL)
 	{
 		rqf->source = GetHost()->NewFrame();
-		rqf->source->SetFormat(*format);
+		rqf->source->SetFormat(format);
 		rqf->source->Allocate();
 
 		if (m_Renderer->Allocate(rqf->render, format) != YT_OK)
@@ -233,7 +231,6 @@ void VideoQueue::ReleaseBuffers()
 		m_RenderQueue.pop(rqf);
 		
 		m_Renderer->Deallocate(rqf->render);
-		GetHost()->ReleaseFrame(rqf->source);
 		
 		delete rqf;
 	}
@@ -244,7 +241,7 @@ void VideoQueue::ReleaseBuffers()
 		m_LastRenderedFrame = NULL;
 
 		m_Renderer->Deallocate(rqf->render);
-		GetHost()->ReleaseFrame(rqf->source);
+		rqf->source.clear();
 
 		delete rqf;
 	}
@@ -259,12 +256,7 @@ void VideoQueue::ReleaseBuffers()
 			m_Renderer->Deallocate(rqf->render);
 		}
 
-		if (rqf->source)
-		{
-			GetHost()->ReleaseFrame(rqf->source);
-		}
-
-		rqf->source = NULL;
+		rqf->source.clear();
 
 		delete rqf;
 	}
@@ -294,7 +286,7 @@ void VideoQueue::RenderFrame( Frame* vqf)
 	{
 		for (int i=0; i<4; i++)
 		{
-			size_t len = render->Format().PlaneSize(i);
+			size_t len = render->Format()->PlaneSize(i);
 			if (len > 0)
 			{
 				memcpy(render->Data(i), frame->Data(i), len);

@@ -5,7 +5,7 @@ YT_ShowYUVComponent::YT_ShowYUVComponent() : m_EmptyFrame(GetHost()->NewFrame())
 }
 YT_ShowYUVComponent::~YT_ShowYUVComponent()
 {
-	GetHost()->ReleaseFrame(m_EmptyFrame);
+	m_EmptyFrame.clear();
 }
 
 
@@ -44,10 +44,10 @@ YT_RESULT YT_ShowYUVComponent::Process(const YT_Frame_Ptr input, QMap<QString, Y
 		m_EmptyFrame->SetFormat(input->Format());
 		m_EmptyFrame->Allocate();
 
-		memset(m_EmptyFrame->Data(0), 128, m_EmptyFrame->Format().PlaneSize(0));
-		memset(m_EmptyFrame->Data(1), 128, m_EmptyFrame->Format().PlaneSize(1));
-		memset(m_EmptyFrame->Data(2), 128, m_EmptyFrame->Format().PlaneSize(2));
-		memset(m_EmptyFrame->Data(3), 128, m_EmptyFrame->Format().PlaneSize(3));
+		memset(m_EmptyFrame->Data(0), 128, m_EmptyFrame->Format()->PlaneSize(0));
+		memset(m_EmptyFrame->Data(1), 128, m_EmptyFrame->Format()->PlaneSize(1));
+		memset(m_EmptyFrame->Data(2), 128, m_EmptyFrame->Format()->PlaneSize(2));
+		memset(m_EmptyFrame->Data(3), 128, m_EmptyFrame->Format()->PlaneSize(3));
 	}
 
 	stats.clear();
@@ -62,7 +62,7 @@ YT_RESULT YT_ShowYUVComponent::Process(const YT_Frame_Ptr input, QMap<QString, Y
 
 		for (int j=0; j<4; j++)
 		{
-			if (component.compare(input->Format().PlaneName(j)) == 0)
+			if (component.compare(input->Format()->PlaneName(j)) == 0)
 			{
 				ProcessPlane(input, output, j);
 				break;
@@ -76,11 +76,11 @@ YT_RESULT YT_ShowYUVComponent::Process(const YT_Frame_Ptr input, QMap<QString, Y
 void YT_ShowYUVComponent::ProcessPlane( YT_Frame_Ptr input, YT_Frame_Ptr output, int plane )
 {
 	output->Reset();
-	output->Format().SetColor(YT_I420);
-	output->Format().SetStride(0, 0);
-	output->Format().SetWidth(input->Format().PlaneWidth(plane));
-	output->Format().SetHeight(input->Format().PlaneHeight(plane));
-	output->Format().PlaneSize(0); // Update internal	
+	output->Format()->SetColor(YT_I420);
+	output->Format()->SetStride(0, 0);
+	output->Format()->SetWidth(input->Format()->PlaneWidth(plane));
+	output->Format()->SetHeight(input->Format()->PlaneHeight(plane));
+	output->Format()->PlaneSize(0); // Update internal	
 	output->SetData(0, input->Data(plane));
 	for (int i=1; i<4; i++)
 	{

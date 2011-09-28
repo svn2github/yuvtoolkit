@@ -105,7 +105,7 @@ YT_RESULT YT_OpenGLRenderer::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr source
 	QImage* image = new QImage(sourceFormat->Width(), sourceFormat->Height(), QImage::Format_RGB888);
 
 	frame = m_Host->NewFrame();
-	frame->SetFormat(*sourceFormat);
+	frame->SetFormat(sourceFormat);
 
 	frame->SetExternData((void*) image);
 	frame->SetData(0, image->bits());
@@ -114,12 +114,12 @@ YT_RESULT YT_OpenGLRenderer::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr source
 	frame->SetData(3, 0);
 
 	// support only rgb24
-	frame->Format().SetStride(0,sourceFormat->Width()*3);
-	frame->Format().SetStride(1,0);
-	frame->Format().SetStride(2,0);
-	frame->Format().SetStride(3,0);
+	frame->Format()->SetStride(0,sourceFormat->Width()*3);
+	frame->Format()->SetStride(1,0);
+	frame->Format()->SetStride(2,0);
+	frame->Format()->SetStride(3,0);
 
-	frame->Format().SetColor(YT_RGB24);
+	frame->Format()->SetColor(YT_RGB24);
 
 	return YT_OK;
 }
@@ -130,7 +130,7 @@ YT_RESULT YT_OpenGLRenderer::Deallocate( YT_Frame_Ptr frame )
 
 	delete image;
 
-	m_Host->ReleaseFrame(frame);
+	frame.clear();
 
 	return YT_OK;
 }

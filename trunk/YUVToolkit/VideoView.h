@@ -114,8 +114,8 @@ private:
 	QPoint m_LastMousePoint;
 	RendererWidget* parent;
 
-	YT_Format* m_RenderFormat;
-	YT_Format* m_SourceFormat;
+	YT_Format_Ptr m_RenderFormat;
+	YT_Format_Ptr m_SourceFormat;
 	YT_Frame_Ptr m_EmptyFrame;
 };
 #endif

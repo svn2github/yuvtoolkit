@@ -23,7 +23,7 @@ public slots:
 private:
 	Ui::RawFormatWidget ui;
 	YTS_Raw* rawSource;
-	YT_Format* m_Format;
+	YT_Format_Ptr m_Format;
 };
 
 #endif // RAWFORMATWIDGET_H

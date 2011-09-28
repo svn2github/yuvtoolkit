@@ -60,16 +60,16 @@ class YT_FrameImpl : public YT_Frame
 	unsigned char* allocated_data;
 	size_t allocated_size;
 
-	YT_Format* format;
+	YT_Format_Ptr format;
 
 	void Deallocate();
 public:
 	YT_FrameImpl();
 	virtual ~YT_FrameImpl();
 
-	virtual const YT_Format& Format() const;
-	virtual YT_Format& Format();
-	virtual void SetFormat(const YT_Format&);
+	virtual const YT_Format_Ptr Format() const;
+	virtual YT_Format_Ptr Format();
+	virtual void SetFormat(const YT_Format_Ptr);
 
 	// Get/Set data pointers of each plane
 	virtual unsigned char* Data(int plane) const;
@@ -124,11 +124,9 @@ public:
 	bool IsLoggingEnabled();
 	void OpenLoggingDirectory();
 
-	virtual YT_Format* NewFormat();
-	virtual void ReleaseFormat(YT_Format*);
+	virtual YT_Format_Ptr NewFormat();
 
-	virtual YT_Frame* NewFrame();
-	virtual void ReleaseFrame(YT_Frame*);
+	virtual YT_Frame_Ptr NewFrame();
 
 	virtual YT_RESULT RegisterPlugin(YT_PlugIn*, YT_PLUGIN_TYPE, const QString& name);
 	// virtual QMainWindow* GetMainWindow();

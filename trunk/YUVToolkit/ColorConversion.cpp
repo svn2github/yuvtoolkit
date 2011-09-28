@@ -37,18 +37,18 @@ void PrepareCC(YT_COLOR_FORMAT& color, unsigned char* (&data)[4])
 
 void ColorConversion(const YT_Frame& in, YT_Frame& out)
 {
-	const YT_Format& format_in = in.Format();
-	YT_Format& format_out = out.Format();
+	const YT_Format_Ptr format_in = in.Format();
+	YT_Format_Ptr format_out = out.Format();
 
 	int step_in[4];
-	memcpy(step_in, format_in.Stride(), sizeof(step_in));
+	memcpy(step_in, format_in->Stride(), sizeof(step_in));
 
 	unsigned char* data_in[4], *data_out[4];
 	memcpy(data_in, in.Data(), sizeof(data_in));
 	memcpy(data_out, out.Data(), sizeof(data_out));
 
-	YT_COLOR_FORMAT color_in  = format_in.Color();
-	YT_COLOR_FORMAT color_out = format_out.Color();
+	YT_COLOR_FORMAT color_in  = format_in->Color();
+	YT_COLOR_FORMAT color_out = format_out->Color();
 
 	
 	PrepareCC(color_in, data_in);
@@ -58,13 +58,13 @@ void ColorConversion(const YT_Frame& in, YT_Frame& out)
 	if (!ok)
 	{
 		// Try FFMpeg conversion if framewave doesn't support the conversion
-		struct SwsContext *ctx = sws_getContext(format_in.Width(), format_in.Height(),
-			YT_Format_to_FFMpeg_Format(color_in), format_out.Width(), format_out.Height(),
+		struct SwsContext *ctx = sws_getContext(format_in->Width(), format_in->Height(),
+			YT_Format_to_FFMpeg_Format(color_in), format_out->Width(), format_out->Height(),
 			YT_Format_to_FFMpeg_Format(color_out),
 			SWS_BILINEAR, NULL,NULL,NULL );
 		if (ctx)
 		{
-			if (sws_scale( ctx, data_in, step_in, 0, format_in.Height(), data_out, format_out.Stride()) == format_out.Height())
+			if (sws_scale( ctx, data_in, step_in, 0, format_in->Height(), data_out, format_out->Stride()) == format_out->Height())
 			{
 				ok = true;
 			}
@@ -77,7 +77,7 @@ void ColorConversion(const YT_Frame& in, YT_Frame& out)
 		// Fill with random data
 		for (int i=0; i<4; i++)
 		{
-			for (int j=0; j<format_out.Stride(i)*format_out.Height(); j++)
+			for (int j=0; j<format_out->Stride(i)*format_out->Height(); j++)
 			{
 				data_out[i][j] = rand()*255/RAND_MAX;
 			}

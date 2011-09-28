@@ -173,6 +173,8 @@ void VideoViewList::CheckRenderReset()
 
 bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsigned int& renderPTS )
 {
+	QTime time;
+	time.restart();
 	// INFO_LOG("VideoViewList::GetRenderFrameList");
 
 	QMutexLocker locker(&m_MutexAddRemoveAndSeeking);
@@ -311,10 +313,10 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 				continue;
 			}
 
-			YT_FormatImpl transformFormat;
-			vv->GetTransform()->GetFormat(&(ref->source->Format()), vv->GetOutputName(), &transformFormat);
+			YT_Format_Ptr transformFormat = YT_Format_Ptr(new YT_FormatImpl);
+			vv->GetTransform()->GetFormat(ref->source->Format(), vv->GetOutputName(), transformFormat);
 			
-			VideoQueue::Frame* vqf = vv->GetVideoQueue()->GetSourceFrame(&(transformFormat));
+			VideoQueue::Frame* vqf = vv->GetVideoQueue()->GetSourceFrame(transformFormat);
 			if (vqf != NULL && vqf->source != NULL && vqf->render != NULL )
 			{
 				QMap<QString, YT_Frame_Ptr> outputs;
@@ -338,14 +340,14 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 		}
 	}
 
-	for (int i=0; i<m_MeasureWindowList.size(); ++i) 
+	/*for (int i=0; i<m_MeasureWindowList.size(); ++i) 
 	{
 		MeasureWindow* measureWin = m_MeasureWindowList.at(i);
 		if (measureWin->isVisible())
 		{
 			measureWin->UpdateMeasure();
 		}
-	}
+	}*/
 
 	if (m_Paused || m_SeekingPTS != INVALID_PTS)
 	{
@@ -354,6 +356,8 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 	{
 		renderPTS  = pts;
 	}
+
+	INFO_LOG("GetRenderFrameList took %d ms", time.elapsed());
 
 	return shouldRender;
 }

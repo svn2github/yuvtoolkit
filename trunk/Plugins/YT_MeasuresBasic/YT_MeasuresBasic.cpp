@@ -16,16 +16,16 @@ double YT_MeasuresBasic::ComputeMSE( YT_Frame_Ptr input1, YT_Frame_Ptr input2, Y
 	if (output)
 	{
 		output->Reset();
-		output->Format().SetColor(YT_I420);
-		output->Format().SetStride(0, 0);
-		output->Format().SetWidth(input1->Format().PlaneWidth(plane));
-		output->Format().SetHeight(input1->Format().PlaneHeight(plane));
-		output->Format().PlaneSize(0); // Update internal	
+		output->Format()->SetColor(YT_I420);
+		output->Format()->SetStride(0, 0);
+		output->Format()->SetWidth(input1->Format()->PlaneWidth(plane));
+		output->Format()->SetHeight(input1->Format()->PlaneHeight(plane));
+		output->Format()->PlaneSize(0); // Update internal	
 		output->Allocate();
 	}
 
 	double mse = 0;
-	int frameSize = input1->Format().PlaneSize(plane);	
+	int frameSize = input1->Format()->PlaneSize(plane);	
 	unsigned char* p1 = input1->Data(plane);
 	unsigned char* p2 = input2->Data(plane);
 	for (int i=0; i<frameSize; i++, p1++, p2++)
@@ -114,13 +114,13 @@ YT_RESULT YT_MeasuresBasic::Process( const YT_Frame_Ptr input1, const YT_Frame_P
 	YT_Measure_Item item;
 	for (int p=0; p<4; p++)
 	{
-		if (!input1->Format().IsPlanar(p))
+		if (!input1->Format()->IsPlanar(p))
 		{
 			continue;
 		}
 
 		item.plane = p;
-		YT_Frame_Ptr output = NULL;
+		YT_Frame_Ptr output;
 
 		item.measureType = MEASURE_MSE;
 		mses[p] = ComputeMSE(input1, input2, output, p);

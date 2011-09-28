@@ -46,7 +46,7 @@ public:
 	virtual bool HasGUI();
 	virtual QWidget* CreateGUI(QWidget* parent);
 
-	void ReInit(const YT_Format& format, double FPS);
+	void ReInit(const YT_Format_Ptr format, double FPS);
 	const QString GetPath() {return m_Path;}
 protected:
 	unsigned int PTSToIndex(unsigned int PTS);
@@ -61,7 +61,7 @@ private:
 
 	FILE* m_File;
 
-	YT_Format* m_Format;
+	YT_Format_Ptr m_Format;
 	QString m_Path;
 	RawFormatWidget* m_RawFormatWidget;
 
