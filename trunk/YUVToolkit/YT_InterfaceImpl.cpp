@@ -300,7 +300,7 @@ int YT_FormatImpl::PlaneHeight( int plane )
 	return 0;
 }
 
-YT_FrameImpl::YT_FrameImpl() : pts(0), frame_num(0), externData(0),
+YT_FrameImpl::YT_FrameImpl(YT_FramePool* p) : pool(p), pts(0), frame_num(0), externData(0),
 	allocated_data(0), allocated_size(0),
 	format(new YT_FormatImpl)
 {
@@ -446,6 +446,18 @@ void YT_FrameImpl::SetExternData( void* data )
 void* YT_FrameImpl::ExternData() const
 {
 	return externData;
+}
+
+void YT_FrameImpl::Recyle( YT_Frame *obj )
+{
+	YT_FrameImpl* frame = static_cast<YT_FrameImpl*> (obj);
+	if (frame->pool)
+	{
+		frame->pool->Recycle(frame);
+	}else
+	{
+		delete obj;
+	}
 }
 
 YT_Frame_Ptr YT_HostImpl::NewFrame()
@@ -706,3 +718,41 @@ void YT_HostImpl::OpenLoggingDirectory()
 	QDesktopServices::openUrl(QUrl("file:///" + path));
 }
 
+
+YT_FramePool::YT_FramePool( unsigned int size )
+{
+	for (unsigned int i=0; i<size; i++)
+	{
+		m_Pool.append(new YT_FrameImpl(this));
+	}
+}
+
+YT_FramePool::~YT_FramePool()
+{
+	for (unsigned int i=0; i<m_Pool.size(); i++)
+	{
+		delete m_Pool.at(i);
+	}
+}
+
+void YT_FramePool::Recycle( YT_Frame* frame )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Pool.append(frame);
+}
+
+YT_Frame_Ptr YT_FramePool::Get()
+{
+	if (m_Pool.size())
+	{
+		QMutexLocker locker(&m_Mutex);
+
+		YT_Frame* frame = m_Pool.first();
+		m_Pool.removeFirst();
+
+		return YT_Frame_Ptr(frame, YT_FrameImpl::Recyle);
+	}
+
+	return YT_Frame_Ptr(NULL);
+}

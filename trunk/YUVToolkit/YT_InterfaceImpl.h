@@ -50,6 +50,8 @@ public:
 	virtual YT_Format& operator= (YT_Format &f);
 };
 
+class YT_FramePool;
+
 class YT_FrameImpl : public YT_Frame
 {
 	unsigned char* data[4]; 	// pointers to the planes, for packed frame, only first one is used
@@ -61,10 +63,11 @@ class YT_FrameImpl : public YT_Frame
 	size_t allocated_size;
 
 	YT_Format_Ptr format;
+	YT_FramePool* pool;
 
 	void Deallocate();
 public:
-	YT_FrameImpl();
+	YT_FrameImpl(YT_FramePool* p=NULL);
 	virtual ~YT_FrameImpl();
 
 	virtual const YT_Format_Ptr Format() const;
@@ -90,6 +93,21 @@ public:
 	YT_RESULT Allocate(); 
 	// Reset the internal buffer, call me before changing the format
 	YT_RESULT Reset();
+
+	static void Recyle(YT_Frame *obj);
+};
+
+class YT_FramePool
+{
+	QList<YT_Frame*> m_Pool;
+	QMutex m_Mutex;
+public:
+	YT_FramePool(unsigned int size);
+	virtual ~YT_FramePool();
+
+	YT_Frame_Ptr Get();
+
+	void Recycle(YT_Frame* frame);
 };
 
 struct PlugInInfo
