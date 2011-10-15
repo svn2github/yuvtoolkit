@@ -2,7 +2,8 @@
 #include "VideoView.h"
 #include "RendererWidget.h"
 #include "RenderThread.h"
-#include "VideoQueue.h"
+#include "ProcessThread.h"
+
 #include "SourceThread.h"
 #include "Layout.h"
 #include "ColorConversion.h"
@@ -10,7 +11,10 @@
 
 #include <assert.h>
 
-VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(true), m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), m_EndOfFile(false), m_NeedSeekingRequest(false)
+VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL),
+	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(true), 
+	m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), 
+	m_EndOfFile(false), m_NeedSeekingRequest(false)
 {
 	m_RenderWidget = rw;
 	m_MainWindow = mainWindow;
@@ -38,11 +42,16 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 
 VideoViewList::~VideoViewList()
 {
-
 }
 
 VideoView* VideoViewList::NewVideoView( const char* title )
 {
+	if (m_ProcessThread == NULL)
+	{
+		m_ProcessThread = new ProcessThread();
+		m_ProcessThread->Start();
+	}
+
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
 		QSettings settings;
@@ -50,11 +59,15 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		m_RenderWidget->Init(renderType);
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
+		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
+			m_RenderThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
+
+		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int)), m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int)));
 	}
 
 	m_RenderThread->Stop();
 
-	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget);
+	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget, m_ProcessThread);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
 
 	{
@@ -83,6 +96,22 @@ void VideoViewList::OnUpdateRenderWidgetPosition()
 	QRect rcClient = m_RenderWidget->rect();
 	int width = rcClient.width();
 	m_RenderWidget->layout->UpdateGeometry();
+
+	QList<unsigned int> ids;
+	QList<QRect> srcRects, dstRects;
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+
+		ids.append(vv->GetID());
+		srcRects.append(vv->srcRect);
+		dstRects.append(vv->dstRect);
+	}
+
+	if (m_VideoList.size()>0)
+	{
+		emit layoutUpdated(ids, srcRects, dstRects);
+	}
 }
 
 void VideoViewList::CloseVideoView( VideoView* vv)
@@ -91,11 +120,12 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv2 = m_VideoList.at(i);
+		/*
 		if (vv2->GetRefVideoQueue() == vv->GetVideoQueue())
 		{
 			CloseVideoView(vv2);
 			i = 0; 
-		}
+		}*/
 	}
 
 	m_RenderThread->Stop();
@@ -120,6 +150,9 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 		m_CurrentPTS = 0;
 		m_SeekingPTS = m_SeekingPTSNext = INVALID_PTS;
+
+		m_ProcessThread->Stop();
+		SAFE_DELETE(m_ProcessThread);
 	}else
 	{
 		m_RenderThread->Start();
@@ -136,41 +169,16 @@ void VideoViewList::CheckRenderReset()
 	{
 		m_RenderThread->Stop();
 
-		for (int i=0; i<m_VideoList.size(); ++i) 
-		{
-			VideoView* vv = m_VideoList.at(i);
-			if (vv->GetType() == YT_PLUGIN_SOURCE)
-			{
-				SourceThread* st = vv->GetSourceThread();
-				st->quit();
-			}
-			vv->GetVideoQueue()->ReleaseBuffers();
-		}
-
 		YT_RESULT res = m_RenderWidget->GetRenderer()->Reset();
 		assert(res == YT_OK);
 
 		if (res == YT_OK)
 		{
-			for (int i=0; i<m_VideoList.size(); ++i) 
-			{
-				VideoView* vv = m_VideoList.at(i);
-				vv->GetVideoQueue()->InitBuffers();
-
-				if (vv->GetType() == YT_PLUGIN_SOURCE)
-				{
-					SourceThread* st = vv->GetSourceThread();
-					st->start();
-				}
-			}
-
-			Seek(m_CurrentPTS, IsPlaying());
-
 			m_RenderThread->Start();
 		}
 	}
 }
-
+/*
 bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsigned int& renderPTS )
 {
 	QTime time;
@@ -191,7 +199,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 	}
 
 
-	unsigned int pts = NEXT_PTS; // Next pts to read from video queue
+	unsigned int pts = INVALID_PTS; // Next pts to read from video queue
 	// If paused, get the most recent item in the queue (flush queue)
 	// If playing, find the closest frame in the future
 	if (m_SeekingPTS != INVALID_PTS)
@@ -227,14 +235,14 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 				}
 			}
 		}
-		if (minPTS < NEXT_PTS)
+		if (minPTS < INVALID_PTS)
 		{
 			pts = minPTS;
 		}else
 		{
 			pts = maxPTS;
 		}
-		assert(pts < NEXT_PTS);
+		assert(pts < INVALID_PTS);
 	}
 
 	m_CurrentPTS = pts;
@@ -340,15 +348,6 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 		}
 	}
 
-	/*for (int i=0; i<m_MeasureWindowList.size(); ++i) 
-	{
-		MeasureWindow* measureWin = m_MeasureWindowList.at(i);
-		if (measureWin->isVisible())
-		{
-			measureWin->UpdateMeasure();
-		}
-	}*/
-
 	if (m_Paused || m_SeekingPTS != INVALID_PTS)
 	{
 		renderPTS  = INVALID_PTS;
@@ -360,7 +359,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 	INFO_LOG("GetRenderFrameList took %d ms", time.elapsed());
 
 	return shouldRender;
-}
+}*/
 
 class QThread3 : public QThread
 {
@@ -417,6 +416,7 @@ void VideoViewList::CheckLoopFromStart()
 		
 		YT_Source* src = vv->GetSource();
 		VideoQueue* queue = vv->GetVideoQueue();
+		/*
 		VideoQueue::Frame* lastFrame = queue->GetLastRenderFrame();
 
 		YT_Source_Info info;
@@ -429,7 +429,7 @@ void VideoViewList::CheckLoopFromStart()
 			Seek(0, true);
 		}
 
-		m_EndOfFile = endOfFile;
+		m_EndOfFile = endOfFile;*/
 	}
 }
 
@@ -480,12 +480,13 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv2 = m_VideoList.at(i);
+		/*
 		if (vv2->GetType() == YT_PLUGIN_TRANSFORM && vv2->GetRefVideoQueue() == 
 			vv->GetVideoQueue() && vv2->GetOutputName() == data->outputName)
 		{
 			hasView = true;
 			CloseVideoView(vv2);
-		}
+		}*/
 	}
 
 	if (!hasView)

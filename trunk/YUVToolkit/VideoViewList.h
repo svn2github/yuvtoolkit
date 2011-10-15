@@ -2,6 +2,7 @@
 #define VIDEO_VIEW_LIST_H
 
 #include "YT_Interface.h"
+#include "RenderThread.h"
 
 class VideoView;
 struct TransformActionData;
@@ -12,6 +13,7 @@ class QMainWindow;
 class QAction;
 class MeasureWindow;
 class QDockWidget;
+class ProcessThread;
 
 class VideoViewList : public QObject
 {
@@ -39,7 +41,7 @@ public:
 	bool IsPlaying();
 
 	unsigned int GetCurrentPTS() {return m_CurrentPTS; }
-	bool GetRenderFrameList(QList<YT_Render_Frame>& list, unsigned int& pts);
+	//bool GetRenderFrameList(QList<YT_Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
 	unsigned int GetSeekingPTS() {return m_SeekingPTS; }
 	void CheckRenderReset();
@@ -58,8 +60,11 @@ signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
+	void layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>);
 private:
 	RenderThread* m_RenderThread;
+	ProcessThread* m_ProcessThread;
+
 	unsigned int m_Duration;
 	volatile unsigned int m_CurrentPTS;
 	unsigned int m_VideoCount;

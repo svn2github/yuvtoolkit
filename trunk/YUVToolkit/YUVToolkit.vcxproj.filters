@@ -33,6 +33,11 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Generated Files\Template">
+      <UniqueIdentifier>{36aacb84-c84f-40ea-8084-4a4e029418ac}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColorConversion.cpp">
@@ -57,9 +62,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SourceThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VideoView.cpp">
@@ -98,9 +100,6 @@
     <ClCompile Include="generatedfiles\release\moc_TextLabel.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="generatedfiles\release\moc_VideoQueue.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="generatedfiles\release\moc_VideoView.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -134,9 +133,6 @@
     <ClCompile Include="generatedfiles\debug\moc_TextLabel.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="generatedfiles\debug\moc_VideoQueue.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="generatedfiles\debug\moc_VideoView.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -145,6 +141,18 @@
     </ClCompile>
     <ClCompile Include="generatedfiles\debug\moc_YT_InterfaceImpl.cpp">
       <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ProcessThread.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ProcessThread.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_ProcessThread.cpp">
+      <Filter>Generated Files\Template</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +197,6 @@
     <CustomBuild Include="UI\TextLabel.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="VideoQueue.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="VideoView.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -209,6 +214,9 @@
     </CustomBuild>
     <CustomBuild Include="YUVToolkit.qrc">
       <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ProcessThread.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

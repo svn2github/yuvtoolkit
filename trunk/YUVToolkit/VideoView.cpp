@@ -5,6 +5,8 @@
 #include "RendererWidget.h"
 #include "YT_InterfaceImpl.h"
 #include "SourceThread.h"
+#include "ProcessThread.h"
+
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -14,10 +16,14 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent) :
+
+unsigned int VideoView::m_IDCounter = 0;
+
+VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread) :
 	parent(_parent), m_Type(YT_PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
-		m_Dock(NULL), m_PluginGUI(NULL)
+		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread)
 {
+	m_ViewID = m_IDCounter++;
 	m_LastMousePoint.setX(-1);
 	m_LastMousePoint.setY(-1);
 	m_ScaleNum = 0;
@@ -30,7 +36,6 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent) :
 	m_VideoWidth = 0;
 	m_Duration = 0;
 
-	m_RefVideoQueue = 0;
 	m_Transform = 0;
 	m_Measure = 0; 
 	m_SourceThread = 0;
@@ -38,8 +43,7 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent) :
 	m_RenderFormat = YT_Format_Ptr(new YT_FormatImpl);
 	m_SourceFormat = YT_Format_Ptr(new YT_FormatImpl); 
 	m_EmptyFrame = YT_Frame_Ptr(new YT_FrameImpl);
-	m_VideoQueue = new VideoQueue(_parent->GetRenderer());
-
+	
 	m_CloseAction = new QAction("Close", this);
 	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(OnClose()));
 }
@@ -47,7 +51,7 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent) :
 void VideoView::Init( const char* path, unsigned int pts)
 {
 	m_Type = YT_PLUGIN_SOURCE;
-	m_SourceThread = new SourceThread(m_VideoQueue, path);
+	m_SourceThread = new SourceThread(m_ViewID, path);
 
 	YT_Source* source = m_SourceThread->GetSource();
 	if (source && source->HasGUI())
@@ -70,15 +74,15 @@ void VideoView::Init( const char* path, unsigned int pts)
 		source->GUINeeded.connect(this, &VideoView::OnSourceGUINeeded);
 	}
 
-	m_SourceThread->InitAndRun(pts);
-	connect(m_VideoQueue, SIGNAL(BufferAvailable()), m_SourceThread, SLOT(ReadFrame()));
+	connect(m_SourceThread, SIGNAL(frameReady(YT_Frame_Ptr)), m_ProcessThread, SLOT(ReceiveFrame(YT_Frame_Ptr)));
+	m_SourceThread->Start(pts);
 }
 
 void VideoView::Init( YT_Transform* transform, VideoQueue* source, QString outputName )
 {
 	m_Type = YT_PLUGIN_TRANSFORM;
 	m_Transform = transform;
-	m_RefVideoQueue = source;
+	// m_RefVideoQueue = source;
 	m_OutputName = outputName;
 }
 
@@ -86,7 +90,7 @@ void VideoView::Init( YT_Measure* measure, VideoQueue* source, VideoQueue* sourc
 {
 	m_Type = YT_PLUGIN_TRANSFORM;
 	m_Measure = measure;
-	m_RefVideoQueue = source;
+	// m_RefVideoQueue = source;
 }
 
 void VideoView::UnInit()
@@ -101,18 +105,18 @@ void VideoView::UnInit()
 	if (st)
 	{
 
-		st->StopAndUninit();
+		st->Stop();
 
 		SAFE_DELETE(st);
 	}
 
-	m_VideoQueue->ReleaseBuffers();
+// 	m_VideoQueue->ReleaseBuffers();
 }
 
 VideoView::~VideoView()
 {
 	// TODO Clean up action list
-	delete m_VideoQueue;
+//	delete m_VideoQueue;
 }
 
 
@@ -247,7 +251,7 @@ bool VideoView::CheckResolutionDurationChanged()
 	YT_Source* source = VV_SOURCE(this);
 	YT_Frame_Ptr frame;
 	if (_VV_LASTFRAME(this)) {
-		frame = _VV_LASTFRAME(this)->source;
+		//frame = _VV_LASTFRAME(this)->source;
 	}
 
 	UpdateTransformActionList();

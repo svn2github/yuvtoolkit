@@ -24,7 +24,7 @@ public:
 
 	virtual QWidget* GetWidget() {return this;}
 
-	virtual YT_RESULT RenderScene(QList<YT_Render_Frame>& frameList);
+	virtual YT_RESULT RenderScene(QList<YT_Frame_Ptr> frames);
 
 	// Allocate render specific buffers
 	virtual YT_RESULT Allocate(YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat);
@@ -49,7 +49,7 @@ protected:
 	QMutex m_MutexFramesRendered;
 	QWaitCondition m_FramesRendered;
 
-	QList<YT_Render_Frame>* m_RenderList;
+	QList<YT_Frame_Ptr> m_Frames;
 protected:
 	YT_Host* m_Host;
 };

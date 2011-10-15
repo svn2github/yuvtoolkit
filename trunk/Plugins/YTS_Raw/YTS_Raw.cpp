@@ -170,12 +170,7 @@ YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
 {
 	QMutexLocker locker(&m_Mutex);
 
-	if (PTS == INVALID_PTS)
-	{
-		return YT_ERROR;
-	}
-
-	if (PTS < NEXT_PTS)
+	if (PTS < INVALID_PTS)
 	{
 		m_FrameIndex = PTSToIndex(PTS);
 		m_FrameIndex = MyMin(m_FrameIndex, m_NumFrames-1);

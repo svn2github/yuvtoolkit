@@ -3,7 +3,7 @@
 #include "MeasureWindow.h"
 #include "VideoView.h"
 #include "VideoViewList.h"
-#include "VideoQueue.h"
+
 
 MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags flags) : 
 	QWidget(parent, flags), m_VideoViewList(vvList)
@@ -111,6 +111,7 @@ void MeasureWindow::onComboIndexChanged( int )
 
 void MeasureWindow::UpdateMeasure()
 {
+	/*
 	if (ui.originalList->count()<=1)
 	{
 		return;
@@ -125,7 +126,7 @@ void MeasureWindow::UpdateMeasure()
 
 	YT_Measure* measure = m_MeasureList.at(0);
 
-	measure->Process(origFrame->source, procFrame->source, m_OutputViewItems, m_OutputMeasureItems);
+	measure->Process(origFrame->source, procFrame->source, m_OutputViewItems, m_OutputMeasureItems);*/
 }
 
 void MeasureWindow::UpdateMeasureWindow()

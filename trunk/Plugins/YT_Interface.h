@@ -6,7 +6,6 @@
 class QWidget;
 
 #define INVALID_PTS		0xffffffff
-#define NEXT_PTS		0xfffffffe
 #define YT_FOURCC(a,b,c,d) (((unsigned int)a)|(((unsigned int)b)<<8)|(((unsigned int)c)<<16)|(((unsigned int)d)<<24)) 
 
 typedef enum _YT_RESULT {
@@ -71,6 +70,14 @@ public:
 
 typedef QSharedPointer<YT_Format> YT_Format_Ptr;
 
+enum YT_Info_Key {
+	VIEW_ID,          // unsigned int, view id
+	IS_LAST_FRAME,    // bool, indicate that it is the last frame
+	SEEKING_PTS,      // unsigned int, result of seeking pts
+	SRC_RECT,         // QRect, source rect for rendering
+	DST_RECT,         // QRect, destination rect for rendering
+};
+
 class YT_Frame
 {
 public:
@@ -94,6 +101,10 @@ public:
 
 	virtual unsigned int FrameNumber() const = 0;
 	virtual void SetFrameNumber(unsigned int value) = 0;
+
+	virtual bool HasInfo(YT_Info_Key) const = 0;
+	virtual QVariant Info(YT_Info_Key) const = 0;
+	virtual void SetInfo(YT_Info_Key, QVariant) = 0;
 
 	// Given the format, allocate the memory and populate Data
 	virtual YT_RESULT Allocate() = 0; 
@@ -208,7 +219,7 @@ public:
 	// if PTS != 0xFFFFFFFE, seek to PTS
 	// PTS might be larger than the duration, then returns the last frame
 	// Else get next frame
-	virtual YT_RESULT GetFrame(YT_Frame_Ptr frame, unsigned int PTS=NEXT_PTS) = 0;
+	virtual YT_RESULT GetFrame(YT_Frame_Ptr frame, unsigned int PTS=INVALID_PTS) = 0;
 
 	// Requesting source info
 	virtual YT_RESULT GetInfo(YT_Source_Info& info) = 0;
@@ -231,14 +242,6 @@ public:
 #define SET_RECT(rect, left, top, width, height) {rect[0]=left; rect[1]=top; rect[2]=left+width; rect[3]=top+height;}
 #define COPY_RECT(rc, qrc) {rc[0]=qrc.left(); rc[1]=qrc.top(); rc[2]=qrc.left()+qrc.width(); rc[3]=qrc.top()+qrc.height();}
 
-struct YT_Render_Frame
-{
-	YT_Frame_Ptr frame;
-
-	long srcRect[4]; // left, top, right, bottom
-	long dstRect[4]; // left, top, right, bottom	
-};
-
 // Render host is the parent of all renderers in one 
 // window. Can have multiple renderers inside
 class YT_Renderer
@@ -249,8 +252,10 @@ public:
 	// returns the widget pointer in case you need to show and position the widget in the render region
 	virtual QWidget* GetWidget() = 0;
 
-	virtual YT_RESULT RenderScene(QList<YT_Render_Frame>& frameList) = 0;	
-
+	// frames should be frames allocated by renderer
+	// it should have SRC_RECT/DST_RECT properties
+	virtual YT_RESULT RenderScene(QList<YT_Frame_Ptr> frames) = 0;
+	   
 	// Allocate render specific buffers
 	virtual YT_RESULT Allocate(YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat) = 0;
 	virtual YT_RESULT Deallocate(YT_Frame_Ptr frame) = 0;

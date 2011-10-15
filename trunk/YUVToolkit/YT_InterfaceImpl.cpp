@@ -301,7 +301,7 @@ int YT_FormatImpl::PlaneHeight( int plane )
 }
 
 YT_FrameImpl::YT_FrameImpl(YT_FramePool* p) : pool(p), pts(0), frame_num(0), externData(0),
-	allocated_data(0), allocated_size(0),
+	allocated_data(0), allocated_size(0), 
 	format(new YT_FormatImpl)
 {
 	memset(data, 0, sizeof(data));
@@ -458,6 +458,21 @@ void YT_FrameImpl::Recyle( YT_Frame *obj )
 	{
 		delete obj;
 	}
+}
+
+QVariant YT_FrameImpl::Info( YT_Info_Key key) const
+{
+	return info.value(key);
+}
+
+void YT_FrameImpl::SetInfo( YT_Info_Key key, QVariant value)
+{
+	info.insert(key, value);
+}
+
+bool YT_FrameImpl::HasInfo( YT_Info_Key key ) const
+{
+	return info.contains(key);
 }
 
 YT_Frame_Ptr YT_HostImpl::NewFrame()
@@ -755,4 +770,9 @@ YT_Frame_Ptr YT_FramePool::Get()
 	}
 
 	return YT_Frame_Ptr(NULL);
+}
+
+int YT_FramePool::Size()
+{
+	return m_Pool.size();
 }

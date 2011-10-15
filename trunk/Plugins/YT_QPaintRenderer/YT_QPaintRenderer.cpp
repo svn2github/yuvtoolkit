@@ -36,7 +36,7 @@ void YT_QPaintRendererPlugin::ReleaseRenderer( YT_Renderer* parent )
 
 
 YT_QPaintRenderer::YT_QPaintRenderer(YT_Host* host, QWidget* widget, const QString& name) 
-: m_Host(host), QWidget(widget), m_RenderList(NULL)
+	: m_Host(host), QWidget(widget)
 {
 }
 
@@ -45,16 +45,16 @@ YT_QPaintRenderer::~YT_QPaintRenderer()
 {
 }
 
-YT_RESULT YT_QPaintRenderer::RenderScene(QList<YT_Render_Frame>& frameList)
+YT_RESULT YT_QPaintRenderer::RenderScene(QList<YT_Frame_Ptr> frames)
 {
-	m_RenderList = &frameList;
+	m_Frames = frames;
 
 	this->update();
 
 	QMutexLocker locker(&m_MutexFramesRendered);
 	m_FramesRendered.wait(&m_MutexFramesRendered, 100);
 	
-	m_RenderList = NULL;
+	m_Frames.clear();
 
 	return YT_OK;
 }
@@ -106,8 +106,7 @@ YT_RESULT YT_QPaintRenderer::ReleaseFrame( YT_Frame_Ptr frame )
 
 void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 {
-	QList<YT_Render_Frame>* renderList = m_RenderList;
-	if (renderList)
+	if (m_Frames.size())
 	{
 		int width = QWidget::width();
 		int height = QWidget::height();
@@ -119,18 +118,23 @@ void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 			painter.setBrush(Qt::black);
 			painter.drawRect(rcClient);
 
-			for (int i=0; i<renderList->size(); ++i) 
+			for (int i=0; i<m_Frames.size(); ++i) 
 			{
-				const YT_Render_Frame& rf = renderList->at(i);
+				YT_Frame_Ptr frame = m_Frames.at(i);
+				if (!frame)
+				{
+					continue;
+				}
 
-				QRect srcRect(rf.srcRect[0], rf.srcRect[1], rf.srcRect[2]-rf.srcRect[0], rf.srcRect[3]-rf.srcRect[1]);
-				QRect dstRect(rf.dstRect[0], rf.dstRect[1], rf.dstRect[2]-rf.dstRect[0], rf.dstRect[3]-rf.dstRect[1]);
+				const QRect srcRect = frame->Info(SRC_RECT).toRect();
+				const QRect dstRect = frame->Info(DST_RECT).toRect();
 
-				painter.drawImage(dstRect, *(QImage*)(rf.frame->ExternData()), srcRect);
+				painter.drawImage(dstRect, *(QImage*)(frame->ExternData()), srcRect);
 			}
 		}
 
-		m_RenderList = NULL;
+		m_Frames.clear();
+
 		m_FramesRendered.wakeAll();
 	}
 }

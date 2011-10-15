@@ -11,10 +11,14 @@ class YT_Renderer;
 class YT_Format;
 class RendererWidget;
 class QMouseEvent;
-class VideoQueue;
 class SourceThread;
 class QMainWindow;
 class VideoView;
+class ProcessThread;
+
+class VideoQueue
+{
+};
 
 struct TransformActionData 
 {
@@ -25,7 +29,7 @@ struct TransformActionData
 
 #define VV_SOURCE(vv)  ((vv)?vv->GetSource():NULL)
 #define VV_VIDEOQUEUE(vv) ((vv)?vv->GetVideoQueue():NULL)
-#define _VV_LASTFRAME(vv) (VV_VIDEOQUEUE(vv)?VV_VIDEOQUEUE(vv)->GetLastRenderFrame():NULL)
+#define _VV_LASTFRAME(vv) (NULL)
 #define VV_LASTFRAME(vv) (_VV_LASTFRAME(vv)?_VV_LASTFRAME(vv)->source:NULL)
 
 class VideoView : public QObject, public sigslot::has_slots<>
@@ -33,9 +37,8 @@ class VideoView : public QObject, public sigslot::has_slots<>
 	Q_OBJECT;
 
 	YT_PLUGIN_TYPE m_Type;
-	VideoQueue* m_VideoQueue;
 	SourceThread* m_SourceThread;
-	VideoQueue* m_RefVideoQueue; // Used for transform or measure view
+	ProcessThread* m_ProcessThread;
 	YT_Transform* m_Transform; // Used for transform view
 	QString m_OutputName;
 	YT_Measure* m_Measure; // Used for measure view
@@ -51,8 +54,11 @@ class VideoView : public QObject, public sigslot::has_slots<>
 	bool m_TransformActionListUpdated;
 	QList<QAction*> m_TransformActionList;
 	void UpdateTransformActionList();
+
+	static unsigned int m_IDCounter;
+	unsigned int m_ViewID;
 public:
-	VideoView(QMainWindow* _mainWin, RendererWidget* _parent);
+	VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread);
 	void Init(const char* path, unsigned int pts); // for source view
 	void Init(YT_Transform* transform, VideoQueue* source, QString outputName); // for tranform view
 	void Init(YT_Measure* measure, VideoQueue* source, VideoQueue* source1); // for measure view
@@ -72,12 +78,11 @@ public:
 	YT_Source* GetSource();
 	SourceThread* GetSourceThread() {return m_SourceThread;} 
 	YT_Transform* GetTransform() {return m_Transform; }
-	VideoQueue* GetVideoQueue() {return m_VideoQueue;}
+	VideoQueue* GetVideoQueue() {return NULL;}
 	QString GetOutputName() {return m_OutputName; }
 	QDockWidget* GetDocketWidget() {return m_Dock;}
+	unsigned int GetID() {return m_ViewID;}
 	
-	VideoQueue* GetRefVideoQueue() {return m_RefVideoQueue;}	
-
 	void GetVideoSize( QSize& actual, QSize& display);
 
 	// Update view point to ensure that this region is 

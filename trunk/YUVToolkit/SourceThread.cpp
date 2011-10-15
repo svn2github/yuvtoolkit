@@ -8,9 +8,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-SourceThread::SourceThread(VideoQueue* vq, const char* p) : m_Path(p), 
-			m_Source(0), 
-			m_ReadFramePTS(NEXT_PTS), m_VideoQueue(vq), m_EndOfFile(false)
+SourceThread::SourceThread(int id, const char* p) : m_Path(p), 
+			m_Source(0), m_ViewID(id), 
+			m_SeekPTS(INVALID_PTS), m_EndOfFile(false), m_FramePool(BUFFER_COUNT)
 {
 	YT_PlugIn* plugin;
 	plugin = GetHostImpl()->FindSourcePlugin(m_Path.right(4));
@@ -23,70 +23,13 @@ SourceThread::~SourceThread(void)
 
 void SourceThread::run()
 {
-	QTimer* timer = new QTimer(this);
-	timer->setInterval(50);
-	connect(timer, SIGNAL(timeout()), this, SLOT(ReadFrame()), Qt::DirectConnection);
-	timer->start();
-
 	exec();
 }
 
-void SourceThread::ReadFrame()
-{
-	if (m_EndOfFile)
-	{
-		return;
-	}
-
-	YT_Source_Info info;
-	m_Source->GetInfo(info);
-
-	VideoQueue::Frame* vqf = m_VideoQueue->GetSourceFrame(info.format);
-	int counter = 0;
-	while (vqf && vqf->source && vqf->render)
-	{
-		vqf->shouldRender = true;
-		vqf->isLastFrame = false;
-
-		// Get next frame or seek 
-		YT_RESULT res = m_Source->GetFrame(vqf->source, m_ReadFramePTS);
-
-		if (res == YT_OK)
-		{
-			if (m_ReadFramePTS < NEXT_PTS)
-			{
-				m_ReadFramePTS = NEXT_PTS;
-			}
-
-			vqf->isLastFrame = (vqf->source->PTS() == info.lastPTS);
-
-			VideoQueue::RenderFrame(vqf);
-		}else
-		{
-			if (res == YT_END_OF_FILE)
-			{
-				INFO_LOG("m_Source->GetFrame returns YT_END_OF_FILE, seek %X", m_ReadFramePTS);
-			}else
-			{
-				ERROR_LOG("m_Source->GetFrame returns error %d, seek %X", res, m_ReadFramePTS);
-			}
-			
-			vqf->shouldRender = false;
-			m_EndOfFile = true;
-		}
-
-		m_VideoQueue->ReleaseSourceFrame(vqf);
-
-		vqf = m_VideoQueue->GetSourceFrame(info.format);
-	}
-}
-
-void SourceThread::StopAndUninit()
+void SourceThread::Stop()
 {
 	quit();
 	wait();
-
-	m_VideoQueue->ReleaseBuffers();
 
 	if (m_Source)
 	{
@@ -94,21 +37,84 @@ void SourceThread::StopAndUninit()
 	}
 
 	delete m_Source;
-
 	m_Source = NULL;
+
+	while (m_FramePool.Size() != BUFFER_COUNT)
+	{
+		WARNING_LOG("Waiting for frame pool to uninitialize (%s)... ", m_Path.toAscii());
+		QThread::sleep(1);
+	}
 }
 
-void SourceThread::InitAndRun(unsigned int initialPTS)
+void SourceThread::Start(unsigned int initialPTS)
 {
-	m_ReadFramePTS = initialPTS;
+	m_SeekPTS = initialPTS;
 	m_Source->Init(m_Path);
 	
 	start();
+	startTimer(15);
 }
 
 
 void SourceThread::Seek(unsigned int pts)
 {
-	m_ReadFramePTS = pts;
+	m_SeekPTS = pts;
 	m_EndOfFile = false;
+}
+
+void SourceThread::timerEvent( QTimerEvent *event )
+{
+	while (true)
+	{
+		if (m_EndOfFile || !m_FramePool.Size())
+		{
+			return;
+		}
+
+		YT_Source_Info info;
+		m_Source->GetInfo(info);
+
+		YT_Frame_Ptr frame = m_FramePool.Get();
+
+		if (*frame->Format() != *info.format)
+		{
+			frame->Reset();
+		}
+
+		frame->SetFormat(info.format);
+		frame->Allocate();
+		frame->SetInfo(VIEW_ID, m_ViewID);
+		frame->SetInfo(IS_LAST_FRAME, false);
+		frame->SetInfo(SEEKING_PTS, INVALID_PTS);
+
+		// Get next frame or seek 
+		YT_RESULT res = m_Source->GetFrame(frame, m_SeekPTS);
+
+		if (res == YT_OK)
+		{
+			frame->SetInfo(IS_LAST_FRAME, frame->PTS() == info.lastPTS);
+			frame->SetInfo(SEEKING_PTS, m_SeekPTS);
+
+			emit frameReady(frame);
+			WARNING_LOG("FrameReady %d", frame->PTS());
+
+			if (m_SeekPTS < INVALID_PTS)
+			{
+				emit seekDone(m_ViewID, m_SeekPTS);
+
+				m_SeekPTS = INVALID_PTS;
+			}
+
+		}else
+		{
+			if (res == YT_END_OF_FILE)
+			{
+				INFO_LOG("m_Source->GetFrame returns YT_END_OF_FILE, seek %X", m_SeekPTS);
+			}else
+			{
+				ERROR_LOG("m_Source->GetFrame returns error %d, seek %X", res, m_SeekPTS);
+			}
+			m_EndOfFile = true;
+		}
+	}	
 }

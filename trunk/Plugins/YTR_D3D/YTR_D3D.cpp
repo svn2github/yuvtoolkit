@@ -65,7 +65,7 @@ void YTR_D3D::OnResizeTimer()
 #define RECT_WIDTH(rc) (rc->right-rc->left)
 #define RECT_HEIGHT(rc) (rc->bottom-rc->top)
 
-YT_RESULT YTR_D3D::RenderScene(QList<YT_Render_Frame>& frameList)
+YT_RESULT YTR_D3D::RenderScene(QList<YT_Frame_Ptr> frames)
 {
 	if (FAILED(d3DDevice->TestCooperativeLevel()))
 	{
@@ -99,12 +99,20 @@ YT_RESULT YTR_D3D::RenderScene(QList<YT_Render_Frame>& frameList)
 		scale_y = ((double)desc.Height)/height;
 	}
 
-	for (int i=0; i<frameList.size(); ++i) 
+	for (int i=0; i<frames.size(); ++i) 
 	{
-		const YT_Render_Frame& rf = frameList.at(i);
+		YT_Frame_Ptr frame = frames.at(i);
+		if (!frame)
+		{
+			continue;
+		}
+
+		const QRect _srcRect = frame->Info(SRC_RECT).toRect();
+		const QRect _dstRect = frame->Info(DST_RECT).toRect();
+		IDirect3DSurface9* pSurface = (IDirect3DSurface9*) (frame->ExternData());
 		
-		RECT srcRectCopy = {rf.srcRect[0], rf.srcRect[1], rf.srcRect[2], rf.srcRect[3]};
-		RECT dstRectCopy = {rf.dstRect[0], rf.dstRect[1], rf.dstRect[2], rf.dstRect[3]};
+		RECT srcRectCopy = {_srcRect.left(), _srcRect.top(), _srcRect.right(), _srcRect.bottom()};
+		RECT dstRectCopy = {_dstRect.left(), _dstRect.top(), _dstRect.right(), _dstRect.bottom()};
 
 		RECT* srcRect = &(srcRectCopy);
 		RECT* dstRect = &(dstRectCopy);
@@ -125,7 +133,7 @@ YT_RESULT YTR_D3D::RenderScene(QList<YT_Render_Frame>& frameList)
 			dstRect->bottom *= scale_y;				
 		}
 
-		hr = d3DDevice->StretchRect((IDirect3DSurface9*) (rf.frame->ExternData()), srcRect, 
+		hr = d3DDevice->StretchRect(pSurface, srcRect, 
 			pRT, dstRect, D3DTEXF_LINEAR);
 	}
 

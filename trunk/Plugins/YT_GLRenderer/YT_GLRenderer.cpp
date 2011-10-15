@@ -39,7 +39,7 @@ void YT_OpenGLRendererPlugin::ReleaseRenderer( YT_Renderer* parent )
 
 
 YT_OpenGLRenderer::YT_OpenGLRenderer(YT_Host* host, QWidget* widget, const QString& name) 
-: m_Host(host), QGLWidget(widget), m_RenderList(NULL), m_ReadyToRender(false)
+: m_Host(host), QGLWidget(widget), m_ReadyToRender(false)
 {
 	setAutoBufferSwap(false); // swap buffer in rendering thread	
 
@@ -57,7 +57,7 @@ YT_OpenGLRenderer::~YT_OpenGLRenderer()
 {
 }
 
-YT_RESULT YT_OpenGLRenderer::RenderScene(QList<YT_Render_Frame>& frameList)
+YT_RESULT YT_OpenGLRenderer::RenderScene(QList<YT_Frame_Ptr> frames)
 {
 	if (m_ReadyToRender) 
 	{
@@ -77,20 +77,24 @@ YT_RESULT YT_OpenGLRenderer::RenderScene(QList<YT_Render_Frame>& frameList)
 		}
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);     // Background => dark blue
-		for (int i=0; i<frameList.size(); ++i) 
+		for (int i=0; i<frames.size(); ++i) 
 		{
-			const YT_Render_Frame& rf = frameList.at(i);
+			YT_Frame_Ptr frame = frames.at(i);
+			if (!frame)
+			{
+				continue;
+			}
 
-			QRect srcRect(rf.srcRect[0], rf.srcRect[1], rf.srcRect[2]-rf.srcRect[0], rf.srcRect[3]-rf.srcRect[1]);
-			QRect dstRect(rf.dstRect[0], rf.dstRect[1], rf.dstRect[2]-rf.dstRect[0], rf.dstRect[3]-rf.dstRect[1]);
+			const QRect srcRect = frame->Info(SRC_RECT).toRect();
+			const QRect dstRect = frame->Info(DST_RECT).toRect();
 
-			QImage image = *(QImage*)(rf.frame->ExternData());
-			glRasterPos2f(rf.dstRect[0], rf.dstRect[1]);
-			glPixelZoom(((float)(rf.dstRect[2]-rf.dstRect[0]))/(rf.srcRect[2]-rf.srcRect[0]), 
-				-1.0 * ((float)(rf.dstRect[3]-rf.dstRect[1]))/(rf.srcRect[3]-rf.srcRect[1]));	
+			QImage image = *(QImage*)(frame->ExternData());
+			glRasterPos2f(dstRect.left(), dstRect.top());
+			glPixelZoom(((float)(dstRect.width()))/(srcRect.width()), 
+				-1.0 * ((float)(dstRect.height()))/(srcRect.height()));	
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, image.width());
-			const uchar* bits  = image.bits() + (rf.srcRect[1])*image.width()*3 + rf.srcRect[0]*3;
-			glDrawPixels(rf.srcRect[2]-rf.srcRect[0], rf.srcRect[3]-rf.srcRect[1], GL_RGB, GL_UNSIGNED_BYTE, bits);
+			const uchar* bits  = image.bits() + (srcRect.top())*image.width()*3 + srcRect.left()*3;
+			glDrawPixels(srcRect.width(), srcRect.height(), GL_RGB, GL_UNSIGNED_BYTE, bits);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 		}
 

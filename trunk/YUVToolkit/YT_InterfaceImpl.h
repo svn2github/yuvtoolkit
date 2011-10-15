@@ -3,6 +3,7 @@
 
 #include "../Plugins/YT_Interface.h"
 #include <QtGui>
+#include <QVariant>
 
 class YT_HostImpl;
 
@@ -65,6 +66,8 @@ class YT_FrameImpl : public YT_Frame
 	YT_Format_Ptr format;
 	YT_FramePool* pool;
 
+	QMap<YT_Info_Key, QVariant> info;
+
 	void Deallocate();
 public:
 	YT_FrameImpl(YT_FramePool* p=NULL);
@@ -89,6 +92,10 @@ public:
 	virtual unsigned int FrameNumber() const;
 	virtual void SetFrameNumber(unsigned int value);
 
+	virtual bool HasInfo(YT_Info_Key) const;
+	virtual QVariant Info(YT_Info_Key) const;
+	virtual void SetInfo(YT_Info_Key, QVariant);
+
 	// Given the format, allocate the memory and populate Data
 	YT_RESULT Allocate(); 
 	// Reset the internal buffer, call me before changing the format
@@ -106,8 +113,8 @@ public:
 	virtual ~YT_FramePool();
 
 	YT_Frame_Ptr Get();
-
 	void Recycle(YT_Frame* frame);
+	int Size();
 };
 
 struct PlugInInfo

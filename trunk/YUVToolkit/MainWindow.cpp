@@ -9,6 +9,7 @@
 #include "RenderThread.h"
 #include "VideoViewList.h"
 
+
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
 #include <QScriptValue>
@@ -744,7 +745,7 @@ void MainWindow::OnTimer()
 		YT_Source* source = VV_SOURCE(longest);
 		YT_Frame_Ptr frame;
 		if (_VV_LASTFRAME(longest)) {
-			frame = _VV_LASTFRAME(longest)->source;
+			// frame = _VV_LASTFRAME(longest)->source;
 		}
 		
 		if (source && frame)
@@ -770,7 +771,7 @@ void MainWindow::OnTimer()
 		YT_Source* source = VV_SOURCE(active);
 		YT_Frame_Ptr frame;
 		if (_VV_LASTFRAME(active)) {
-			frame = _VV_LASTFRAME(active)->source;
+			// frame = _VV_LASTFRAME(active)->source;
 		}
 
 		if (source && frame)
@@ -844,7 +845,7 @@ void MainWindow::stepVideo( int step )
 	if (longest)
 	{
 		source = longest->GetSource();
-		lastFrame = longest->GetVideoQueue()->GetLastRenderFrame()->source;
+		// lastFrame = longest->GetVideoQueue()->GetLastRenderFrame()->source;
 	}
 
 	if (!source || !lastFrame)
@@ -1021,11 +1022,11 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 
 	if (vv->GetType() == YT_PLUGIN_TRANSFORM)
 	{
-		VideoQueue* vq = vv->GetRefVideoQueue();
+		// VideoQueue* vq = vv->GetRefVideoQueue();
 		for (int i=0; i<m_VideoViewList->size(); i++)
 		{
 			VideoView* vvRef = m_VideoViewList->at(i);
-			if (vq == vvRef->GetVideoQueue())
+			/*if (vq == vvRef->GetVideoQueue())
 			{
 				const QList<QAction*>& actions = vvRef->GetTransformActions();
 				for (int j=0; j<actions.size(); j++)
@@ -1036,7 +1037,7 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 						actions[j]->setChecked(false);
 					}
 				}
-			}
+			}*/
 		}
 	}
 
