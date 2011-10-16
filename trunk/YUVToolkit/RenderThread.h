@@ -50,5 +50,5 @@ protected:
 	QList<QRect> m_SrcRects;
 	QList<QRect> m_DstRects;
 
-	QTime m_Timer;
+	QTime m_Timer, m_RenderSpeedTimer;
 };

@@ -65,6 +65,7 @@ void RenderThread::timerEvent( QTimerEvent *event )
 {
 	WARNING_LOG("Render start since last cycle: %d ms", m_Timer.restart());
 
+	int diffPts = 0;
 	if (m_SceneQueue.size()>0)
 	{		
 		QList<YT_Frame_Ptr> newScene = m_SceneQueue.first();
@@ -74,7 +75,13 @@ void RenderThread::timerEvent( QTimerEvent *event )
 		m_SceneQueue.removeFirst();
 		m_PTSQueue.removeFirst();
 		m_SeekingQueue.removeFirst();
-		
+
+		// Compute render speed ratio
+		if (pts != INVALID_PTS && m_LastPTS != INVALID_PTS && pts>m_LastPTS)
+		{
+			diffPts = qAbs<int>(((int)pts)-((int)m_LastPTS));
+		}
+
 		m_LastRenderFrames = RenderFrames(newScene, m_LastRenderFrames);
 		m_LastSourceFrames = newScene;
 		m_LastSeeking = seeking;
@@ -105,6 +112,15 @@ void RenderThread::timerEvent( QTimerEvent *event )
 	WARNING_LOG("Render prepare scene took: %d ms", m_Timer.restart());
 	m_Renderer->RenderScene(renderScene);
 	WARNING_LOG("Render render scene took: %d ms", m_Timer.restart());
+
+	// Compute render speed ratio
+	int elapsedSinceLastPTS = m_RenderSpeedTimer.elapsed();
+	if (diffPts > 0 && elapsedSinceLastPTS>0 && diffPts <= 1000 && elapsedSinceLastPTS<=1000)
+	{
+		WARNING_LOG("TIME %d, %d", diffPts, elapsedSinceLastPTS);
+		m_SpeedRatio = m_SpeedRatio + 0.1f * (diffPts*1.0f/ elapsedSinceLastPTS - m_SpeedRatio);
+	}
+	m_RenderSpeedTimer.start();
 
 	emit sceneRendered(m_LastSourceFrames, m_LastPTS, m_LastSeeking);
 }
