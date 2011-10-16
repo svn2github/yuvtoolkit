@@ -1,6 +1,6 @@
 #include "ProcessThread.h"
 
-ProcessThread::ProcessThread()
+ProcessThread::ProcessThread() : m_Paused(false)
 {
 }
 
@@ -21,41 +21,46 @@ void ProcessThread::Stop()
 
 void ProcessThread::Start()
 {
+	m_Paused = false;
+
 	start();
 	startTimer(15);
 }
 
 void ProcessThread::timerEvent( QTimerEvent *event )
 {
-	QList<YT_Frame_Ptr> scene;
-	QMapIterator<unsigned int, QList<YT_Frame_Ptr> > i(m_Frames);
-	while (i.hasNext()) 
+	if (m_Paused)
 	{
-		i.next();
-		
-		unsigned int viewID = i.key();
-		QList<YT_Frame_Ptr>& frameList = m_Frames[viewID];
-		int j = m_ViewIDs.indexOf(viewID);
-		if (j == -1)
-		{
-			continue;
-		}
-
-		if (frameList.size()>0)
-		{
-			YT_Frame_Ptr frame = frameList.first();
-			frameList.removeFirst();
-
-			frame->SetInfo(SRC_RECT, m_SrcRects.at(j));
-			frame->SetInfo(DST_RECT, m_DstRects.at(j));
-
-			scene.append(frame);
-		}
+		return;
 	}
 
-	if (scene.size()>0)
+	while (true)
 	{
-		emit sceneReady(scene, scene.first()->PTS());
+		QList<YT_Frame_Ptr> scene;
+		QMapIterator<unsigned int, QList<YT_Frame_Ptr> > i(m_Frames);
+		while (i.hasNext()) 
+		{
+			i.next();
+		
+			unsigned int viewID = i.key();
+			QList<YT_Frame_Ptr>& frameList = m_Frames[viewID];
+
+			if (frameList.size()>0)
+			{
+				YT_Frame_Ptr frame = frameList.first();
+				frameList.removeFirst();
+
+				scene.append(frame);
+			}
+		}
+
+		if (scene.size()>0)
+		{
+			emit sceneReady(scene, scene.first()->PTS());
+		}else
+		{
+			break;
+		}
 	}
 }
 
@@ -69,9 +74,12 @@ void ProcessThread::ReceiveFrame( YT_Frame_Ptr frame )
 	m_Frames[viewID].append(frame);
 }
 
-void ProcessThread::SetLayout(QList<unsigned int> ids, QList<QRect> srcRects, QList<QRect> dstRects)
+void ProcessThread::Seek( unsigned int pts, bool playAfterSeek )
 {
-	m_ViewIDs = ids;
-	m_SrcRects = srcRects;
-	m_DstRects = dstRects;
+	m_Paused = !playAfterSeek;
+}
+
+bool ProcessThread::IsPlaying()
+{
+	return !m_Paused;
 }

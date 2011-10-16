@@ -20,14 +20,14 @@ signals:
 
 public slots:
 	void RenderScene(QList<YT_Frame_Ptr> scene, unsigned int renderPTS); // pts set to INVALID_PTS when don't care about pts
-	void Play(bool pause);
+	void SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>);
 
 private slots:
 
 protected:
 	void run();
 	void timerEvent(QTimerEvent *event);
-	YT_Frame_Ptr ExtractFrame(QList<YT_Frame_Ptr>&, unsigned int);
+	QList<YT_Frame_Ptr> RenderFrames(QList<YT_Frame_Ptr> sourceFrames, QList<YT_Frame_Ptr> renderFramesOld);
 
 	float m_SpeedRatio;
 	YT_Renderer* m_Renderer;
@@ -38,6 +38,14 @@ protected:
 	QList<unsigned int> m_PTSQueue;
 
 	// Last rendered scene
-	QList<YT_Frame_Ptr> m_RenderFrames;
+	QList<YT_Frame_Ptr> m_LastSourceFrames;
+	QList<YT_Frame_Ptr> m_LastRenderFrames;
 	unsigned int m_LastPTS;
+
+	// Layout
+	QList<unsigned int> m_ViewIDs;
+	QList<QRect> m_SrcRects;
+	QList<QRect> m_DstRects;
+
+	QTime m_Timer;
 };

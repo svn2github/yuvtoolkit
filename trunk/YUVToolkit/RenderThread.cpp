@@ -27,9 +27,9 @@ void RenderThread::Stop()
 	quit();
 	wait();
 
-	for (int i = 0; i < m_RenderFrames.size(); i++) 
+	for (int i = 0; i < m_LastRenderFrames.size(); i++) 
 	{
-		YT_Frame_Ptr& renderFrame = m_RenderFrames[i];
+		YT_Frame_Ptr& renderFrame = m_LastRenderFrames[i];
 
 		if (renderFrame)
 		{
@@ -37,13 +37,14 @@ void RenderThread::Stop()
 			renderFrame.clear();
 		}
 	}
-	m_RenderFrames.clear();
+	m_LastRenderFrames.clear();
  }
 
 void RenderThread::Start()
 {
 	QThread::start();
 
+	m_Timer.start();
 	startTimer(8);
 }
 
@@ -54,35 +55,79 @@ float RenderThread::GetSpeedRatio()
 
 void RenderThread::timerEvent( QTimerEvent *event )
 {
-	if (m_SceneQueue.size()==0)
-	{
-		return;
+	WARNING_LOG("Render start since last cycle: %d ms", m_Timer.restart());
+
+	if (m_SceneQueue.size()>0)
+	{		
+		QList<YT_Frame_Ptr> newScene = m_SceneQueue.first();
+		unsigned int renderPTS = m_PTSQueue.first();
+		m_SceneQueue.removeFirst();
+		m_PTSQueue.removeFirst();
+
+		m_LastRenderFrames = RenderFrames(newScene, m_LastRenderFrames);
+		m_LastSourceFrames = newScene;
 	}
 
-	QList<YT_Frame_Ptr> newScene = m_SceneQueue.first();
-	unsigned int renderPTS = m_PTSQueue.first();
-	m_SceneQueue.removeFirst();
-	m_PTSQueue.removeFirst();
-	
-	QList<YT_Frame_Ptr> renderFramesNew;
-	for (int i = 0; i < newScene.size(); i++) 
+	if (m_LastRenderFrames.size()== 0 && m_LastSourceFrames.size()>0)
 	{
-		YT_Frame_Ptr sourceFrame = newScene.at(i);
+		m_LastRenderFrames = RenderFrames(m_LastSourceFrames, m_LastRenderFrames);
+	}
+
+	// Create render scene with layout info
+	QList<YT_Frame_Ptr> renderScene;
+	for (int i=0; i<m_LastRenderFrames.size(); i++)
+	{
+		YT_Frame_Ptr renderFrame = m_LastRenderFrames.at(i);
+		int j = m_ViewIDs.indexOf(renderFrame->Info(VIEW_ID).toUInt());
+		if (j == -1)
+		{
+			continue;
+		}
+
+		renderFrame->SetInfo(SRC_RECT, m_SrcRects.at(j));
+		renderFrame->SetInfo(DST_RECT, m_DstRects.at(j));
+		renderScene.append(renderFrame);
+	}
+
+	WARNING_LOG("Render prepare scene took: %d ms", m_Timer.restart());
+	m_Renderer->RenderScene(renderScene);
+	WARNING_LOG("Render render scene took: %d ms", m_Timer.restart());
+}
+
+void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int renderPTS )
+{
+	m_SceneQueue.append(scene);
+	m_PTSQueue.append(renderPTS);
+}
+
+void RenderThread::SetLayout(QList<unsigned int> ids, QList<QRect> srcRects, QList<QRect> dstRects)
+{
+	m_ViewIDs = ids;
+	m_SrcRects = srcRects;
+	m_DstRects = dstRects;
+}
+
+QList<YT_Frame_Ptr> RenderThread::RenderFrames(QList<YT_Frame_Ptr> sourceFrames, QList<YT_Frame_Ptr> renderFramesOld)
+{
+	QList<YT_Frame_Ptr> renderFramesNew;
+	for (int i = 0; i < sourceFrames.size(); i++) 
+	{
+		YT_Frame_Ptr sourceFrame = sourceFrames.at(i);
 		if (!sourceFrame)
 		{
 			continue;
 		}
-		
+
 		unsigned int viewID = sourceFrame->Info(VIEW_ID).toUInt();
-		
+
 		YT_Frame_Ptr renderFrame;		
 		// Find existing render frame and extract it
-		for (int k = 0; k < m_RenderFrames.size(); k++) 
+		for (int k = 0; k < renderFramesOld.size(); k++) 
 		{
-			YT_Frame_Ptr _frame = m_RenderFrames.at(k);
+			YT_Frame_Ptr _frame = renderFramesOld.at(k);
 			if (_frame && _frame->Info(VIEW_ID).toUInt() == viewID)
 			{
-				m_RenderFrames.removeAt(i);
+				renderFramesOld.removeAt(i);
 				renderFrame = _frame;
 			}
 		}
@@ -125,50 +170,21 @@ void RenderThread::timerEvent( QTimerEvent *event )
 			m_Renderer->ReleaseFrame(renderFrame);
 		}
 
-		renderFrame->SetInfo(SRC_RECT, sourceFrame->Info(SRC_RECT));
-		renderFrame->SetInfo(DST_RECT, sourceFrame->Info(DST_RECT));
 		renderFramesNew.append(renderFrame);
 	}
 
 	// Delete old frames
-	for (int i=0; i<m_RenderFrames.size(); i++)
+	for (int i=0; i<renderFramesOld.size(); i++)
 	{
-		YT_Frame_Ptr renderFrame = m_RenderFrames.at(i);
+		YT_Frame_Ptr renderFrame = renderFramesOld.at(i);
 		if (renderFrame)
 		{
 			m_Renderer->Deallocate(renderFrame);
 		}
 		renderFrame.clear();
 	}
-	m_RenderFrames.clear();
+	renderFramesOld.clear();
 
-	// replace with new scene
-	m_RenderFrames = renderFramesNew;
-	m_Renderer->RenderScene(m_RenderFrames);
+	return renderFramesNew;
 }
 
-void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int renderPTS )
-{
-	m_SceneQueue.append(scene);
-	m_PTSQueue.append(renderPTS);
-}
-
-void RenderThread::Play( bool pause )
-{
-
-}
-
-YT_Frame_Ptr RenderThread::ExtractFrame( QList<YT_Frame_Ptr>& lst, unsigned int id)
-{
-	for (int i = 0; i < lst.size(); i++) 
-	{
-		YT_Frame_Ptr frame = lst.at(i);
-		if (frame && frame->Info(VIEW_ID).toUInt() == id)
-		{
-			lst.removeAt(i);
-			return frame;
-		}
-	}
-
-	return YT_Frame_Ptr();
-}

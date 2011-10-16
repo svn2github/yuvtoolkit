@@ -61,6 +61,8 @@ signals:
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
 	void layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>);
+
+	void seek(unsigned int pts, bool playAfterSeek);
 private:
 	RenderThread* m_RenderThread;
 	ProcessThread* m_ProcessThread;
@@ -69,7 +71,6 @@ private:
 	volatile unsigned int m_CurrentPTS;
 	unsigned int m_VideoCount;
 	VideoView* m_LongestVideoView;
-	volatile bool m_Paused;
 	bool m_EndOfFile;
 
 	volatile unsigned int  m_SeekingPTS;

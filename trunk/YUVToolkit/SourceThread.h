@@ -14,7 +14,7 @@ class YT_Format;
 class QDockWidget;
 class VideoView;
 
-#define BUFFER_COUNT 4
+#define BUFFER_COUNT 8
 
 class SourceThread : public QThread
 {
@@ -30,9 +30,6 @@ public:
 	QString& GetSourcePath() {return m_Path;}
 
 signals:
-	void seekDone(int viewId, unsigned int pts);
-	
-	// seekPts is INVALID_PTS when seeking not used
 	void frameReady(YT_Frame_Ptr frame);
 
 public slots:

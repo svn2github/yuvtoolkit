@@ -12,7 +12,7 @@
 #include <assert.h>
 
 VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL),
-	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0), m_Paused(true), 
+	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0),
 	m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), 
 	m_EndOfFile(false), m_NeedSeekingRequest(false)
 {
@@ -51,8 +51,8 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		m_ProcessThread = new ProcessThread();
 		m_ProcessThread->Start();
 
-		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
-			m_ProcessThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
+		connect(this, SIGNAL(seek(unsigned int, bool)), 
+			m_ProcessThread, SLOT(Seek(unsigned int, bool)));
 	}
 
 	if (m_RenderWidget->GetRenderer() == NULL)
@@ -64,6 +64,8 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
 		
 		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int)), m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int)));
+		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
+			m_RenderThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
 	}
 
 	m_RenderThread->Stop();
@@ -377,7 +379,7 @@ void VideoViewList::Seek( unsigned int pts, bool playAfterSeek)
 	INFO_LOG("VideoViewList::Seek %d - m_SeekingPTS %d", pts, m_SeekingPTS);
 
 	assert(m_VideoList.size()>0);
-
+	/*
 	m_Paused = true;
 	m_PlayAfterSeeking = playAfterSeek;
 
@@ -388,25 +390,26 @@ void VideoViewList::Seek( unsigned int pts, bool playAfterSeek)
 			m_SeekingPTS = pts;
 			m_NeedSeekingRequest = true;
 
-			/*
 			for (int i=0; i<m_VideoList.size(); ++i) 
 			{
-			VideoView* vv = m_VideoList.at(i);
-			VideoQueue* vq = vv->GetVideoQueue();
-			SourceThread* st = vv->GetSourceThread();
+				VideoView* vv = m_VideoList.at(i);
+				VideoQueue* vq = vv->GetVideoQueue();
+				SourceThread* st = vv->GetSourceThread();
 
-			VideoQueue::Frame * frame = vq->GetLastRenderFrame();
-			if (!frame || frame->source->PTS() != pts)
-			{
-			QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, pts));
+				VideoQueue::Frame * frame = vq->GetLastRenderFrame();
+				if (!frame || frame->source->PTS() != pts)
+				{
+					QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, pts));
+				}
 			}
-			}*/
 		}else
 		{
 			// Already seeking
 			m_SeekingPTSNext = pts;
 		}
-	}
+	}*/
+
+	emit seek(pts, playAfterSeek);
 }
 
 void VideoViewList::CheckLoopFromStart()
@@ -504,7 +507,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 
 void VideoViewList::CheckSeeking()
 {
-	if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext != INVALID_PTS)
+	/*if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext != INVALID_PTS)
 	{
 		unsigned int pts = m_SeekingPTSNext;
 		m_SeekingPTSNext = INVALID_PTS;
@@ -521,12 +524,18 @@ void VideoViewList::CheckSeeking()
 
 		m_PlayAfterSeeking = false;
 	}
-
+	*/
 }
 
 bool VideoViewList::IsPlaying()
 {
-	return !m_Paused;
+	if (m_ProcessThread)
+	{
+		return m_ProcessThread->IsPlaying();
+	}else
+	{
+		return false;
+	}
 }
 
 VideoView* VideoViewList::longest() const

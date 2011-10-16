@@ -100,8 +100,6 @@ void SourceThread::timerEvent( QTimerEvent *event )
 
 			if (m_SeekPTS < INVALID_PTS)
 			{
-				emit seekDone(m_ViewID, m_SeekPTS);
-
 				m_SeekPTS = INVALID_PTS;
 			}
 
