@@ -29,8 +29,7 @@ struct TransformActionData
 
 #define VV_SOURCE(vv)  ((vv)?vv->GetSource():NULL)
 #define VV_VIDEOQUEUE(vv) ((vv)?vv->GetVideoQueue():NULL)
-#define _VV_LASTFRAME(vv) (NULL)
-#define VV_LASTFRAME(vv) (_VV_LASTFRAME(vv)?_VV_LASTFRAME(vv)->source:NULL)
+#define VV_LASTFRAME(vv) ((vv)?vv->GetLastFrame():YT_Frame_Ptr())
 
 class VideoView : public QObject, public sigslot::has_slots<>
 {
@@ -57,6 +56,7 @@ class VideoView : public QObject, public sigslot::has_slots<>
 
 	static unsigned int m_IDCounter;
 	unsigned int m_ViewID;
+	YT_Frame_Ptr m_LastFrame;
 public:
 	VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread);
 	void Init(const char* path, unsigned int pts); // for source view
@@ -68,7 +68,6 @@ public:
 
 	void SetZoomLevel(int mode);
 	void SetGeometry(int x, int y, int width, int height);
-
 	void SetTitle(const char* title);
 	const QString& GetTitle() {return m_Title; }
 	const QList<QAction*>& GetTransformActions() {return m_TransformActionList; }
@@ -82,6 +81,10 @@ public:
 	QString GetOutputName() {return m_OutputName; }
 	QDockWidget* GetDocketWidget() {return m_Dock;}
 	unsigned int GetID() {return m_ViewID;}
+
+	YT_Frame_Ptr GetLastFrame() {return m_LastFrame;}
+	void SetLastFrame(YT_Frame_Ptr f) {m_LastFrame = f;}
+	void ClearLastFrame() {m_LastFrame.clear();}
 	
 	void GetVideoSize( QSize& actual, QSize& display);
 

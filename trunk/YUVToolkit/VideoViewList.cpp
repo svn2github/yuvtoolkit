@@ -66,6 +66,8 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int)), m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int)));
 		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
 			m_RenderThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
+
+		connect(m_RenderThread, SIGNAL(sceneRendered(QList<YT_Frame_Ptr>)), this, SLOT(OnSceneRendered(QList<YT_Frame_Ptr>)));
 	}
 
 	m_RenderThread->Stop();
@@ -553,4 +555,36 @@ void VideoViewList::UpdateMeasureWindows()
 			win->UpdateMeasureWindow();
 		}
 	}
+}
+
+void VideoViewList::OnSceneRendered( QList<YT_Frame_Ptr> scene )
+{
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+		vv->ClearLastFrame();
+	}
+
+	for (int i=0; i<scene.size(); i++)
+	{
+		YT_Frame_Ptr frame = scene.at(i);
+		VideoView* vv = find(frame->Info(VIEW_ID).toUInt());
+		if (vv)
+		{
+			vv->SetLastFrame(frame);
+		}
+	}
+}
+
+VideoView* VideoViewList::find( unsigned int id ) const
+{
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+		if (vv->GetID() == id)
+		{
+			return vv;
+		}
+	}	
+	return NULL;
 }

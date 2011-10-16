@@ -249,10 +249,7 @@ void VideoView::SetTitle( const char* title )
 bool VideoView::CheckResolutionDurationChanged()
 {
 	YT_Source* source = VV_SOURCE(this);
-	YT_Frame_Ptr frame;
-	if (_VV_LASTFRAME(this)) {
-		//frame = _VV_LASTFRAME(this)->source;
-	}
+	YT_Frame_Ptr frame = VV_LASTFRAME(this);
 
 	UpdateTransformActionList();
 

@@ -743,10 +743,7 @@ void MainWindow::OnTimer()
 	if (longest)
 	{
 		YT_Source* source = VV_SOURCE(longest);
-		YT_Frame_Ptr frame;
-		if (_VV_LASTFRAME(longest)) {
-			// frame = _VV_LASTFRAME(longest)->source;
-		}
+		YT_Frame_Ptr frame = VV_LASTFRAME(longest);
 		
 		if (source && frame)
 		{
@@ -769,10 +766,7 @@ void MainWindow::OnTimer()
 	if (active)
 	{
 		YT_Source* source = VV_SOURCE(active);
-		YT_Frame_Ptr frame;
-		if (_VV_LASTFRAME(active)) {
-			// frame = _VV_LASTFRAME(active)->source;
-		}
+		YT_Frame_Ptr frame = VV_LASTFRAME(active);
 
 		if (source && frame)
 		{

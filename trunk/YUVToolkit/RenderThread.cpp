@@ -92,6 +92,8 @@ void RenderThread::timerEvent( QTimerEvent *event )
 	WARNING_LOG("Render prepare scene took: %d ms", m_Timer.restart());
 	m_Renderer->RenderScene(renderScene);
 	WARNING_LOG("Render render scene took: %d ms", m_Timer.restart());
+
+	emit sceneRendered(m_LastSourceFrames);
 }
 
 void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int renderPTS )

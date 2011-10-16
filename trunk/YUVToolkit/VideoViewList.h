@@ -32,6 +32,7 @@ public:
 	VideoView* first() const {return m_VideoList.first();}
 	VideoView* last() const {return m_VideoList.last();}
 	VideoView* longest() const;
+	VideoView* find(unsigned int id) const;
 
 	VideoView* NewVideoView(const char* title);
 	RenderThread* GetRenderThread() {return m_RenderThread;}
@@ -56,6 +57,7 @@ public slots:
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
+	void OnSceneRendered(QList<YT_Frame_Ptr> scene);
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);

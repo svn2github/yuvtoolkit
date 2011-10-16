@@ -17,6 +17,7 @@ public:
 
 	float GetSpeedRatio();
 signals:
+	void sceneRendered(QList<YT_Frame_Ptr> scene);
 
 public slots:
 	void RenderScene(QList<YT_Frame_Ptr> scene, unsigned int renderPTS); // pts set to INVALID_PTS when don't care about pts
