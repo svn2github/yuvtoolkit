@@ -74,11 +74,6 @@ void RenderThread::timerEvent( QTimerEvent *event )
 		}
 		
 		unsigned int viewID = sourceFrame->Info(VIEW_ID).toUInt();
-		int j = m_ViewIDs.indexOf(viewID);
-		if (j == -1)
-		{
-			continue;
-		}		
 		
 		YT_Frame_Ptr renderFrame;		
 		// Find existing render frame and extract it
@@ -130,8 +125,8 @@ void RenderThread::timerEvent( QTimerEvent *event )
 			m_Renderer->ReleaseFrame(renderFrame);
 		}
 
-		renderFrame->SetInfo(SRC_RECT, m_SrcRects.at(j));
-		renderFrame->SetInfo(DST_RECT, m_DstRects.at(j));
+		renderFrame->SetInfo(SRC_RECT, sourceFrame->Info(SRC_RECT));
+		renderFrame->SetInfo(DST_RECT, sourceFrame->Info(DST_RECT));
 		renderFramesNew.append(renderFrame);
 	}
 
@@ -156,13 +151,6 @@ void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int renderPT
 {
 	m_SceneQueue.append(scene);
 	m_PTSQueue.append(renderPTS);
-}
-
-void RenderThread::SetLayout(QList<unsigned int> ids, QList<QRect> srcRects, QList<QRect> dstRects)
-{
-	m_ViewIDs = ids;
-	m_SrcRects = srcRects;
-	m_DstRects = dstRects;
 }
 
 void RenderThread::Play( bool pause )

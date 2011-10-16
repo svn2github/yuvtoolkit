@@ -27,19 +27,51 @@ void ProcessThread::Start()
 
 void ProcessThread::timerEvent( QTimerEvent *event )
 {
-	while (m_Frames.size()>0)
+	QList<YT_Frame_Ptr> scene;
+	QMapIterator<unsigned int, QList<YT_Frame_Ptr> > i(m_Frames);
+	while (i.hasNext()) 
 	{
-		YT_Frame_Ptr frame = m_Frames.first();
-		m_Frames.removeFirst();
+		i.next();
 		
-		QList<YT_Frame_Ptr> scene;
-		scene.append(frame);
+		unsigned int viewID = i.key();
+		QList<YT_Frame_Ptr>& frameList = m_Frames[viewID];
+		int j = m_ViewIDs.indexOf(viewID);
+		if (j == -1)
+		{
+			continue;
+		}
 
-		emit sceneReady(scene, frame->PTS());
+		if (frameList.size()>0)
+		{
+			YT_Frame_Ptr frame = frameList.first();
+			frameList.removeFirst();
+
+			frame->SetInfo(SRC_RECT, m_SrcRects.at(j));
+			frame->SetInfo(DST_RECT, m_DstRects.at(j));
+
+			scene.append(frame);
+		}
+	}
+
+	if (scene.size()>0)
+	{
+		emit sceneReady(scene, scene.first()->PTS());
 	}
 }
 
 void ProcessThread::ReceiveFrame( YT_Frame_Ptr frame )
 {
-	m_Frames.append(frame);
+	unsigned int viewID = frame->Info(VIEW_ID).toUInt();
+	if (!m_Frames.contains(viewID))
+	{
+		m_Frames.insert(viewID, QList<YT_Frame_Ptr>());
+	}
+	m_Frames[viewID].append(frame);
+}
+
+void ProcessThread::SetLayout(QList<unsigned int> ids, QList<QRect> srcRects, QList<QRect> dstRects)
+{
+	m_ViewIDs = ids;
+	m_SrcRects = srcRects;
+	m_DstRects = dstRects;
 }

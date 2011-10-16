@@ -50,6 +50,9 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 	{
 		m_ProcessThread = new ProcessThread();
 		m_ProcessThread->Start();
+
+		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
+			m_ProcessThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
 	}
 
 	if (m_RenderWidget->GetRenderer() == NULL)
@@ -59,9 +62,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		m_RenderWidget->Init(renderType);
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
-		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
-			m_RenderThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
-
+		
 		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int)), m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int)));
 	}
 

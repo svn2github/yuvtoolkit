@@ -4,6 +4,7 @@
 #include "YT_InterfaceImpl.h"
 #include <QThread>
 #include <QList>
+#include <QMap>
 
 class ProcessThread : public QThread
 {
@@ -20,13 +21,18 @@ signals:
 	
 public slots:
 	void ReceiveFrame(YT_Frame_Ptr frame);
+	void SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>);
 	
 private:
 	void run();
 	void timerEvent(QTimerEvent *event);
 
 private:
-	QList<YT_Frame_Ptr> m_Frames;
+	QMap<unsigned int, QList<YT_Frame_Ptr> > m_Frames;
+	// Layout
+	QList<unsigned int> m_ViewIDs;
+	QList<QRect> m_SrcRects;
+	QList<QRect> m_DstRects;
 };
 
 #endif

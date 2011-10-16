@@ -38,6 +38,9 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Threads">
+      <UniqueIdentifier>{e981a2e7-dd12-42e3-b90f-55b4b443a4be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColorConversion.cpp">
@@ -56,12 +59,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RendererWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VideoView.cpp">
@@ -142,9 +139,6 @@
     <ClCompile Include="generatedfiles\debug\moc_YT_InterfaceImpl.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="ProcessThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_ProcessThread.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -153,6 +147,15 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Template\moc_ProcessThread.cpp">
       <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderThread.cpp">
+      <Filter>Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessThread.cpp">
+      <Filter>Threads</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceThread.cpp">
+      <Filter>Threads</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -188,12 +191,6 @@
     <CustomBuild Include="RendererWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="RenderThread.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="SourceThread.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="UI\TextLabel.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -216,7 +213,13 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ProcessThread.h">
-      <Filter>Header Files</Filter>
+      <Filter>Threads</Filter>
+    </CustomBuild>
+    <CustomBuild Include="RenderThread.h">
+      <Filter>Threads</Filter>
+    </CustomBuild>
+    <CustomBuild Include="SourceThread.h">
+      <Filter>Threads</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
