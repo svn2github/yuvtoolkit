@@ -13,8 +13,8 @@
 
 VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL),
 	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0),
-	m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), m_PlayAfterSeeking(false), 
-	m_EndOfFile(false), m_NeedSeekingRequest(false)
+	m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), 
+	m_EndOfFile(false)
 {
 	m_RenderWidget = rw;
 	m_MainWindow = mainWindow;
@@ -63,11 +63,12 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
 		
-		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int)), m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int)));
+		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int, bool)), 
+			m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int, bool)));
 		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
 			m_RenderThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
-
-		connect(m_RenderThread, SIGNAL(sceneRendered(QList<YT_Frame_Ptr>)), this, SLOT(OnSceneRendered(QList<YT_Frame_Ptr>)));
+		connect(m_RenderThread, SIGNAL(sceneRendered(QList<YT_Frame_Ptr>, unsigned int, bool)), 
+			this, SLOT(OnSceneRendered(QList<YT_Frame_Ptr>, unsigned int, bool)));
 	}
 
 	m_RenderThread->Stop();
@@ -75,12 +76,8 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget, m_ProcessThread);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
 
-	{
-		QMutexLocker locker(&m_MutexAddRemoveAndSeeking);
-
-		m_RenderWidget->layout->AddView(vv);
-		m_VideoList.append(vv);	
-	}
+	m_RenderWidget->layout->AddView(vv);
+	m_VideoList.append(vv);	
 	
 	vv->SetTitle( title );
 
@@ -134,14 +131,11 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 	}
 
 	m_RenderThread->Stop();
+	m_ProcessThread->Stop();
 	
 	vv->UnInit();
-	{
-		QMutexLocker locker(&m_MutexAddRemoveAndSeeking);
-
-		m_RenderWidget->layout->RemoveView(vv);
-		m_VideoList.removeOne(vv);
-	}
+	m_RenderWidget->layout->RemoveView(vv);
+	m_VideoList.removeOne(vv);
 	
 	UpdateDuration();
 
@@ -156,11 +150,12 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 		m_CurrentPTS = 0;
 		m_SeekingPTS = m_SeekingPTSNext = INVALID_PTS;
 
-		m_ProcessThread->Stop();
+		SAFE_DELETE(m_ProcessThread);
 		SAFE_DELETE(m_ProcessThread);
 	}else
 	{
 		m_RenderThread->Start();
+		m_ProcessThread->Start();
 	}
 
 	emit VideoViewClosed(vv);
@@ -376,42 +371,25 @@ public:
 
 void VideoViewList::Seek( unsigned int pts, bool playAfterSeek)
 {
-	QMutexLocker locker(&m_MutexAddRemoveAndSeeking);
-
 	INFO_LOG("VideoViewList::Seek %d - m_SeekingPTS %d", pts, m_SeekingPTS);
 
 	assert(m_VideoList.size()>0);
-	/*
-	m_Paused = true;
-	m_PlayAfterSeeking = playAfterSeek;
-
+	
 	if (pts != INVALID_PTS)
 	{
 		if (m_SeekingPTS == INVALID_PTS)
 		{
 			m_SeekingPTS = pts;
-			m_NeedSeekingRequest = true;
-
-			for (int i=0; i<m_VideoList.size(); ++i) 
-			{
-				VideoView* vv = m_VideoList.at(i);
-				VideoQueue* vq = vv->GetVideoQueue();
-				SourceThread* st = vv->GetSourceThread();
-
-				VideoQueue::Frame * frame = vq->GetLastRenderFrame();
-				if (!frame || frame->source->PTS() != pts)
-				{
-					QMetaObject::invokeMethod(st, "Seek", Qt::QueuedConnection, Q_ARG(unsigned int, pts));
-				}
-			}
+			emit seek(pts, playAfterSeek);
 		}else
 		{
 			// Already seeking
 			m_SeekingPTSNext = pts;
 		}
-	}*/
-
-	emit seek(pts, playAfterSeek);
+	} else
+	{
+		emit seek(pts, playAfterSeek);
+	}
 }
 
 void VideoViewList::CheckLoopFromStart()
@@ -421,21 +399,16 @@ void VideoViewList::CheckLoopFromStart()
 		VideoView* vv = m_LongestVideoView;
 		
 		YT_Source* src = vv->GetSource();
-		VideoQueue* queue = vv->GetVideoQueue();
-		/*
-		VideoQueue::Frame* lastFrame = queue->GetLastRenderFrame();
+		YT_Frame_Ptr frame = vv->GetLastFrame();
 
-		YT_Source_Info info;
-		src->GetInfo(info);
-
-		bool endOfFile = (lastFrame && lastFrame->source->PTS() == info.lastPTS);
+		bool endOfFile = (frame && frame->Info(IS_LAST_FRAME).toBool());
 
 		if (!m_EndOfFile && endOfFile)
 		{
 			Seek(0, true);
 		}
 
-		m_EndOfFile = endOfFile;*/
+		m_EndOfFile = endOfFile;
 	}
 }
 
@@ -507,28 +480,6 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	action->setChecked(!hasView);
 }
 
-void VideoViewList::CheckSeeking()
-{
-	/*if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext != INVALID_PTS)
-	{
-		unsigned int pts = m_SeekingPTSNext;
-		m_SeekingPTSNext = INVALID_PTS;
-
-		Seek(pts, m_PlayAfterSeeking);
-	}
-
-	if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext == INVALID_PTS)
-	{
-		if (m_PlayAfterSeeking)
-		{
-			m_Paused = false;
-		}
-
-		m_PlayAfterSeeking = false;
-	}
-	*/
-}
-
 bool VideoViewList::IsPlaying()
 {
 	if (m_ProcessThread)
@@ -557,7 +508,7 @@ void VideoViewList::UpdateMeasureWindows()
 	}
 }
 
-void VideoViewList::OnSceneRendered( QList<YT_Frame_Ptr> scene )
+void VideoViewList::OnSceneRendered( QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking )
 {
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
@@ -572,6 +523,22 @@ void VideoViewList::OnSceneRendered( QList<YT_Frame_Ptr> scene )
 		if (vv)
 		{
 			vv->SetLastFrame(frame);
+		}
+	}
+
+	m_CurrentPTS = pts;
+
+	if (seeking)
+	{
+		// assert(pts == m_SeekingPTS);
+		m_SeekingPTS = INVALID_PTS;
+
+		if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext != INVALID_PTS)
+		{
+			unsigned int pts = m_SeekingPTSNext;
+			m_SeekingPTSNext = INVALID_PTS;
+
+			Seek(pts, m_ProcessThread->IsPlaying());
 		}
 	}
 }

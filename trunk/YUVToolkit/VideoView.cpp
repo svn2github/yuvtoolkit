@@ -95,6 +95,8 @@ void VideoView::Init( YT_Measure* measure, VideoQueue* source, VideoQueue* sourc
 
 void VideoView::UnInit()
 {
+	m_LastFrame.clear();
+
 	if (m_Dock)
 	{
 		m_MainWindow->removeDockWidget(m_Dock);

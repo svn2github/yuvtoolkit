@@ -56,7 +56,7 @@ void SourceThread::Start(unsigned int initialPTS)
 }
 
 
-void SourceThread::Seek(unsigned int pts)
+void SourceThread::Seek(unsigned int pts, bool playAfterSeek)
 {
 	m_SeekPTS = pts;
 	m_EndOfFile = false;

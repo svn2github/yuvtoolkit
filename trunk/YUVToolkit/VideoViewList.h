@@ -48,7 +48,6 @@ public:
 	void CheckRenderReset();
 	void CheckLoopFromStart();
 	void CheckResolutionChanged();
-	void CheckSeeking();
 	void UpdateMeasureWindows();
 	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
 		
@@ -57,7 +56,7 @@ public slots:
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
-	void OnSceneRendered(QList<YT_Frame_Ptr> scene);
+	void OnSceneRendered(QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking);
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);
@@ -77,10 +76,6 @@ private:
 
 	volatile unsigned int  m_SeekingPTS;
 	volatile unsigned int  m_SeekingPTSNext;
-	volatile bool m_PlayAfterSeeking;
-	volatile bool m_NeedSeekingRequest;
-
-	QMutex m_MutexAddRemoveAndSeeking;
 };
 
 #endif

@@ -38,10 +38,18 @@ void RenderThread::Stop()
 		}
 	}
 	m_LastRenderFrames.clear();
+
+	m_SceneQueue.clear();
+	m_PTSQueue.clear();
+	m_SeekingQueue.clear();
+	m_LastSourceFrames.clear();
  }
 
 void RenderThread::Start()
 {
+	m_LastPTS = INVALID_PTS;
+	m_LastSeeking = false;
+
 	QThread::start();
 
 	m_Timer.start();
@@ -60,12 +68,17 @@ void RenderThread::timerEvent( QTimerEvent *event )
 	if (m_SceneQueue.size()>0)
 	{		
 		QList<YT_Frame_Ptr> newScene = m_SceneQueue.first();
-		unsigned int renderPTS = m_PTSQueue.first();
+		unsigned int pts = m_PTSQueue.first();
+		bool seeking = m_SeekingQueue.first();
+		
 		m_SceneQueue.removeFirst();
 		m_PTSQueue.removeFirst();
-
+		m_SeekingQueue.removeFirst();
+		
 		m_LastRenderFrames = RenderFrames(newScene, m_LastRenderFrames);
 		m_LastSourceFrames = newScene;
+		m_LastSeeking = seeking;
+		m_LastPTS = pts;
 	}
 
 	if (m_LastRenderFrames.size()== 0 && m_LastSourceFrames.size()>0)
@@ -93,13 +106,14 @@ void RenderThread::timerEvent( QTimerEvent *event )
 	m_Renderer->RenderScene(renderScene);
 	WARNING_LOG("Render render scene took: %d ms", m_Timer.restart());
 
-	emit sceneRendered(m_LastSourceFrames);
+	emit sceneRendered(m_LastSourceFrames, m_LastPTS, m_LastSeeking);
 }
 
-void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int renderPTS )
+void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking )
 {
 	m_SceneQueue.append(scene);
-	m_PTSQueue.append(renderPTS);
+	m_PTSQueue.append(pts);
+	m_SeekingQueue.append(seeking);
 }
 
 void RenderThread::SetLayout(QList<unsigned int> ids, QList<QRect> srcRects, QList<QRect> dstRects)

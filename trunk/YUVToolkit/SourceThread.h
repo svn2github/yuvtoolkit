@@ -33,7 +33,7 @@ signals:
 	void frameReady(YT_Frame_Ptr frame);
 
 public slots:
-	void Seek(unsigned int pts);
+	void Seek(unsigned int pts, bool playAfterSeek);
 
 private:
 	void run();

@@ -19,13 +19,7 @@ public:
 	bool IsPlaying();
 signals:
 	// Signals that one scene is ready for render
-	void sceneReady(QList<YT_Frame_Ptr> scene, unsigned int renderPTS);
-
-	// Signals that seeking is done for all source views
-	void seekDone(unsigned int pts);
-
-	// Signals (to source) to seek
-	void sourceSeek(unsigned int pts);
+	void sceneReady(QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking);
 	
 public slots:
 	void ReceiveFrame(YT_Frame_Ptr frame);
@@ -42,6 +36,8 @@ private:
 	
 	// Play/Pause
 	volatile bool m_Paused;
+
+	unsigned int m_SeekingPTS;
 };
 
 #endif

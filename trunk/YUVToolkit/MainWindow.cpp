@@ -444,12 +444,12 @@ void MainWindow::openFileInternal( QString strPath)
 	VideoView* vv = m_VideoViewList->NewVideoView(strPath.toAscii());
 	vv->Init(strPath.toAscii(), m_VideoViewList->GetCurrentPTS());
 
+	connect(m_VideoViewList, SIGNAL(seek(unsigned int, bool)), vv->GetSourceThread(), SLOT(Seek(unsigned int, bool)));
+	
 	m_VideoViewList->UpdateDuration();
 
 	EnableButtons(true);
 }
-
-
 
 void MainWindow::play( bool play )
 {
@@ -724,8 +724,7 @@ void MainWindow::OnTimer()
 	{
 		m_VideoViewList->CheckResolutionChanged();
 		m_VideoViewList->CheckRenderReset();
-		m_VideoViewList->CheckSeeking();
-
+		
 		if (m_VideoViewList->IsPlaying())
 		{
 			m_VideoViewList->CheckLoopFromStart();
@@ -839,7 +838,7 @@ void MainWindow::stepVideo( int step )
 	if (longest)
 	{
 		source = longest->GetSource();
-		// lastFrame = longest->GetVideoQueue()->GetLastRenderFrame()->source;
+		lastFrame = longest->GetLastFrame();
 	}
 
 	if (!source || !lastFrame)
