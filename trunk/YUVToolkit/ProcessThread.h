@@ -13,31 +13,32 @@ public:
 	ProcessThread();
 	~ProcessThread();
 
-	void Start();
+	void Start(UintList sourceViewIDs);
 	void Stop();
 
 	bool IsPlaying();
 signals:
 	// Signals that one scene is ready for render
-	void sceneReady(QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking);
+	void sceneReady(YT_Frame_List scene, unsigned int pts, bool seeking);
 	
 public slots:
 	void ReceiveFrame(YT_Frame_Ptr frame);
 	
-	// Seek, and play/pause after seeking
-	// pts can be INVALID_PTS to just keep current PTS
-	void Seek(unsigned int pts, bool playAfterSeek);
+	void Play(bool play);
+
+private slots:
+	void ProcessFrameQueue();
 private:
 	void run();
-	void timerEvent(QTimerEvent *event);
-
+	
+	YT_Frame_List FastSeekQueue(unsigned int pts);
+	void CleanQueue();
 private:
-	QMap<unsigned int, QList<YT_Frame_Ptr> > m_Frames;
+	QMap<unsigned int, YT_Frame_List > m_Frames;
+	UintList m_SourceViewIDs;
 	
 	// Play/Pause
-	volatile bool m_Paused;
-
-	unsigned int m_SeekingPTS;
+	volatile bool m_Play;
 };
 
 #endif

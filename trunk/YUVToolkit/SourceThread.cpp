@@ -12,25 +12,17 @@ SourceThread::SourceThread(int id, const char* p) : m_Path(p),
 			m_Source(0), m_ViewID(id), 
 			m_SeekPTS(INVALID_PTS), m_EndOfFile(false), m_FramePool(BUFFER_COUNT)
 {
+	moveToThread(this);
+
 	YT_PlugIn* plugin;
 	plugin = GetHostImpl()->FindSourcePlugin(m_Path.right(4));
 	m_Source = plugin->NewSource(m_Path.right(4));
+
+	m_Source->Init(m_Path);
 }
 
 SourceThread::~SourceThread(void)
 {
-}
-
-void SourceThread::run()
-{
-	exec();
-}
-
-void SourceThread::Stop()
-{
-	quit();
-	wait();
-
 	if (m_Source)
 	{
 		m_Source->UnInit();
@@ -39,20 +31,39 @@ void SourceThread::Stop()
 	delete m_Source;
 	m_Source = NULL;
 
-	while (m_FramePool.Size() != BUFFER_COUNT)
+	// while (m_FramePool.Size() != BUFFER_COUNT)
+	if (m_FramePool.Size() != BUFFER_COUNT)
 	{
 		WARNING_LOG("Waiting for frame pool to uninitialize (%s)... ", m_Path.toAscii());
 		QThread::sleep(1);
 	}
 }
 
+void SourceThread::run()
+{
+	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
+	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<UintList>("UintList");
+	qRegisterMetaType<RectList>("RectList");
+
+	QTimer* timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(ReadFrames()), Qt::DirectConnection);
+	timer->start(15);
+
+	exec();
+}
+
+void SourceThread::Stop()
+{
+	quit();
+	wait();
+}
+
 void SourceThread::Start(unsigned int initialPTS)
 {
-	m_SeekPTS = initialPTS;
-	m_Source->Init(m_Path);
+	m_SeekPTS = initialPTS;	
 	
 	start();
-	startTimer(15);
 }
 
 
@@ -62,7 +73,7 @@ void SourceThread::Seek(unsigned int pts, bool playAfterSeek)
 	m_EndOfFile = false;
 }
 
-void SourceThread::timerEvent( QTimerEvent *event )
+void SourceThread::ReadFrames()
 {
 	while (true)
 	{

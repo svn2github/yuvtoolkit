@@ -25,7 +25,7 @@ public:
 
 	virtual QWidget* GetWidget() {return this;}
 
-	virtual YT_RESULT RenderScene(QList<YT_Frame_Ptr> frames);
+	virtual YT_RESULT RenderScene(YT_Frame_List frames);
 
 	// Allocate render specific buffers
 	virtual YT_RESULT Allocate(YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat);

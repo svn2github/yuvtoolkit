@@ -17,38 +17,38 @@ public:
 
 	float GetSpeedRatio();
 signals:
-	void sceneRendered(QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking);
+	void sceneRendered(YT_Frame_List scene, unsigned int pts, bool seeking);
 
 public slots:
-	void RenderScene(QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking); 
-	void SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>);
+	void RenderScene(YT_Frame_List scene, unsigned int pts, bool seeking); 
+	void SetLayout(UintList, RectList, RectList);
 
 private slots:
+	void Render();
 
 protected:
 	void run();
-	void timerEvent(QTimerEvent *event);
-	QList<YT_Frame_Ptr> RenderFrames(QList<YT_Frame_Ptr> sourceFrames, QList<YT_Frame_Ptr> renderFramesOld);
-
+	YT_Frame_List RenderFrames(YT_Frame_List sourceFrames, YT_Frame_List renderFramesOld);
+	
 	float m_SpeedRatio;
 	YT_Renderer* m_Renderer;
 	VideoViewList* m_VideoViewList;
 
 	// render queue
-	QList<QList<YT_Frame_Ptr> > m_SceneQueue;
-	QList<unsigned int> m_PTSQueue;
+	QList<YT_Frame_List > m_SceneQueue;
+	UintList m_PTSQueue;
 	QList<bool> m_SeekingQueue;
 
 	// Last rendered scene
-	QList<YT_Frame_Ptr> m_LastSourceFrames;
-	QList<YT_Frame_Ptr> m_LastRenderFrames;
+	YT_Frame_List m_LastSourceFrames;
+	YT_Frame_List m_LastRenderFrames;
 	unsigned int m_LastPTS;
 	bool m_LastSeeking;
 
 	// Layout
-	QList<unsigned int> m_ViewIDs;
-	QList<QRect> m_SrcRects;
-	QList<QRect> m_DstRects;
+	UintList m_ViewIDs;
+	RectList m_SrcRects;
+	RectList m_DstRects;
 
 	QTime m_Timer, m_RenderSpeedTimer;
 };

@@ -45,14 +45,16 @@ YT_QPaintRenderer::~YT_QPaintRenderer()
 {
 }
 
-YT_RESULT YT_QPaintRenderer::RenderScene(QList<YT_Frame_Ptr> frames)
+YT_RESULT YT_QPaintRenderer::RenderScene(YT_Frame_List frames)
 {
+	int size = frames.size();
+
 	m_Frames = frames;
 
 	this->update();
 
 	QMutexLocker locker(&m_MutexFramesRendered);
-	m_FramesRendered.wait(&m_MutexFramesRendered, 100);
+	m_FramesRendered.wait(&m_MutexFramesRendered, 1000);
 	
 	m_Frames.clear();
 

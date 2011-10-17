@@ -9,6 +9,7 @@
 RenderThread::RenderThread(YT_Renderer* renderer, VideoViewList* list) : m_Renderer(renderer), 
 	m_VideoViewList(list), m_SpeedRatio(1.0f)
 {
+	moveToThread(this);
 }
 
 RenderThread::~RenderThread(void)
@@ -19,6 +20,15 @@ RenderThread::~RenderThread(void)
 #define DIFF_PTS(x,y) qAbs<int>(((int)x)-((int)y))
 void RenderThread::run()
 {
+	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
+	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<UintList>("UintList");
+	qRegisterMetaType<RectList>("RectList");
+
+	QTimer* timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::DirectConnection);
+	timer->start(8);
+
 	exec();
 }
 
@@ -38,11 +48,11 @@ void RenderThread::Stop()
 		}
 	}
 	m_LastRenderFrames.clear();
+	m_LastSourceFrames.clear();
 
 	m_SceneQueue.clear();
 	m_PTSQueue.clear();
 	m_SeekingQueue.clear();
-	m_LastSourceFrames.clear();
  }
 
 void RenderThread::Start()
@@ -53,7 +63,6 @@ void RenderThread::Start()
 	QThread::start();
 
 	m_Timer.start();
-	startTimer(8);
 }
 
 float RenderThread::GetSpeedRatio()
@@ -61,14 +70,14 @@ float RenderThread::GetSpeedRatio()
 	return m_SpeedRatio;
 }
 
-void RenderThread::timerEvent( QTimerEvent *event )
+void RenderThread::Render()
 {
 	WARNING_LOG("Render start since last cycle: %d ms", m_Timer.restart());
 
 	int diffPts = 0;
 	if (m_SceneQueue.size()>0)
 	{		
-		QList<YT_Frame_Ptr> newScene = m_SceneQueue.first();
+		YT_Frame_List newScene = m_SceneQueue.first();
 		unsigned int pts = m_PTSQueue.first();
 		bool seeking = m_SeekingQueue.first();
 		
@@ -94,7 +103,7 @@ void RenderThread::timerEvent( QTimerEvent *event )
 	}
 
 	// Create render scene with layout info
-	QList<YT_Frame_Ptr> renderScene;
+	YT_Frame_List renderScene;
 	for (int i=0; i<m_LastRenderFrames.size(); i++)
 	{
 		YT_Frame_Ptr renderFrame = m_LastRenderFrames.at(i);
@@ -110,7 +119,11 @@ void RenderThread::timerEvent( QTimerEvent *event )
 	}
 
 	WARNING_LOG("Render prepare scene took: %d ms", m_Timer.restart());
-	m_Renderer->RenderScene(renderScene);
+	if (renderScene.size()>0 && renderScene.size() == m_ViewIDs.size())
+	{
+		m_Renderer->RenderScene(renderScene);
+	}
+	
 	WARNING_LOG("Render render scene took: %d ms", m_Timer.restart());
 
 	// Compute render speed ratio
@@ -121,27 +134,32 @@ void RenderThread::timerEvent( QTimerEvent *event )
 		m_SpeedRatio = m_SpeedRatio + 0.1f * (diffPts*1.0f/ elapsedSinceLastPTS - m_SpeedRatio);
 	}
 	m_RenderSpeedTimer.start();
-
+	
 	emit sceneRendered(m_LastSourceFrames, m_LastPTS, m_LastSeeking);
 }
 
-void RenderThread::RenderScene( QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking )
+void RenderThread::RenderScene( YT_Frame_List scene, unsigned int pts, bool seeking )
 {
+	int siz = scene.size();
 	m_SceneQueue.append(scene);
 	m_PTSQueue.append(pts);
 	m_SeekingQueue.append(seeking);
 }
 
-void RenderThread::SetLayout(QList<unsigned int> ids, QList<QRect> srcRects, QList<QRect> dstRects)
+void RenderThread::SetLayout(UintList ids, RectList srcRects, RectList dstRects)
 {
 	m_ViewIDs = ids;
 	m_SrcRects = srcRects;
 	m_DstRects = dstRects;
 }
 
-QList<YT_Frame_Ptr> RenderThread::RenderFrames(QList<YT_Frame_Ptr> sourceFrames, QList<YT_Frame_Ptr> renderFramesOld)
+YT_Frame_List RenderThread::RenderFrames(YT_Frame_List sourceFrames, YT_Frame_List renderFramesOld)
 {
-	QList<YT_Frame_Ptr> renderFramesNew;
+	if (sourceFrames.size()==2)
+	{
+		int i=0;
+	}
+	YT_Frame_List renderFramesNew;
 	for (int i = 0; i < sourceFrames.size(); i++) 
 	{
 		YT_Frame_Ptr sourceFrame = sourceFrames.at(i);
@@ -159,8 +177,9 @@ QList<YT_Frame_Ptr> RenderThread::RenderFrames(QList<YT_Frame_Ptr> sourceFrames,
 			YT_Frame_Ptr _frame = renderFramesOld.at(k);
 			if (_frame && _frame->Info(VIEW_ID).toUInt() == viewID)
 			{
-				renderFramesOld.removeAt(i);
+				renderFramesOld.removeAt(k);
 				renderFrame = _frame;
+				break;
 			}
 		}
 
@@ -178,6 +197,7 @@ QList<YT_Frame_Ptr> RenderThread::RenderFrames(QList<YT_Frame_Ptr> sourceFrames,
 		if (!renderFrame)
 		{
 			m_Renderer->Allocate(renderFrame, sourceFrame->Format());
+			renderFrame->SetInfo(VIEW_ID, viewID);
 		}
 
 		// Render frame

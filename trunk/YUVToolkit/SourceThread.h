@@ -14,13 +14,13 @@ class YT_Format;
 class QDockWidget;
 class VideoView;
 
-#define BUFFER_COUNT 8
+#define BUFFER_COUNT 4
 
 class SourceThread : public QThread
 {
 	Q_OBJECT;
 public:
-	SourceThread(int, const char* path);
+	SourceThread(int id, const char* path);
 	~SourceThread(void);
 
 	void Start(unsigned int initialPTS);
@@ -35,10 +35,12 @@ signals:
 public slots:
 	void Seek(unsigned int pts, bool playAfterSeek);
 
+private slots:
+	void ReadFrames();
+
 private:
 	void run();
-	void timerEvent(QTimerEvent *event);
-
+	
 private:
 	int m_ViewID;
 	QString m_Path;

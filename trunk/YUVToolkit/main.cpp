@@ -25,6 +25,11 @@ int main(int argc, char *argv[])
 	app.setOrganizationName("Yocto.net");
 	app.setQuitOnLastWindowClosed(true);
 
+	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
+	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<UintList>("UintList");
+	qRegisterMetaType<RectList>("RectList");
+
 	g_Host = new YT_HostImpl;
 	QMainWindow* w = g_Host->NewMainWindow(argc, argv);
 	

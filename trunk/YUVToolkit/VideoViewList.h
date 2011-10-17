@@ -3,17 +3,16 @@
 
 #include "YT_Interface.h"
 #include "RenderThread.h"
+#include "ProcessThread.h"
 
 class VideoView;
 struct TransformActionData;
 class RendererWidget;
-class RenderThread;
 class SourceThread;
 class QMainWindow;
 class QAction;
 class MeasureWindow;
 class QDockWidget;
-class ProcessThread;
 
 class VideoViewList : public QObject
 {
@@ -33,9 +32,11 @@ public:
 	VideoView* last() const {return m_VideoList.last();}
 	VideoView* longest() const;
 	VideoView* find(unsigned int id) const;
+	UintList GetSourceIDList() const;
 
 	VideoView* NewVideoView(const char* title);
 	RenderThread* GetRenderThread() {return m_RenderThread;}
+	ProcessThread* GetProcessThread() {return m_ProcessThread;}
 
 	void Seek(unsigned int pts, bool playAfterSeek);
 
@@ -50,19 +51,22 @@ public:
 	void CheckResolutionChanged();
 	void UpdateMeasureWindows();
 	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
+
+	unsigned int StopSources();
+	void StartSources(unsigned int);
 		
 public slots:
 	void UpdateDuration();
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
-	void OnSceneRendered(QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking);
+	void OnSceneRendered(YT_Frame_List scene, unsigned int pts, bool seeking);
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
-	void layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>);
-
+	void layoutUpdated(UintList, RectList, RectList);
+	
 	void seek(unsigned int pts, bool playAfterSeek);
 private:
 	RenderThread* m_RenderThread;

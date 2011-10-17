@@ -18,6 +18,8 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 {
 	m_RenderWidget = rw;
 	m_MainWindow = mainWindow;
+
+	m_ProcessThread = new ProcessThread();	
 	
 	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
 
@@ -42,19 +44,11 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 
 VideoViewList::~VideoViewList()
 {
+	delete m_ProcessThread;
 }
 
 VideoView* VideoViewList::NewVideoView( const char* title )
 {
-	if (m_ProcessThread == NULL)
-	{
-		m_ProcessThread = new ProcessThread();
-		m_ProcessThread->Start();
-
-		connect(this, SIGNAL(seek(unsigned int, bool)), 
-			m_ProcessThread, SLOT(Seek(unsigned int, bool)));
-	}
-
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
 		QSettings settings;
@@ -63,15 +57,17 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
 		
-		connect(m_ProcessThread, SIGNAL(sceneReady(QList<YT_Frame_Ptr>, unsigned int, bool)), 
-			m_RenderThread, SLOT(RenderScene(QList<YT_Frame_Ptr>, unsigned int, bool)));
-		connect(this, SIGNAL(layoutUpdated(QList<unsigned int>, QList<QRect>, QList<QRect>)), 
-			m_RenderThread, SLOT(SetLayout(QList<unsigned int>, QList<QRect>, QList<QRect>)));
-		connect(m_RenderThread, SIGNAL(sceneRendered(QList<YT_Frame_Ptr>, unsigned int, bool)), 
-			this, SLOT(OnSceneRendered(QList<YT_Frame_Ptr>, unsigned int, bool)));
+		connect(m_ProcessThread, SIGNAL(sceneReady(YT_Frame_List, unsigned int, bool)), 
+			m_RenderThread, SLOT(RenderScene(YT_Frame_List, unsigned int, bool)));
+		connect(this, SIGNAL(layoutUpdated(UintList, RectList, RectList)), 
+			m_RenderThread, SLOT(SetLayout(UintList, RectList, RectList)));
+		connect(m_RenderThread, SIGNAL(sceneRendered(YT_Frame_List, unsigned int, bool)), 
+			this, SLOT(OnSceneRendered(YT_Frame_List, unsigned int, bool)));
+
+		m_RenderThread->Start();
 	}
 
-	m_RenderThread->Stop();
+	// m_RenderThread->Stop();
 
 	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget, m_ProcessThread);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
@@ -81,9 +77,17 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 	
 	vv->SetTitle( title );
 
+	// Update id
+	UintList ids;
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+		ids.append(vv->GetID());
+	}
+	
 	OnUpdateRenderWidgetPosition();
 
-	m_RenderThread->Start();
+	// m_RenderThread->Start();
 
 	connect(vv, SIGNAL(Close(VideoView*)), this, SLOT(CloseVideoView(VideoView*)));
 	connect(vv, SIGNAL(TransformTriggered(QAction*, VideoView*, TransformActionData*)), this, SLOT(OnVideoViewTransformTriggered(QAction*, VideoView*, TransformActionData*)));
@@ -99,8 +103,8 @@ void VideoViewList::OnUpdateRenderWidgetPosition()
 	int width = rcClient.width();
 	m_RenderWidget->layout->UpdateGeometry();
 
-	QList<unsigned int> ids;
-	QList<QRect> srcRects, dstRects;
+	UintList ids;
+	RectList srcRects, dstRects;
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);
@@ -110,10 +114,7 @@ void VideoViewList::OnUpdateRenderWidgetPosition()
 		dstRects.append(vv->dstRect);
 	}
 
-	if (m_VideoList.size()>0)
-	{
-		emit layoutUpdated(ids, srcRects, dstRects);
-	}
+	emit layoutUpdated(ids, srcRects, dstRects);
 }
 
 void VideoViewList::CloseVideoView( VideoView* vv)
@@ -130,18 +131,25 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 		}*/
 	}
 
-	m_RenderThread->Stop();
-	m_ProcessThread->Stop();
+	// m_RenderThread->Stop();
+
+	unsigned int currentPTS = StopSources();
 	
-	vv->UnInit();
 	m_RenderWidget->layout->RemoveView(vv);
 	m_VideoList.removeOne(vv);
+	
+	// Update id
+	UintList ids;
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+		ids.append(vv->GetID());
+	}
 	
 	UpdateDuration();
 
 	if (m_VideoList.isEmpty())
 	{
-		m_RenderThread->Stop();
 		SAFE_DELETE(m_RenderThread);
 
 		m_RenderWidget->UnInit();
@@ -149,17 +157,14 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 		m_CurrentPTS = 0;
 		m_SeekingPTS = m_SeekingPTSNext = INVALID_PTS;
-
-		SAFE_DELETE(m_ProcessThread);
-		SAFE_DELETE(m_ProcessThread);
 	}else
 	{
-		m_RenderThread->Start();
-		m_ProcessThread->Start();
+		StartSources(currentPTS);
 	}
 
 	emit VideoViewClosed(vv);
 
+	vv->UnInit();
 	SAFE_DELETE(vv);
 }
 
@@ -508,7 +513,7 @@ void VideoViewList::UpdateMeasureWindows()
 	}
 }
 
-void VideoViewList::OnSceneRendered( QList<YT_Frame_Ptr> scene, unsigned int pts, bool seeking )
+void VideoViewList::OnSceneRendered( YT_Frame_List scene, unsigned int pts, bool seeking )
 {
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
@@ -554,4 +559,62 @@ VideoView* VideoViewList::find( unsigned int id ) const
 		}
 	}	
 	return NULL;
+}
+
+UintList VideoViewList::GetSourceIDList() const
+{
+	UintList lst;
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+		if (vv->GetType() == YT_PLUGIN_SOURCE)
+		{
+			lst.append(vv->GetID());
+		}		
+	}
+	return lst;
+}
+
+unsigned int VideoViewList::StopSources()
+{
+	unsigned int currentPTS = 0;
+	if (size()>0)
+	{
+		currentPTS = GetCurrentPTS();
+
+		// Stop process thread + source thread
+		m_ProcessThread->Stop();
+		// SAFE_DELETE(m_ProcessThread);
+
+		// m_RenderThread->Stop();
+		// SAFE_DELETE(m_RenderThread);
+
+		for (int i=0; i<size(); ++i) 
+		{
+			VideoView* vv = at(i);
+			if (vv->GetSourceThread())
+			{
+				vv->GetSourceThread()->Stop();
+			}
+		}
+	}
+	return currentPTS;
+}
+
+void VideoViewList::StartSources( unsigned int pts)
+{
+	if (size()>0)
+	{
+		// GetRenderThread()->Start();
+		GetProcessThread()->Start(GetSourceIDList());
+
+		for (int i=0; i<size(); ++i) 
+		{
+			VideoView* vv = at(i);
+			if (vv->GetSourceThread())
+			{
+				vv->GetSourceThread()->Start(pts);
+			}
+		}
+	}
 }

@@ -113,6 +113,9 @@ public:
 };
 
 typedef QSharedPointer<YT_Frame> YT_Frame_Ptr;
+typedef QList<YT_Frame_Ptr> YT_Frame_List;
+typedef QList<unsigned int> UintList;
+typedef QList<QRect> RectList;
 
 enum YT_PLUGIN_TYPE {
 	YT_PLUGIN_UNKNOWN       = -1,
@@ -254,7 +257,7 @@ public:
 
 	// frames should be frames allocated by renderer
 	// it should have SRC_RECT/DST_RECT properties
-	virtual YT_RESULT RenderScene(QList<YT_Frame_Ptr> frames) = 0;
+	virtual YT_RESULT RenderScene(YT_Frame_List frames) = 0;
 	   
 	// Allocate render specific buffers
 	virtual YT_RESULT Allocate(YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat) = 0;

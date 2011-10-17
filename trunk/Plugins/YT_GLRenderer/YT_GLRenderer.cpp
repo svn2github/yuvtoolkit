@@ -57,7 +57,7 @@ YT_OpenGLRenderer::~YT_OpenGLRenderer()
 {
 }
 
-YT_RESULT YT_OpenGLRenderer::RenderScene(QList<YT_Frame_Ptr> frames)
+YT_RESULT YT_OpenGLRenderer::RenderScene(YT_Frame_List frames)
 {
 	if (m_ReadyToRender) 
 	{

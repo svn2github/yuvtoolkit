@@ -65,7 +65,7 @@ void YTR_D3D::OnResizeTimer()
 #define RECT_WIDTH(rc) (rc->right-rc->left)
 #define RECT_HEIGHT(rc) (rc->bottom-rc->top)
 
-YT_RESULT YTR_D3D::RenderScene(QList<YT_Frame_Ptr> frames)
+YT_RESULT YTR_D3D::RenderScene(YT_Frame_List frames)
 {
 	if (FAILED(d3DDevice->TestCooperativeLevel()))
 	{

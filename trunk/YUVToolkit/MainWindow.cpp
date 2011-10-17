@@ -232,12 +232,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 		return;
 	}
 
-	bool playNow = true;
-	if (m_VideoViewList->size()>0)
-	{
-		playNow = m_VideoViewList->IsPlaying();
-		m_VideoViewList->Seek(INVALID_PTS, false);
-	}
+	unsigned int currentPTS = m_VideoViewList->StopSources();
 	
 	for ( int i=0; i<fileList2.size(); i++) // if at least one QUrl is present in list
 	{
@@ -245,7 +240,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 		openFileInternal(fName);
 	}
 
-	m_VideoViewList->Seek(INVALID_PTS, playNow);
+	m_VideoViewList->StartSources(currentPTS);
 }
 
 
@@ -407,16 +402,9 @@ void MainWindow::SetZoomMode( int mode )
 
 void MainWindow::openFile( QString strPath)
 {
-	bool playNow = true;
-	if (m_VideoViewList->size()>0)
-	{
-		playNow = m_VideoViewList->IsPlaying();
-		m_VideoViewList->Seek(INVALID_PTS, false);
-	}
-
-	openFileInternal(strPath);
-	
-	m_VideoViewList->Seek(INVALID_PTS, playNow);
+	QStringList lst;
+	lst.append(strPath);
+	openFiles(lst);
 }
 
 void MainWindow::openFileInternal( QString strPath)
@@ -453,7 +441,8 @@ void MainWindow::openFileInternal( QString strPath)
 
 void MainWindow::play( bool play )
 {
-	m_VideoViewList->Seek(INVALID_PTS, play);
+	// m_VideoViewList->Seek(INVALID_PTS, play);
+	m_VideoViewList->GetProcessThread()->Play(play);
 }
 
 
