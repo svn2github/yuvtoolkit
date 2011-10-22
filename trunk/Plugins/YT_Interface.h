@@ -114,8 +114,11 @@ public:
 
 typedef QSharedPointer<Frame> FramePtr;
 typedef QList<FramePtr> FrameList;
+typedef QSharedPointer<FrameList> FrameListPtr;
 typedef QList<unsigned int> UintList;
+typedef QSharedPointer<UintList> UintListPtr;
 typedef QList<QRect> RectList;
+typedef QSharedPointer<RectList> RectListPtr;
 
 enum PLUGIN_TYPE {
 	PLUGIN_UNKNOWN       = -1,
@@ -257,7 +260,7 @@ public:
 
 	// frames should be frames allocated by renderer
 	// it should have SRC_RECT/DST_RECT properties
-	virtual RESULT RenderScene(FrameList frames) = 0;
+	virtual RESULT RenderScene(FrameListPtr frames) = 0;
 	   
 	// Allocate render specific buffers
 	virtual RESULT Allocate(FramePtr& frame, FormatPtr sourceFormat) = 0;

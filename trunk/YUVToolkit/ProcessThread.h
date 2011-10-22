@@ -19,7 +19,7 @@ public:
 	bool IsPlaying();
 signals:
 	// Signals that one scene is ready for render
-	void sceneReady(FrameList scene, unsigned int pts, bool seeking);
+	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
 	
 public slots:
 	void ReceiveFrame(FramePtr frame);

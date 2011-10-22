@@ -57,12 +57,12 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
 		
-		connect(m_ProcessThread, SIGNAL(sceneReady(FrameList, unsigned int, bool)), 
-			m_RenderThread, SLOT(RenderScene(FrameList, unsigned int, bool)));
+		connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
+			m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
 		connect(this, SIGNAL(layoutUpdated(UintList, RectList, RectList)), 
 			m_RenderThread, SLOT(SetLayout(UintList, RectList, RectList)));
-		connect(m_RenderThread, SIGNAL(sceneRendered(FrameList, unsigned int, bool)), 
-			this, SLOT(OnSceneRendered(FrameList, unsigned int, bool)));
+		connect(m_RenderThread, SIGNAL(sceneRendered(FrameListPtr, unsigned int, bool)), 
+			this, SLOT(OnSceneRendered(FrameListPtr, unsigned int, bool)));
 
 		m_RenderThread->Start();
 	}
@@ -131,7 +131,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 		}*/
 	}
 
-	// m_RenderThread->Stop();
+	m_RenderThread->Stop();
 
 	unsigned int currentPTS = StopSources();
 	
@@ -513,7 +513,7 @@ void VideoViewList::UpdateMeasureWindows()
 	}
 }
 
-void VideoViewList::OnSceneRendered( FrameList scene, unsigned int pts, bool seeking )
+void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool seeking )
 {
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
@@ -521,9 +521,9 @@ void VideoViewList::OnSceneRendered( FrameList scene, unsigned int pts, bool see
 		vv->ClearLastFrame();
 	}
 
-	for (int i=0; i<scene.size(); i++)
+	for (int i=0; i<scene->size(); i++)
 	{
-		FramePtr frame = scene.at(i);
+		FramePtr frame = scene->at(i);
 		VideoView* vv = find(frame->Info(VIEW_ID).toUInt());
 		if (vv)
 		{

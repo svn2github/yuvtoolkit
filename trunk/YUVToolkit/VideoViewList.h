@@ -60,7 +60,7 @@ public slots:
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
-	void OnSceneRendered(FrameList scene, unsigned int pts, bool seeking);
+	void OnSceneRendered(FrameListPtr scene, unsigned int pts, bool seeking);
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);

@@ -45,9 +45,9 @@ QPaintRenderer::~QPaintRenderer()
 {
 }
 
-RESULT QPaintRenderer::RenderScene(FrameList frames)
+RESULT QPaintRenderer::RenderScene(FrameListPtr frames)
 {
-	int size = frames.size();
+	int size = frames->size();
 
 	m_Frames = frames;
 
@@ -108,7 +108,8 @@ RESULT QPaintRenderer::ReleaseFrame( FramePtr frame )
 
 void QPaintRenderer::paintEvent( QPaintEvent* )
 {
-	if (m_Frames.size())
+	FrameListPtr frames = m_Frames;
+	if (frames->size())
 	{
 		int width = QWidget::width();
 		int height = QWidget::height();
@@ -120,9 +121,9 @@ void QPaintRenderer::paintEvent( QPaintEvent* )
 			painter.setBrush(Qt::black);
 			painter.drawRect(rcClient);
 
-			for (int i=0; i<m_Frames.size(); ++i) 
+			for (int i=0; i<frames->size(); ++i) 
 			{
-				FramePtr frame = m_Frames.at(i);
+				FramePtr frame = frames->at(i);
 				if (!frame)
 				{
 					continue;

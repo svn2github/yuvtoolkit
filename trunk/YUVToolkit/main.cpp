@@ -29,6 +29,9 @@ int main(int argc, char *argv[])
 	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
+	qRegisterMetaType<FrameListPtr>("FrameListPtr");
+	qRegisterMetaType<UintListPtr>("UintListPtr");
+	qRegisterMetaType<RectListPtr>("RectListPtr");
 
 	g_Host = new HostImpl;
 	QMainWindow* w = g_Host->NewMainWindow(argc, argv);

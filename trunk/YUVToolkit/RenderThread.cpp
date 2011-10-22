@@ -24,6 +24,9 @@ void RenderThread::run()
 	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
+	qRegisterMetaType<FrameListPtr>("FrameListPtr");
+	qRegisterMetaType<UintListPtr>("UintListPtr");
+	qRegisterMetaType<RectListPtr>("RectListPtr");
 
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::DirectConnection);
@@ -37,14 +40,13 @@ void RenderThread::Stop()
 	quit();
 	wait();
 
-	for (int i = 0; i < m_LastRenderFrames.size(); i++) 
+	for (int i = 0; i < m_LastRenderFrames->size(); i++) 
 	{
-		FramePtr& renderFrame = m_LastRenderFrames[i];
+		FramePtr renderFrame = m_LastRenderFrames->at(i);
 
 		if (renderFrame)
 		{
 			m_Renderer->Deallocate(renderFrame);
-			renderFrame.clear();
 		}
 	}
 	m_LastRenderFrames.clear();
@@ -77,7 +79,7 @@ void RenderThread::Render()
 	int diffPts = 0;
 	if (m_SceneQueue.size()>0)
 	{		
-		FrameList newScene = m_SceneQueue.first();
+		FrameListPtr newScene = m_SceneQueue.first();
 		unsigned int pts = m_PTSQueue.first();
 		bool seeking = m_SeekingQueue.first();
 		
@@ -97,16 +99,21 @@ void RenderThread::Render()
 		m_LastPTS = pts;
 	}
 
-	if (m_LastRenderFrames.size()== 0 && m_LastSourceFrames.size()>0)
+	if (!m_LastRenderFrames)
+	{
+		return;
+	}
+
+	if (m_LastRenderFrames->size()== 0 && m_LastSourceFrames->size()>0)
 	{
 		m_LastRenderFrames = RenderFrames(m_LastSourceFrames, m_LastRenderFrames);
 	}
 
 	// Create render scene with layout info
-	FrameList renderScene;
-	for (int i=0; i<m_LastRenderFrames.size(); i++)
+	FrameListPtr renderScene = FrameListPtr(new FrameList);
+	for (int i=0; i<m_LastRenderFrames->size(); i++)
 	{
-		FramePtr renderFrame = m_LastRenderFrames.at(i);
+		FramePtr renderFrame = m_LastRenderFrames->at(i);
 		int j = m_ViewIDs.indexOf(renderFrame->Info(VIEW_ID).toUInt());
 		if (j == -1)
 		{
@@ -115,11 +122,11 @@ void RenderThread::Render()
 
 		renderFrame->SetInfo(SRC_RECT, m_SrcRects.at(j));
 		renderFrame->SetInfo(DST_RECT, m_DstRects.at(j));
-		renderScene.append(renderFrame);
+		renderScene->append(renderFrame);
 	}
 
 	WARNING_LOG("Render prepare scene took: %d ms", m_Timer.restart());
-	if (renderScene.size()>0 && renderScene.size() == m_ViewIDs.size())
+	if (renderScene->size()>0 && renderScene->size() == m_ViewIDs.size())
 	{
 		m_Renderer->RenderScene(renderScene);
 	}
@@ -135,12 +142,17 @@ void RenderThread::Render()
 	}
 	m_RenderSpeedTimer.start();
 	
-	emit sceneRendered(m_LastSourceFrames, m_LastPTS, m_LastSeeking);
+	FrameListPtr sourceFrames = m_LastSourceFrames;
+	if (sourceFrames)
+	{
+		FrameListPtr rendered = FrameListPtr(new FrameList);
+		rendered->append(*sourceFrames);
+		emit sceneRendered(rendered, m_LastPTS, m_LastSeeking);
+	}
 }
 
-void RenderThread::RenderScene( FrameList scene, unsigned int pts, bool seeking )
+void RenderThread::RenderScene( FrameListPtr scene, unsigned int pts, bool seeking )
 {
-	int siz = scene.size();
 	m_SceneQueue.append(scene);
 	m_PTSQueue.append(pts);
 	m_SeekingQueue.append(seeking);
@@ -153,16 +165,12 @@ void RenderThread::SetLayout(UintList ids, RectList srcRects, RectList dstRects)
 	m_DstRects = dstRects;
 }
 
-FrameList RenderThread::RenderFrames(FrameList sourceFrames, FrameList renderFramesOld)
+FrameListPtr RenderThread::RenderFrames(FrameListPtr sourceFrames, FrameListPtr renderFramesOld)
 {
-	if (sourceFrames.size()==2)
+	FrameListPtr renderFramesNew = FrameListPtr(new FrameList);
+	for (int i = 0; i < sourceFrames->size(); i++) 
 	{
-		int i=0;
-	}
-	FrameList renderFramesNew;
-	for (int i = 0; i < sourceFrames.size(); i++) 
-	{
-		FramePtr sourceFrame = sourceFrames.at(i);
+		FramePtr sourceFrame = sourceFrames->at(i);
 		if (!sourceFrame)
 		{
 			continue;
@@ -172,17 +180,20 @@ FrameList RenderThread::RenderFrames(FrameList sourceFrames, FrameList renderFra
 
 		FramePtr renderFrame;		
 		// Find existing render frame and extract it
-		for (int k = 0; k < renderFramesOld.size(); k++) 
+		if (renderFramesOld)
 		{
-			FramePtr _frame = renderFramesOld.at(k);
-			if (_frame && _frame->Info(VIEW_ID).toUInt() == viewID)
+			for (int k = 0; k < renderFramesOld->size(); k++) 
 			{
-				renderFramesOld.removeAt(k);
-				renderFrame = _frame;
-				break;
+				FramePtr _frame = renderFramesOld->at(k);
+				if (_frame && _frame->Info(VIEW_ID).toUInt() == viewID)
+				{
+					renderFramesOld->removeAt(k);
+					renderFrame = _frame;
+					break;
+				}
 			}
 		}
-
+		
 		// Deallocate if resolution changed
 		if (renderFrame && (sourceFrame->Format()->Width() != 
 			renderFrame->Format()->Width() || 
@@ -222,20 +233,24 @@ FrameList RenderThread::RenderFrames(FrameList sourceFrames, FrameList renderFra
 			m_Renderer->ReleaseFrame(renderFrame);
 		}
 
-		renderFramesNew.append(renderFrame);
+		renderFramesNew->append(renderFrame);
 	}
 
 	// Delete old frames
-	for (int i=0; i<renderFramesOld.size(); i++)
+	if (renderFramesOld)
 	{
-		FramePtr renderFrame = renderFramesOld.at(i);
-		if (renderFrame)
+		for (int i=0; i<renderFramesOld->size(); i++)
 		{
-			m_Renderer->Deallocate(renderFrame);
+			FramePtr renderFrame = renderFramesOld->at(i);
+			if (renderFrame)
+			{
+				m_Renderer->Deallocate(renderFrame);
+			}
+			renderFrame.clear();
 		}
-		renderFrame.clear();
+		renderFramesOld.clear();
 	}
-	renderFramesOld.clear();
+	
 
 	return renderFramesNew;
 }

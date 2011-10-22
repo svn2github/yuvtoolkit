@@ -15,6 +15,9 @@ void ProcessThread::run()
 	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
+	qRegisterMetaType<FrameListPtr>("FrameListPtr");
+	qRegisterMetaType<UintListPtr>("UintListPtr");
+	qRegisterMetaType<RectListPtr>("RectListPtr");
 
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(ProcessFrameQueue()), Qt::DirectConnection);
@@ -62,7 +65,7 @@ void ProcessThread::ProcessFrameQueue()
 	}*/
 	while (true)
 	{
-		FrameList scene;
+		FrameListPtr scene = FrameListPtr(new FrameList);
 		QMapIterator<unsigned int, FrameList > i(m_Frames);
 		while (i.hasNext()) 
 		{
@@ -76,13 +79,13 @@ void ProcessThread::ProcessFrameQueue()
 				FramePtr frame = frameList.first();
 				frameList.removeFirst();
 
-				scene.append(frame);
+				scene->append(frame);
 			}
 		}
 
-		if (scene.size()>0)
+		if (scene->size()>0)
 		{
-			emit sceneReady(scene, scene.first()->PTS(), false);
+			emit sceneReady(scene, scene->first()->PTS(), false);
 		}else
 		{
 			break;

@@ -25,7 +25,7 @@ public:
 
 	virtual QWidget* GetWidget() {return this;}
 
-	virtual RESULT RenderScene(FrameList frames);
+	virtual RESULT RenderScene(FrameListPtr frames);
 
 	// Allocate render specific buffers
 	virtual RESULT Allocate(FramePtr& frame, FormatPtr sourceFormat);
