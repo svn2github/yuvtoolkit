@@ -59,7 +59,7 @@ class VideoView : public QObject, public sigslot::has_slots<>
 	FramePtr m_LastFrame;
 public:
 	VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread);
-	void Init(const char* path, unsigned int pts); // for source view
+	void Init(const char* path); // for source view
 	void Init(Transform* transform, VideoQueue* source, QString outputName); // for tranform view
 	void Init(Measure* measure, VideoQueue* source, VideoQueue* source1); // for measure view
 	void UnInit();

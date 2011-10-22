@@ -20,10 +20,10 @@ class SourceThread : public QThread
 {
 	Q_OBJECT;
 public:
-	SourceThread(int id, const char* path);
+	SourceThread(int id, PlaybackInfo* info, const char* path);
 	~SourceThread(void);
 
-	void Start(unsigned int initialPTS);
+	void Start();
 	void Stop();
 
 	Source* GetSource() {return m_Source;}
@@ -33,7 +33,6 @@ signals:
 	void frameReady(FramePtr frame);
 
 public slots:
-	void Seek(unsigned int pts, bool playAfterSeek);
 
 private slots:
 	void ReadFrames();
@@ -45,10 +44,10 @@ private:
 	int m_ViewID;
 	QString m_Path;
 	Source* m_Source;
-	unsigned int m_SeekPTS;
 	bool m_EndOfFile;
 	
 	FramePool* m_FramePool;
+	PlaybackInfo* m_PlaybackInfo;
 };
 
 #endif

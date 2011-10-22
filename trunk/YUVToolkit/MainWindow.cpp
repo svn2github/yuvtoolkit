@@ -232,7 +232,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 		return;
 	}
 
-	unsigned int currentPTS = m_VideoViewList->StopSources();
+	m_VideoViewList->StopSources();
 	
 	for ( int i=0; i<fileList2.size(); i++) // if at least one QUrl is present in list
 	{
@@ -240,7 +240,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 		openFileInternal(fName);
 	}
 
-	m_VideoViewList->StartSources(currentPTS);
+	m_VideoViewList->StartSources();
 }
 
 
@@ -430,10 +430,8 @@ void MainWindow::openFileInternal( QString strPath)
 	}
 
 	VideoView* vv = m_VideoViewList->NewVideoView(strPath.toAscii());
-	vv->Init(strPath.toAscii(), m_VideoViewList->GetCurrentPTS());
+	vv->Init(strPath.toAscii());
 
-	connect(m_VideoViewList, SIGNAL(seek(unsigned int, bool)), vv->GetSourceThread(), SLOT(Seek(unsigned int, bool)));
-	
 	m_VideoViewList->UpdateDuration();
 
 	EnableButtons(true);
@@ -441,7 +439,6 @@ void MainWindow::openFileInternal( QString strPath)
 
 void MainWindow::play( bool play )
 {
-	// m_VideoViewList->Seek(INVALID_PTS, play);
 	m_VideoViewList->GetProcessThread()->Play(play);
 }
 
@@ -659,7 +656,8 @@ void MainWindow::seekVideoFromSlider()
 		unsigned int pts = qFloor(idx_new * 1000 / info.fps);
 		if (qRound(pts * info.fps / 1000) == idx_new)
 		{
-			m_VideoViewList->Seek(pts, false);
+			m_VideoViewList->GetProcessThread()->Play(false);
+			m_VideoViewList->Seek(pts);
 
 			return;
 		}
@@ -690,7 +688,7 @@ void MainWindow::on_action_Step_Back_Fast_triggered()
 
 void MainWindow::on_action_Seek_Beginning_triggered()
 {
-	m_VideoViewList->Seek(0, false);
+	m_VideoViewList->Seek(0);
 }
 
 void MainWindow::on_action_Seek_End_triggered()
@@ -703,7 +701,7 @@ void MainWindow::on_action_Seek_End_triggered()
 		SourceInfo info;
 		source->GetInfo(info);
 
-		m_VideoViewList->Seek(info.duration, false);
+		m_VideoViewList->Seek(info.duration);
 	}
 }
 
@@ -778,7 +776,7 @@ void MainWindow::OnTimer()
 			m_RenderSpeedLabel->setText(str);
 		}else
 		{
-			unsigned int pts = m_VideoViewList->GetSeekingPTS();
+			unsigned int pts = m_VideoViewList->GetProcessThread()->SeekingPTS();
 			if (pts != INVALID_PTS)
 			{
 				str.clear();
@@ -841,7 +839,7 @@ void MainWindow::stepVideo( int step )
 	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), info.num_frames-1);
 	unsigned int pts = source->IndexToPTS(frame_num);
 
-	m_VideoViewList->Seek(pts, false);
+	m_VideoViewList->Seek(pts);
 
 	bool old = m_Slider->blockSignals(true);
 	m_Slider->setSliderPosition(frame_num);

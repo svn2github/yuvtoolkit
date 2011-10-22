@@ -38,22 +38,20 @@ public:
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 	ProcessThread* GetProcessThread() {return m_ProcessThread;}
 
-	void Seek(unsigned int pts, bool playAfterSeek);
+	void Seek(unsigned int pts);
 
 	bool IsPlaying();
 
-	unsigned int GetCurrentPTS() {return m_CurrentPTS; }
 	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
-	unsigned int GetSeekingPTS() {return m_SeekingPTS; }
 	void CheckRenderReset();
 	void CheckLoopFromStart();
 	void CheckResolutionChanged();
 	void UpdateMeasureWindows();
 	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
 
-	unsigned int StopSources();
-	void StartSources(unsigned int);
+	void StopSources();
+	void StartSources();
 		
 public slots:
 	void UpdateDuration();
@@ -66,20 +64,14 @@ signals:
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
 	void layoutUpdated(UintList, RectList, RectList);
-	
-	void seek(unsigned int pts, bool playAfterSeek);
 private:
 	RenderThread* m_RenderThread;
 	ProcessThread* m_ProcessThread;
 
 	unsigned int m_Duration;
-	volatile unsigned int m_CurrentPTS;
 	unsigned int m_VideoCount;
 	VideoView* m_LongestVideoView;
 	bool m_EndOfFile;
-
-	volatile unsigned int  m_SeekingPTS;
-	volatile unsigned int  m_SeekingPTSNext;
 };
 
 #endif

@@ -206,7 +206,6 @@ struct SourceInfo
 };
 
 
-
 // Source produces source video stream
 // can be Webcam, AVI eller raw files or maybe from network?
 class Source
@@ -242,6 +241,14 @@ public:
 
 	// Signal when GUI is needed and should be popped up
 	sigslot::signal0<> GUINeeded;
+};
+
+class PlaybackInfo
+{
+public:
+	virtual bool IsPlaying() = 0;
+	virtual unsigned int LastPTS() = 0;
+	virtual unsigned int SeekingPTS() = 0; // return INVALID_PTS when is not seeking
 };
 
 

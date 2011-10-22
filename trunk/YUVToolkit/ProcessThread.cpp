@@ -1,6 +1,6 @@
 #include "ProcessThread.h"
 
-ProcessThread::ProcessThread() : m_Play(true)
+ProcessThread::ProcessThread() : m_Play(true), m_LastPTS(INVALID_PTS), m_SeekingPTS(INVALID_PTS)
 {
 	moveToThread(this);
 }
@@ -45,24 +45,22 @@ void ProcessThread::ProcessFrameQueue()
 {
 	CleanQueue();
 
+	if (m_SeekingPTS != INVALID_PTS)
+	{
+		FrameListPtr scene = FastSeekQueue(m_SeekingPTS);
+		if (scene && scene->size() == m_SourceViewIDs.size())
+		{
+			emit sceneReady(scene, m_SeekingPTS, true);
+
+			m_SeekingPTS = INVALID_PTS;
+		}
+	}
+
 	if (!m_Play)
 	{
 		return;
 	}
 
-	/*if (!m_Play)
-	{
-		FrameList scene = FastSeekQueue(m_SeekingPTS);
-		if (scene.size() == m_SourceViewIDs.size())
-		{
-			int siz = scene.size();
-			emit sceneReady(scene, m_SeekingPTS, true);
-
-			m_SeekingPTS = INVALID_PTS;
-		}
-
-		return;
-	}*/
 	while (true)
 	{
 		FrameListPtr scene = FrameListPtr(new FrameList);
@@ -85,7 +83,8 @@ void ProcessThread::ProcessFrameQueue()
 
 		if (scene->size()>0)
 		{
-			emit sceneReady(scene, scene->first()->PTS(), false);
+			m_LastPTS = scene->first()->PTS();
+			emit sceneReady(scene, m_LastPTS, false);
 		}else
 		{
 			break;
@@ -108,9 +107,24 @@ void ProcessThread::Play( bool play )
 	m_Play = play;
 }
 
+void ProcessThread::Seek( unsigned int pts )
+{
+	m_SeekingPTS = pts;
+}
+
 bool ProcessThread::IsPlaying()
 {
 	return m_Play;
+}
+
+unsigned int ProcessThread::LastPTS()
+{
+	return m_LastPTS;
+}
+
+unsigned int ProcessThread::SeekingPTS()
+{
+	return m_SeekingPTS;
 }
 
 void ProcessThread::CleanQueue()
@@ -129,12 +143,12 @@ void ProcessThread::CleanQueue()
 	}
 }
 
-FrameList ProcessThread::FastSeekQueue( unsigned int pts )
+FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts )
 {
 	// Clean up queue tills seeking frame is found, 
 	// clean up so that source has buffer to fill-up
 	// return list of seeking frame
-	FrameList scene;
+	FrameListPtr scene = FrameListPtr(new FrameList);
 	QMapIterator<unsigned int, FrameList > i(m_Frames);
 	while (i.hasNext())
 	{
@@ -146,12 +160,12 @@ FrameList ProcessThread::FastSeekQueue( unsigned int pts )
 		while (frameList.size()>0)
 		{
 			FramePtr frame = frameList.first();
-			if (frame->Info(SEEKING_PTS).toUInt() == INVALID_PTS)
+			if (frame->Info(SEEKING_PTS).toUInt() != m_SeekingPTS)
 			{
 				frameList.removeFirst();
 			}else
 			{
-				scene.append(frame);
+				scene->append(frame);
 				break;
 			}
 		}
@@ -159,3 +173,4 @@ FrameList ProcessThread::FastSeekQueue( unsigned int pts )
 
 	return scene;
 }
+

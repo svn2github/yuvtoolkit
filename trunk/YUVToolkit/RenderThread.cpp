@@ -40,16 +40,20 @@ void RenderThread::Stop()
 	quit();
 	wait();
 
-	for (int i = 0; i < m_LastRenderFrames->size(); i++) 
+	FrameListPtr lastFrames = m_LastRenderFrames;
+	if (lastFrames)
 	{
-		FramePtr renderFrame = m_LastRenderFrames->at(i);
-
-		if (renderFrame)
+		for (int i = 0; i < lastFrames->size(); i++) 
 		{
-			m_Renderer->Deallocate(renderFrame);
+			FramePtr renderFrame = lastFrames->at(i);
+
+			if (renderFrame)
+			{
+				m_Renderer->Deallocate(renderFrame);
+			}
 		}
+		lastFrames->clear();
 	}
-	m_LastRenderFrames.clear();
 	m_LastSourceFrames.clear();
 
 	m_SceneQueue.clear();

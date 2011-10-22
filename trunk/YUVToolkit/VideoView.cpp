@@ -48,10 +48,10 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThre
 	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(OnClose()));
 }
 
-void VideoView::Init( const char* path, unsigned int pts)
+void VideoView::Init( const char* path)
 {
 	m_Type = PLUGIN_SOURCE;
-	m_SourceThread = new SourceThread(m_ViewID, path);
+	m_SourceThread = new SourceThread(m_ViewID, m_ProcessThread, path);
 
 	Source* source = m_SourceThread->GetSource();
 	if (source && source->HasGUI())

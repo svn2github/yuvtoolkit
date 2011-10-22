@@ -13,7 +13,6 @@
 
 VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL),
 	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0),
-	m_CurrentPTS(0), m_SeekingPTS(INVALID_PTS), m_SeekingPTSNext(INVALID_PTS), 
 	m_EndOfFile(false)
 {
 	m_RenderWidget = rw;
@@ -133,7 +132,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 	m_RenderThread->Stop();
 
-	unsigned int currentPTS = StopSources();
+	StopSources();
 	
 	m_RenderWidget->layout->RemoveView(vv);
 	m_VideoList.removeOne(vv);
@@ -154,12 +153,9 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 		m_RenderWidget->UnInit();
 		m_RenderWidget->repaint();
-
-		m_CurrentPTS = 0;
-		m_SeekingPTS = m_SeekingPTSNext = INVALID_PTS;
 	}else
 	{
-		StartSources(currentPTS);
+		StartSources();
 	}
 
 	emit VideoViewClosed(vv);
@@ -374,32 +370,18 @@ public:
 	}
 };
 
-void VideoViewList::Seek( unsigned int pts, bool playAfterSeek)
+void VideoViewList::Seek( unsigned int pts )
 {
-	INFO_LOG("VideoViewList::Seek %d - m_SeekingPTS %d", pts, m_SeekingPTS);
+	INFO_LOG("VideoViewList::Seek %d", pts);
 
 	assert(m_VideoList.size()>0);
 	
-	if (pts != INVALID_PTS)
-	{
-		if (m_SeekingPTS == INVALID_PTS)
-		{
-			m_SeekingPTS = pts;
-			emit seek(pts, playAfterSeek);
-		}else
-		{
-			// Already seeking
-			m_SeekingPTSNext = pts;
-		}
-	} else
-	{
-		emit seek(pts, playAfterSeek);
-	}
+	m_ProcessThread->Seek(pts);
 }
 
 void VideoViewList::CheckLoopFromStart()
 {
-	if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext == INVALID_PTS)
+	if (m_ProcessThread->IsPlaying())
 	{
 		VideoView* vv = m_LongestVideoView;
 		
@@ -410,7 +392,7 @@ void VideoViewList::CheckLoopFromStart()
 
 		if (!m_EndOfFile && endOfFile)
 		{
-			Seek(0, true);
+			Seek(0);
 		}
 
 		m_EndOfFile = endOfFile;
@@ -530,22 +512,6 @@ void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool 
 			vv->SetLastFrame(frame);
 		}
 	}
-
-	m_CurrentPTS = pts;
-
-	if (seeking)
-	{
-		// assert(pts == m_SeekingPTS);
-		m_SeekingPTS = INVALID_PTS;
-
-		if (m_SeekingPTS == INVALID_PTS && m_SeekingPTSNext != INVALID_PTS)
-		{
-			unsigned int pts = m_SeekingPTSNext;
-			m_SeekingPTSNext = INVALID_PTS;
-
-			Seek(pts, m_ProcessThread->IsPlaying());
-		}
-	}
 }
 
 VideoView* VideoViewList::find( unsigned int id ) const
@@ -575,13 +541,10 @@ UintList VideoViewList::GetSourceIDList() const
 	return lst;
 }
 
-unsigned int VideoViewList::StopSources()
+void VideoViewList::StopSources()
 {
-	unsigned int currentPTS = 0;
 	if (size()>0)
 	{
-		currentPTS = GetCurrentPTS();
-
 		for (int i=0; i<size(); ++i) 
 		{
 			VideoView* vv = at(i);
@@ -600,10 +563,9 @@ unsigned int VideoViewList::StopSources()
 
 		
 	}
-	return currentPTS;
 }
 
-void VideoViewList::StartSources( unsigned int pts)
+void VideoViewList::StartSources()
 {
 	if (size()>0)
 	{
@@ -615,7 +577,7 @@ void VideoViewList::StartSources( unsigned int pts)
 			VideoView* vv = at(i);
 			if (vv->GetSourceThread())
 			{
-				vv->GetSourceThread()->Start(pts);
+				vv->GetSourceThread()->Start();
 			}
 		}
 	}

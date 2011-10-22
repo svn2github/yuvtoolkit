@@ -6,7 +6,7 @@
 #include <QList>
 #include <QMap>
 
-class ProcessThread : public QThread
+class ProcessThread : public QThread, public PlaybackInfo
 {
 	Q_OBJECT;
 public:
@@ -16,22 +16,24 @@ public:
 	void Start(UintList sourceViewIDs);
 	void Stop();
 
-	bool IsPlaying();
+	virtual bool IsPlaying();
+	virtual unsigned int LastPTS();
+	virtual unsigned int SeekingPTS();
 signals:
 	// Signals that one scene is ready for render
 	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
 	
 public slots:
-	void ReceiveFrame(FramePtr frame);
-	
+	void ReceiveFrame(FramePtr frame);	
 	void Play(bool play);
+	void Seek(unsigned int pts);
 
 private slots:
 	void ProcessFrameQueue();
 private:
 	void run();
 	
-	FrameList FastSeekQueue(unsigned int pts);
+	FrameListPtr FastSeekQueue(unsigned int pts);
 	void CleanQueue();
 private:
 	QMap<unsigned int, FrameList > m_Frames;
@@ -39,6 +41,9 @@ private:
 	
 	// Play/Pause
 	volatile bool m_Play;
+
+	volatile unsigned int m_LastPTS;
+	volatile unsigned int m_SeekingPTS;
 };
 
 #endif
