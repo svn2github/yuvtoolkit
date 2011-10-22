@@ -4,8 +4,8 @@
 #include <QtCore>
 #include <QtGui/QWidget>
 
-class YT_Renderer;
-class YT_PlugIn;
+class Renderer;
+class YTPlugIn;
 class Layout;
 
 class RendererWidget : public QWidget
@@ -20,8 +20,8 @@ public:
 	void Init(const QString& renderType);
 	void UnInit();
 
-	YT_Renderer* GetRenderer() {return m_Renderer;}
-	YT_PlugIn* GetRenderPlugIn() {return m_Plugin;}
+	Renderer* GetRenderer() {return m_Renderer;}
+	YTPlugIn* GetRenderPlugIn() {return m_Plugin;}
 
 signals:
 	void repositioned();
@@ -32,11 +32,11 @@ protected:
 	virtual void resizeEvent ( QResizeEvent* );
 	virtual void moveEvent (QMoveEvent *);
 
-	YT_Renderer* m_Renderer;
+	Renderer* m_Renderer;
 	void paintEvent(QPaintEvent*);
 
 	QImage m_Background;
-	YT_PlugIn* m_Plugin;
+	YTPlugIn* m_Plugin;
 };
 
 #endif

@@ -10,15 +10,17 @@
 
 SourceThread::SourceThread(int id, const char* p) : m_Path(p), 
 			m_Source(0), m_ViewID(id), 
-			m_SeekPTS(INVALID_PTS), m_EndOfFile(false), m_FramePool(BUFFER_COUNT)
+			m_SeekPTS(INVALID_PTS), m_EndOfFile(false)
 {
 	moveToThread(this);
 
-	YT_PlugIn* plugin;
+	YTPlugIn* plugin;
 	plugin = GetHostImpl()->FindSourcePlugin(m_Path.right(4));
 	m_Source = plugin->NewSource(m_Path.right(4));
 
 	m_Source->Init(m_Path);
+
+	m_FramePool = GetHostImpl()->NewFramePool(BUFFER_COUNT);
 }
 
 SourceThread::~SourceThread(void)
@@ -31,18 +33,13 @@ SourceThread::~SourceThread(void)
 	delete m_Source;
 	m_Source = NULL;
 
-	// while (m_FramePool.Size() != BUFFER_COUNT)
-	if (m_FramePool.Size() != BUFFER_COUNT)
-	{
-		WARNING_LOG("Waiting for frame pool to uninitialize (%s)... ", m_Path.toAscii());
-		QThread::sleep(1);
-	}
+	GetHostImpl()->ReleaseFramePool(m_FramePool);
 }
 
 void SourceThread::run()
 {
-	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
-	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<FramePtr>("FramePtr");
+	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 
@@ -77,15 +74,15 @@ void SourceThread::ReadFrames()
 {
 	while (true)
 	{
-		if (m_EndOfFile || !m_FramePool.Size())
+		if (m_EndOfFile || !m_FramePool->Size())
 		{
 			return;
 		}
 
-		YT_Source_Info info;
+		SourceInfo info;
 		m_Source->GetInfo(info);
 
-		YT_Frame_Ptr frame = m_FramePool.Get();
+		FramePtr frame = m_FramePool->Get();
 
 		if (*frame->Format() != *info.format)
 		{
@@ -99,9 +96,9 @@ void SourceThread::ReadFrames()
 		frame->SetInfo(SEEKING_PTS, INVALID_PTS);
 
 		// Get next frame or seek 
-		YT_RESULT res = m_Source->GetFrame(frame, m_SeekPTS);
+		RESULT res = m_Source->GetFrame(frame, m_SeekPTS);
 
-		if (res == YT_OK)
+		if (res == OK)
 		{
 			frame->SetInfo(IS_LAST_FRAME, frame->PTS() == info.lastPTS);
 			frame->SetInfo(SEEKING_PTS, m_SeekPTS);
@@ -116,9 +113,9 @@ void SourceThread::ReadFrames()
 
 		}else
 		{
-			if (res == YT_END_OF_FILE)
+			if (res == END_OF_FILE)
 			{
-				INFO_LOG("m_Source->GetFrame returns YT_END_OF_FILE, seek %X", m_SeekPTS);
+				INFO_LOG("m_Source->GetFrame returns END_OF_FILE, seek %X", m_SeekPTS);
 			}else
 			{
 				ERROR_LOG("m_Source->GetFrame returns error %d, seek %X", res, m_SeekPTS);

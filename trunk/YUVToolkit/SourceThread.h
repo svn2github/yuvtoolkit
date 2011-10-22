@@ -1,5 +1,5 @@
-#ifndef YT_GRAPH_H
-#define YT_GRAPH_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "YT_InterfaceImpl.h"
 #include <QtGui>
@@ -8,9 +8,9 @@
 #include <QWaitCondition>
 
 class QWidget;
-class YT_Source;
-class YT_Renderer;
-class YT_Format;
+class Source;
+class Renderer;
+class Format;
 class QDockWidget;
 class VideoView;
 
@@ -26,11 +26,11 @@ public:
 	void Start(unsigned int initialPTS);
 	void Stop();
 
-	YT_Source* GetSource() {return m_Source;}
+	Source* GetSource() {return m_Source;}
 	QString& GetSourcePath() {return m_Path;}
 
 signals:
-	void frameReady(YT_Frame_Ptr frame);
+	void frameReady(FramePtr frame);
 
 public slots:
 	void Seek(unsigned int pts, bool playAfterSeek);
@@ -44,11 +44,11 @@ private:
 private:
 	int m_ViewID;
 	QString m_Path;
-	YT_Source* m_Source;
+	Source* m_Source;
 	unsigned int m_SeekPTS;
 	bool m_EndOfFile;
 	
-	YT_FramePool m_FramePool;
+	FramePool* m_FramePool;
 };
 
 #endif

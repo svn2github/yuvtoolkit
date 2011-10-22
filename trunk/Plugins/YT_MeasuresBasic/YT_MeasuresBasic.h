@@ -1,27 +1,27 @@
-#ifndef YT_MEASURESBASIC_H
-#define YT_MEASURESBASIC_H
+#ifndef MEASURESBASIC_H
+#define MEASURESBASIC_H
 
 #include "../YT_Interface.h"
 
-class YT_MeasuresBasic : public QObject, public YT_Measure
+class MeasuresBasic : public QObject, public Measure
 {
 	Q_OBJECT;
 
-	double ComputeMSE(YT_Frame_Ptr input1, YT_Frame_Ptr input2, YT_Frame_Ptr output, int plane);
-	void AddMeasure(int m, YT_Format_Ptr sourceFormat, QList<YT_Measure_Item>& items, bool addAllPlanes);
+	double ComputeMSE(FramePtr input1, FramePtr input2, FramePtr output, int plane);
+	void AddMeasure(int m, FormatPtr sourceFormat, QList<MeasureItem>& items, bool addAllPlanes);
 public:
-	YT_MeasuresBasic();
-	~YT_MeasuresBasic();
+	MeasuresBasic();
+	~MeasuresBasic();
 
-	virtual YT_RESULT GetMeasureString(YT_Measure_Item item, YT_Format_Ptr sourceFormat1, YT_Format_Ptr sourceFormat2, QString& str);
+	virtual RESULT GetMeasureString(MeasureItem item, FormatPtr sourceFormat1, FormatPtr sourceFormat2, QString& str);
 
-	virtual YT_RESULT GetSupportedModes(YT_Format_Ptr sourceFormat1, YT_Format_Ptr sourceFormat2, 
-		QList<YT_Measure_Item>& outputViewItems, QList<YT_Measure_Item>& outputMeasureItems);
+	virtual RESULT GetSupportedModes(FormatPtr sourceFormat1, FormatPtr sourceFormat2, 
+		QList<MeasureItem>& outputViewItems, QList<MeasureItem>& outputMeasureItems);
 
 	// Process
-	virtual YT_RESULT Process(const YT_Frame_Ptr input1, const YT_Frame_Ptr input2, 
-		QMap<YT_Measure_Item, YT_Frame_Ptr>& outputViewItems,
-		QMap<YT_Measure_Item, QVariant>& outputMeasureItems);
+	virtual RESULT Process(const FramePtr input1, const FramePtr input2, 
+		QMap<MeasureItem, FramePtr>& outputViewItems,
+		QMap<MeasureItem, QVariant>& outputMeasureItems);
 };
 
-#endif // YT_MEASURESBASIC_H
+#endif // MEASURESBASIC_H

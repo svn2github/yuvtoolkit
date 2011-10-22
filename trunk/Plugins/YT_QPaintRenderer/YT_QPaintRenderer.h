@@ -1,47 +1,47 @@
-#ifndef YT_QPAINT_RENDERER_H
-#define YT_QPAINT_RENDERER_H
+#ifndef QPAINT_RENDERER_H
+#define QPAINT_RENDERER_H
 
 #include "../YT_Interface.h"
 #include <QtGui>
 
-class YT_QPaintRendererPlugin : public QObject, public YT_PlugIn
+class QPaintRendererPlugin : public QObject, public YTPlugIn
 {
 	Q_OBJECT;
-	Q_INTERFACES(YT_PlugIn);
+	Q_INTERFACES(YTPlugIn);
 public:
-	virtual YT_RESULT Init(YT_Host*);
+	virtual RESULT Init(Host*);
 
-	virtual YT_Renderer* NewRenderer(QWidget* widget, const QString& name);
-	virtual void ReleaseRenderer(YT_Renderer*);
+	virtual Renderer* NewRenderer(QWidget* widget, const QString& name);
+	virtual void ReleaseRenderer(Renderer*);
 };
 
-class YT_QPaintRenderer : public QWidget, public YT_Renderer
+class QPaintRenderer : public QWidget, public Renderer
 {
 	Q_OBJECT;
 public:
-	YT_QPaintRenderer(YT_Host* host, QWidget* widget, const QString& name);
-	~YT_QPaintRenderer();
+	QPaintRenderer(Host* host, QWidget* widget, const QString& name);
+	~QPaintRenderer();
 
 	virtual QWidget* GetWidget() {return this;}
 
-	virtual YT_RESULT RenderScene(YT_Frame_List frames);
+	virtual RESULT RenderScene(FrameList frames);
 
 	// Allocate render specific buffers
-	virtual YT_RESULT Allocate(YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat);
-	virtual YT_RESULT Deallocate(YT_Frame_Ptr frame);
+	virtual RESULT Allocate(FramePtr& frame, FormatPtr sourceFormat);
+	virtual RESULT Deallocate(FramePtr frame);
 
-	// Prepare YT_Frame_Ptr before using it
-	virtual YT_RESULT GetFrame(YT_Frame_Ptr& frame);
-	virtual YT_RESULT ReleaseFrame(YT_Frame_Ptr frame);
+	// Prepare FramePtr before using it
+	virtual RESULT GetFrame(FramePtr& frame);
+	virtual RESULT ReleaseFrame(FramePtr frame);
 
 	virtual bool NeedReset() {return false;}
 
-	// If any function returns YT_E_RENDER_RESET, caller need to
+	// If any function returns E_RENDER_RESET, caller need to
 	// 1. Release all render frames using ReleaseFrame(..)
 	// 2. Deallocate all render frames using Deallocate(..)
 	// 3. Call Reset()
 	// 4. Reallocate frames again using Allocae(..)
-	virtual YT_RESULT Reset() {return YT_OK;}
+	virtual RESULT Reset() {return OK;}
 
 protected:
 	void paintEvent(QPaintEvent*);
@@ -49,9 +49,9 @@ protected:
 	QMutex m_MutexFramesRendered;
 	QWaitCondition m_FramesRendered;
 
-	YT_Frame_List m_Frames;
+	FrameList m_Frames;
 protected:
-	YT_Host* m_Host;
+	Host* m_Host;
 };
 
-#endif // YT_QPAINT_RENDERER_H
+#endif // QPAINT_RENDERER_H

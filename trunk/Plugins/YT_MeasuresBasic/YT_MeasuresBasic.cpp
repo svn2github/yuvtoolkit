@@ -3,20 +3,20 @@
 enum MeasureType {MEASURE_MSE=0, MEASURE_PSNR};
 char* measureString[] = {"MSE", "PSNR"};
 
-YT_MeasuresBasic::YT_MeasuresBasic()
+MeasuresBasic::MeasuresBasic()
 {
 }
 
-YT_MeasuresBasic::~YT_MeasuresBasic()
+MeasuresBasic::~MeasuresBasic()
 {
 }
 
-double YT_MeasuresBasic::ComputeMSE( YT_Frame_Ptr input1, YT_Frame_Ptr input2, YT_Frame_Ptr output, int plane )
+double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, FramePtr output, int plane )
 {
 	if (output)
 	{
 		output->Reset();
-		output->Format()->SetColor(YT_I420);
+		output->Format()->SetColor(I420);
 		output->Format()->SetStride(0, 0);
 		output->Format()->SetWidth(input1->Format()->PlaneWidth(plane));
 		output->Format()->SetHeight(input1->Format()->PlaneHeight(plane));
@@ -43,7 +43,7 @@ double YT_MeasuresBasic::ComputeMSE( YT_Frame_Ptr input1, YT_Frame_Ptr input2, Y
 	return mse;
 }
 
-YT_RESULT YT_MeasuresBasic::GetMeasureString( YT_Measure_Item item, YT_Format_Ptr sourceFormat1, YT_Format_Ptr sourceFormat2, QString& str )
+RESULT MeasuresBasic::GetMeasureString( MeasureItem item, FormatPtr sourceFormat1, FormatPtr sourceFormat2, QString& str )
 {
 	str = measureString[item.measureType];
 	if (item.plane>=0 && item.plane<=3)
@@ -53,12 +53,12 @@ YT_RESULT YT_MeasuresBasic::GetMeasureString( YT_Measure_Item item, YT_Format_Pt
 		str += " Component";
 	}
 
-	return YT_OK;
+	return OK;
 }
 
-void YT_MeasuresBasic::AddMeasure(int m, YT_Format_Ptr sourceFormat, QList<YT_Measure_Item>& items, bool addAllPlanes)
+void MeasuresBasic::AddMeasure(int m, FormatPtr sourceFormat, QList<MeasureItem>& items, bool addAllPlanes)
 {
-	YT_Measure_Item item;
+	MeasureItem item;
 	item.measureType = m;
 	if (addAllPlanes)
 	{
@@ -76,15 +76,15 @@ void YT_MeasuresBasic::AddMeasure(int m, YT_Format_Ptr sourceFormat, QList<YT_Me
 	}
 }
 
-YT_RESULT YT_MeasuresBasic::GetSupportedModes( YT_Format_Ptr sourceFormat1, YT_Format_Ptr sourceFormat2, 
-											  QList<YT_Measure_Item>& outputViewItems, QList<YT_Measure_Item>& outputMeasureItems )
+RESULT MeasuresBasic::GetSupportedModes( FormatPtr sourceFormat1, FormatPtr sourceFormat2, 
+											  QList<MeasureItem>& outputViewItems, QList<MeasureItem>& outputMeasureItems )
 {
 	if (sourceFormat1->Color() != sourceFormat2->Color() || 
 		sourceFormat1->Width() != sourceFormat2->Width() ||
 		sourceFormat1->Height() != sourceFormat2->Height())
 	{
 		// Measure not supported
-		return YT_OK;
+		return OK;
 	}
 
 	outputViewItems.clear();	
@@ -97,21 +97,21 @@ YT_RESULT YT_MeasuresBasic::GetSupportedModes( YT_Format_Ptr sourceFormat1, YT_F
 		AddMeasure(m, sourceFormat1, outputMeasureItems, true);
 	}
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_MeasuresBasic::Process( const YT_Frame_Ptr input1, const YT_Frame_Ptr input2, 
-									QMap<YT_Measure_Item, YT_Frame_Ptr>& outputViewItems,
-									QMap<YT_Measure_Item, QVariant>& outputMeasureItems )
+RESULT MeasuresBasic::Process( const FramePtr input1, const FramePtr input2, 
+									QMap<MeasureItem, FramePtr>& outputViewItems,
+									QMap<MeasureItem, QVariant>& outputMeasureItems )
 {
 	if (input1->Format() != input2->Format())
 	{
-		return YT_ERROR;
+		return E_UNKNOWN;
 	}
 
 	double mses[4] = {0,0,0,0};
 	double psnr[4] = {0,0,0,0};
-	YT_Measure_Item item;
+	MeasureItem item;
 	for (int p=0; p<4; p++)
 	{
 		if (!input1->Format()->IsPlanar(p))
@@ -120,7 +120,7 @@ YT_RESULT YT_MeasuresBasic::Process( const YT_Frame_Ptr input1, const YT_Frame_P
 		}
 
 		item.plane = p;
-		YT_Frame_Ptr output;
+		FramePtr output;
 
 		item.measureType = MEASURE_MSE;
 		mses[p] = ComputeMSE(input1, input2, output, p);
@@ -138,6 +138,6 @@ YT_RESULT YT_MeasuresBasic::Process( const YT_Frame_Ptr input1, const YT_Frame_P
 		}
 	}
 
-	return YT_OK;
+	return OK;
 }
 

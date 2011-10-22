@@ -9,7 +9,7 @@ class RenderThread : public QThread
 	Q_OBJECT;
 public:
 	
-	RenderThread(YT_Renderer* renderer, VideoViewList* list);
+	RenderThread(Renderer* renderer, VideoViewList* list);
 	~RenderThread(void);
 
 	void Start();
@@ -17,10 +17,10 @@ public:
 
 	float GetSpeedRatio();
 signals:
-	void sceneRendered(YT_Frame_List scene, unsigned int pts, bool seeking);
+	void sceneRendered(FrameList scene, unsigned int pts, bool seeking);
 
 public slots:
-	void RenderScene(YT_Frame_List scene, unsigned int pts, bool seeking); 
+	void RenderScene(FrameList scene, unsigned int pts, bool seeking); 
 	void SetLayout(UintList, RectList, RectList);
 
 private slots:
@@ -28,20 +28,20 @@ private slots:
 
 protected:
 	void run();
-	YT_Frame_List RenderFrames(YT_Frame_List sourceFrames, YT_Frame_List renderFramesOld);
+	FrameList RenderFrames(FrameList sourceFrames, FrameList renderFramesOld);
 	
 	float m_SpeedRatio;
-	YT_Renderer* m_Renderer;
+	Renderer* m_Renderer;
 	VideoViewList* m_VideoViewList;
 
 	// render queue
-	QList<YT_Frame_List > m_SceneQueue;
+	QList<FrameList > m_SceneQueue;
 	UintList m_PTSQueue;
 	QList<bool> m_SeekingQueue;
 
 	// Last rendered scene
-	YT_Frame_List m_LastSourceFrames;
-	YT_Frame_List m_LastRenderFrames;
+	FrameList m_LastSourceFrames;
+	FrameList m_LastRenderFrames;
 	unsigned int m_LastPTS;
 	bool m_LastSeeking;
 

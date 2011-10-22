@@ -5,28 +5,28 @@
 #include <stdint.h>
 #include <string.h>
 
-YT_HostImpl* GetHostImpl()
+HostImpl* GetHostImpl()
 {
-	return (YT_HostImpl*)GetHost();
+	return (HostImpl*)GetHost();
 }
 
-YT_FormatImpl::YT_FormatImpl() : color(YT_NODATA), width(0), height(0), format_changed(true)
+FormatImpl::FormatImpl() : color(NODATA), width(0), height(0), format_changed(true)
 {
 	memset(stride, 0, sizeof(stride));
 	memset(plane_size, 0, sizeof(plane_size));
 }
 
-YT_FormatImpl::~YT_FormatImpl()
+FormatImpl::~FormatImpl()
 {
 }
 
 
-YT_COLOR_FORMAT YT_FormatImpl::Color() const
+COLOR_FORMAT FormatImpl::Color() const
 {
 	return color;
 }
 
-void YT_FormatImpl::SetColor( YT_COLOR_FORMAT value )
+void FormatImpl::SetColor( COLOR_FORMAT value )
 {
 	color = value;
 	format_changed = true;
@@ -35,55 +35,55 @@ void YT_FormatImpl::SetColor( YT_COLOR_FORMAT value )
 
 	switch(color)
 	{
-	case YT_I420:
-	case YT_IYUV:
+	case I420:
+	case IYUV:
 		strcpy(name[0], "Y");
 		strcpy(name[1], "U");
 		strcpy(name[2], "V");
 		break;
-	case YT_YV12:
+	case YV12:
 		strcpy(name[0], "Y");
 		strcpy(name[1], "V");
 		strcpy(name[2], "U");
 		break;
-	case YT_NV12:
+	case NV12:
 		strcpy(name[0], "Y");
 		strcpy(name[1], "UV");
 		break;
-	case YT_YUY2:
-	case YT_UYVY:
-	case YT_NODATA:
-	case YT_GRAYSCALE8:
-	case YT_RGB24:
-	case YT_RGBX32:
-	case YT_XRGB32:
+	case YUY2:
+	case UYVY:
+	case NODATA:
+	case GRAYSCALE8:
+	case RGB24:
+	case RGBX32:
+	case XRGB32:
 		break;
 	}
 }
 
-int YT_FormatImpl::Width() const
+int FormatImpl::Width() const
 {
 	return width;
 }
 
-void YT_FormatImpl::SetWidth( int value )
+void FormatImpl::SetWidth( int value )
 {
 	width = value;
 	format_changed = true;
 }
 
-int YT_FormatImpl::Height() const
+int FormatImpl::Height() const
 {
 	return height;
 }
 
-void YT_FormatImpl::SetHeight( int value )
+void FormatImpl::SetHeight( int value )
 {
 	height = value;
 	format_changed = true;
 }
 
-int YT_FormatImpl::Stride( int plane ) const
+int FormatImpl::Stride( int plane ) const
 {
 	if (plane>=0 && plane<4)
 	{
@@ -94,7 +94,7 @@ int YT_FormatImpl::Stride( int plane ) const
 	}
 }
 
-void YT_FormatImpl::SetStride( int plane, int value )
+void FormatImpl::SetStride( int plane, int value )
 {
 	if (plane>=0 && plane<4)
 	{
@@ -103,13 +103,13 @@ void YT_FormatImpl::SetStride( int plane, int value )
 	}
 }
 
-int* YT_FormatImpl::Stride() const
+int* FormatImpl::Stride() const
 {
 	return (int*)stride;
 }
 
 
-size_t YT_FormatImpl::PlaneSize( int plane )
+size_t FormatImpl::PlaneSize( int plane )
 {
 	if (format_changed)
 	{
@@ -118,34 +118,34 @@ size_t YT_FormatImpl::PlaneSize( int plane )
 			stride[0] = stride[1] = stride[2] = stride[3] = 0;
 			switch(color)
 			{
-			case YT_I420:
-			case YT_IYUV:
-			case YT_YV12:
+			case I420:
+			case IYUV:
+			case YV12:
 				stride[0] = width;
 				stride[1] = width/2;
 				stride[2] = width/2;
 				break;
-			case YT_NV12:
+			case NV12:
 				stride[0] = width;
 				stride[1] = width;
 				break;
-			case YT_YUY2:
-			case YT_UYVY:
+			case YUY2:
+			case UYVY:
 				stride[0] = width*2;
 				break;
-			case YT_RGB24:
+			case RGB24:
 				stride[0] = width*3;
 				break;
-			case YT_XRGB32:
+			case XRGB32:
 				stride[0] = width*4;
 				break;
-			case YT_RGBX32:
+			case RGBX32:
 				stride[0] = width*4;
 				break;
-			case YT_GRAYSCALE8:
+			case GRAYSCALE8:
 				stride[0] = width;
 				break;
-			case YT_NODATA:
+			case NODATA:
 				break;
 			}
 		}
@@ -153,20 +153,20 @@ size_t YT_FormatImpl::PlaneSize( int plane )
 		int vstride[4] = {height, 0, 0, 0};
 		switch(color)
 		{
-		case YT_I420:
-		case YT_IYUV:
-		case YT_YV12:
-		case YT_NV12:
+		case I420:
+		case IYUV:
+		case YV12:
+		case NV12:
 			vstride[1] = height/2;
 			vstride[2] = height/2;
 			break;
-		case YT_NODATA:
-		case YT_GRAYSCALE8:
-		case YT_RGB24:
-		case YT_RGBX32:
-		case YT_XRGB32:
-		case YT_YUY2:
-		case YT_UYVY:
+		case NODATA:
+		case GRAYSCALE8:
+		case RGB24:
+		case RGBX32:
+		case XRGB32:
+		case YUY2:
+		case UYVY:
 			break;
 		}
 
@@ -191,7 +191,7 @@ size_t YT_FormatImpl::PlaneSize( int plane )
 	}
 }
 
-bool YT_FormatImpl::operator==( const YT_Format &f )
+bool FormatImpl::operator==( const Format &f )
 {
 
 	return (this->color == f.Color()) && (this->width == f.Width()) &&
@@ -200,12 +200,12 @@ bool YT_FormatImpl::operator==( const YT_Format &f )
 		(this->stride[3] == f.Stride(3));
 }
 
-bool YT_FormatImpl::operator!=( const YT_Format &f )
+bool FormatImpl::operator!=( const Format &f )
 {
 	return !(*this == f);
 }
 
-YT_Format& YT_FormatImpl::operator=( const YT_Format &f )
+Format& FormatImpl::operator=( const Format &f )
 {
 	this->SetColor(f.Color()); 
 	this->width = f.Width();
@@ -219,31 +219,31 @@ YT_Format& YT_FormatImpl::operator=( const YT_Format &f )
 	return *this;
 }
 
-YT_Format& YT_FormatImpl::operator=( YT_Format &f )
+Format& FormatImpl::operator=( Format &f )
 {
-	*this = (const YT_Format &)f;
+	*this = (const Format &)f;
 
 	return *this;
 }
 
-bool YT_FormatImpl::IsPlanar( int plane )
+bool FormatImpl::IsPlanar( int plane )
 {
 	switch(color)
 	{
-	case YT_I420:
-	case YT_IYUV:
-	case YT_YV12:
+	case I420:
+	case IYUV:
+	case YV12:
 		return plane<=2;
-	case YT_NV12:
+	case NV12:
 		return plane<=0;
-	case YT_YUY2:
-	case YT_UYVY:
+	case YUY2:
+	case UYVY:
 		return false;
 	}
 	return false;
 }
 
-const char* YT_FormatImpl::PlaneName( int plane )
+const char* FormatImpl::PlaneName( int plane )
 {
 	if (!IsPlanar(plane))
 	{
@@ -252,7 +252,7 @@ const char* YT_FormatImpl::PlaneName( int plane )
 	return name[plane];
 }
 
-int YT_FormatImpl::PlaneWidth( int plane )
+int FormatImpl::PlaneWidth( int plane )
 {
 	if (!IsPlanar(plane))
 	{
@@ -261,10 +261,10 @@ int YT_FormatImpl::PlaneWidth( int plane )
 
 	switch(color)
 	{
-	case YT_I420:
-	case YT_IYUV:
-	case YT_YV12:
-	case YT_NV12:
+	case I420:
+	case IYUV:
+	case YV12:
+	case NV12:
 		if (plane == 0)
 		{
 			return width;
@@ -276,7 +276,7 @@ int YT_FormatImpl::PlaneWidth( int plane )
 	return 0;
 }
 
-int YT_FormatImpl::PlaneHeight( int plane )
+int FormatImpl::PlaneHeight( int plane )
 {
 	if (!IsPlanar(plane))
 	{
@@ -285,10 +285,10 @@ int YT_FormatImpl::PlaneHeight( int plane )
 
 	switch(color)
 	{
-	case YT_I420:
-	case YT_IYUV:
-	case YT_YV12:
-	case YT_NV12:
+	case I420:
+	case IYUV:
+	case YV12:
+	case NV12:
 		if (plane == 0)
 		{
 			return height;
@@ -300,21 +300,21 @@ int YT_FormatImpl::PlaneHeight( int plane )
 	return 0;
 }
 
-YT_FrameImpl::YT_FrameImpl(YT_FramePool* p) : pool(p), pts(0), frame_num(0), externData(0),
+FrameImpl::FrameImpl(FramePool* p) : pool(p), pts(0), frame_num(0), externData(0),
 	allocated_data(0), allocated_size(0), 
-	format(new YT_FormatImpl)
+	format(new FormatImpl)
 {
 	memset(data, 0, sizeof(data));
 }
 
-YT_FrameImpl::~YT_FrameImpl()
+FrameImpl::~FrameImpl()
 {
 	Deallocate();
 
 	format.clear();
 }
 
-void YT_FrameImpl::Deallocate()
+void FrameImpl::Deallocate()
 {
 	if (allocated_data)
 	{
@@ -327,22 +327,22 @@ void YT_FrameImpl::Deallocate()
 	}
 }
 
-YT_Format_Ptr YT_FrameImpl::Format()
+FormatPtr FrameImpl::Format()
 {
 	return format;
 }
 
 
-void YT_FrameImpl::SetFormat( const YT_Format_Ptr f)
+void FrameImpl::SetFormat( const FormatPtr f)
 {
 	*format = *f;
 }
 
-const YT_Format_Ptr YT_FrameImpl::Format() const
+const FormatPtr FrameImpl::Format() const
 {
 	return format;
 }
-unsigned char* YT_FrameImpl::Data( int plane ) const
+unsigned char* FrameImpl::Data( int plane ) const
 {
 	if (plane>=0 && plane<4)
 	{
@@ -353,7 +353,7 @@ unsigned char* YT_FrameImpl::Data( int plane ) const
 	}
 }
 
-void YT_FrameImpl::SetData( int plane, unsigned char* value )
+void FrameImpl::SetData( int plane, unsigned char* value )
 {
 	// Set external buffer
 	if (plane>=0 && plane<4)
@@ -367,38 +367,38 @@ void YT_FrameImpl::SetData( int plane, unsigned char* value )
 	}
 }
 
-unsigned char** YT_FrameImpl::Data() const
+unsigned char** FrameImpl::Data() const
 {
 	return (unsigned char**)data;
 }
 
-unsigned int YT_FrameImpl::PTS() const
+unsigned int FrameImpl::PTS() const
 {
 	return pts;
 }
 
-void YT_FrameImpl::SetPTS( unsigned int value)
+void FrameImpl::SetPTS( unsigned int value)
 {
 	pts = value;
 }
 
-unsigned int YT_FrameImpl::FrameNumber() const
+unsigned int FrameImpl::FrameNumber() const
 {
 	return frame_num;
 }
 
-void YT_FrameImpl::SetFrameNumber( unsigned int value )
+void FrameImpl::SetFrameNumber( unsigned int value )
 {
 	frame_num = value;
 }
 
-#define YT_DEFAULT_ALIGNMENT	32
-YT_RESULT YT_FrameImpl::Allocate()
+#define DEFAULT_ALIGNMENT	32
+RESULT FrameImpl::Allocate()
 {
 	size_t data_length = format->PlaneSize(0)+format->PlaneSize(1)+
 		format->PlaneSize(2)+format->PlaneSize(3);
 
-	size_t align_margin = YT_DEFAULT_ALIGNMENT*4;
+	size_t align_margin = DEFAULT_ALIGNMENT*4;
 
 	if (data_length+align_margin>allocated_size)
 	{
@@ -414,17 +414,17 @@ YT_RESULT YT_FrameImpl::Allocate()
 	unsigned char* d = allocated_data;
 	for (int i=0; i<4; i++)
 	{
-		while (((unsigned long)d) & (YT_DEFAULT_ALIGNMENT-1))
+		while (((unsigned long)d) & (DEFAULT_ALIGNMENT-1))
 			d ++;
 		data[i] = d;
 	
 		d += format->PlaneSize(i);
 	}
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_FrameImpl::Reset()
+RESULT FrameImpl::Reset()
 {
 	Deallocate();
 
@@ -435,22 +435,22 @@ YT_RESULT YT_FrameImpl::Reset()
 
 	externData = NULL;
 
-	return YT_OK;
+	return OK;
 }
 
-void YT_FrameImpl::SetExternData( void* data )
+void FrameImpl::SetExternData( void* data )
 {
 	externData = data;
 }
 
-void* YT_FrameImpl::ExternData() const
+void* FrameImpl::ExternData() const
 {
 	return externData;
 }
 
-void YT_FrameImpl::Recyle( YT_Frame *obj )
+void FrameImpl::Recyle( Frame *obj )
 {
-	YT_FrameImpl* frame = static_cast<YT_FrameImpl*> (obj);
+	FrameImpl* frame = static_cast<FrameImpl*> (obj);
 	if (frame->pool)
 	{
 		frame->pool->Recycle(frame);
@@ -460,32 +460,32 @@ void YT_FrameImpl::Recyle( YT_Frame *obj )
 	}
 }
 
-QVariant YT_FrameImpl::Info( YT_Info_Key key) const
+QVariant FrameImpl::Info( INFO_KEY key) const
 {
 	return info.value(key);
 }
 
-void YT_FrameImpl::SetInfo( YT_Info_Key key, QVariant value)
+void FrameImpl::SetInfo( INFO_KEY key, QVariant value)
 {
 	info.insert(key, value);
 }
 
-bool YT_FrameImpl::HasInfo( YT_Info_Key key ) const
+bool FrameImpl::HasInfo( INFO_KEY key ) const
 {
 	return info.contains(key);
 }
 
-YT_Frame_Ptr YT_HostImpl::NewFrame()
+FramePtr HostImpl::NewFrame()
 {
-	return YT_Frame_Ptr(new YT_FrameImpl);
+	return FramePtr(new FrameImpl);
 }
 
-YT_Format_Ptr YT_HostImpl::NewFormat()
+FormatPtr HostImpl::NewFormat()
 {
-	return YT_Format_Ptr(new YT_FormatImpl);
+	return FormatPtr(new FormatImpl);
 }
 
-YT_HostImpl::YT_HostImpl() : m_LogFile(this)
+HostImpl::HostImpl() : m_LogFile(this)
 {
 	QCoreApplication::setOrganizationName("YUVToolkit");
 	QCoreApplication::setOrganizationDomain("YUVToolkit");
@@ -510,19 +510,19 @@ YT_HostImpl::YT_HostImpl() : m_LogFile(this)
 
 		QString err(loader.errorString());
 
-		YT_PlugIn* yt_plugin = qobject_cast<YT_PlugIn*>(plugin);
+		YTPlugIn* ytPlugin = qobject_cast<YTPlugIn*>(plugin);
 
-		if (yt_plugin)
+		if (ytPlugin)
 		{
-			if (yt_plugin->Init(this) == YT_OK)
+			if (ytPlugin->Init(this) == OK)
 			{
-				m_PlugInList.append(yt_plugin);
+				m_PlugInList.append(ytPlugin);
 			}
 		}
 	}
 }
 
-YT_RESULT YT_HostImpl::RegisterPlugin( YT_PlugIn* plugin, YT_PLUGIN_TYPE type, const QString& name )
+RESULT HostImpl::RegisterPlugin( YTPlugIn* plugin, PLUGIN_TYPE type, const QString& name )
 {
 	PlugInInfo* info = new PlugInInfo;
 
@@ -532,26 +532,26 @@ YT_RESULT YT_HostImpl::RegisterPlugin( YT_PlugIn* plugin, YT_PLUGIN_TYPE type, c
 
 	switch (type)
 	{
-	case YT_PLUGIN_SOURCE:
+	case PLUGIN_SOURCE:
 		m_SourceList.append(info);
 		break;
-	case YT_PLUGIN_RENDERER:
+	case PLUGIN_RENDERER:
 		m_RendererList.append(info);
 		break;
-	case YT_PLUGIN_TRANSFORM:
+	case PLUGIN_TRANSFORM:
 		m_TransformList.append(info);
 		break;
-	case YT_PLUGIN_MEASURE:
+	case PLUGIN_MEASURE:
 		m_MeasureList.append(info);
 		break;
-	case YT_PLUGIN_UNKNOWN:
+	case PLUGIN_UNKNOWN:
 		break;
 	}
 
-	return YT_OK;
+	return OK;
 }
 
-QMainWindow* YT_HostImpl::NewMainWindow(int argc, char *argv[])
+QMainWindow* HostImpl::NewMainWindow(int argc, char *argv[])
 {
 	MainWindow* win = new MainWindow;
 
@@ -568,7 +568,7 @@ QMainWindow* YT_HostImpl::NewMainWindow(int argc, char *argv[])
 	return win;
 }
 
-YT_HostImpl::~YT_HostImpl()
+HostImpl::~HostImpl()
 {
 	while (!m_MainWindowList.isEmpty())
 	{
@@ -576,26 +576,26 @@ YT_HostImpl::~YT_HostImpl()
 	}
 }
 /*
-YT_Source* YT_HostImpl::NewSource( const QString file_ext )
+Source* HostImpl::NewSource( const QString file_ext )
 {
 	PlugInInfo* info = m_SourceList.first();
 
 	return info->plugin->NewSource(info->string);
 }
 
-void YT_HostImpl::ReleaseSource( YT_Source* )
+void HostImpl::ReleaseSource( Source* )
 {
 
 }
 */
-YT_PlugIn* YT_HostImpl::FindSourcePlugin( const QString file_ext )
+YTPlugIn* HostImpl::FindSourcePlugin( const QString file_ext )
 {
 	PlugInInfo* info = m_SourceList.first();
 
 	return info->plugin;
 }
 
-YT_PlugIn* YT_HostImpl::FindRenderPlugin( const QString& type )
+YTPlugIn* HostImpl::FindRenderPlugin( const QString& type )
 {
 	for (int i = 0; i < m_RendererList.size(); ++i) 
 	{
@@ -614,7 +614,7 @@ YT_PlugIn* YT_HostImpl::FindRenderPlugin( const QString& type )
 	return NULL;
 }
 
-void YT_HostImpl::Logging(void* ptr,  YT_LOGGING_LEVELS level, const char* fmt, ... )
+void HostImpl::Logging(void* ptr,  LOGGING_LEVELS level, const char* fmt, ... )
 {
 	if (m_LoggingEnabled)
 	{
@@ -652,7 +652,7 @@ void YT_HostImpl::Logging(void* ptr,  YT_LOGGING_LEVELS level, const char* fmt, 
 	}
 }
 
-void YT_HostImpl::InitLogging()
+void HostImpl::InitLogging()
 {
 	QSettings ini(QSettings::IniFormat, QSettings::UserScope,
 		QCoreApplication::organizationName(),
@@ -697,7 +697,7 @@ void YT_HostImpl::InitLogging()
 	m_LoggingEnabled = m_LogFile.isOpen();
 }
 
-void YT_HostImpl::UnInitLogging()
+void HostImpl::UnInitLogging()
 {
 	if (m_LogFile.isOpen())
 	{
@@ -705,7 +705,7 @@ void YT_HostImpl::UnInitLogging()
 	}
 }
 
-void YT_HostImpl::EnableLogging( bool enable )
+void HostImpl::EnableLogging( bool enable )
 {
 	QSettings settings;
 	settings.setValue("main/logging", enable);
@@ -718,12 +718,12 @@ void YT_HostImpl::EnableLogging( bool enable )
 	}
 }
 
-bool YT_HostImpl::IsLoggingEnabled()
+bool HostImpl::IsLoggingEnabled()
 {
 	return m_LoggingEnabled && m_LogFile.isOpen();
 }
 
-void YT_HostImpl::OpenLoggingDirectory()
+void HostImpl::OpenLoggingDirectory()
 {
 	QSettings ini(QSettings::IniFormat, QSettings::UserScope,
 		QCoreApplication::organizationName(),
@@ -733,16 +733,37 @@ void YT_HostImpl::OpenLoggingDirectory()
 	QDesktopServices::openUrl(QUrl("file:///" + path));
 }
 
+FramePool* HostImpl::NewFramePool(unsigned int size)
+{
+	FramePool* pool = new FramePool(size);
+	m_FramePoolList.append(pool);
+	return pool;
+}
 
-YT_FramePool::YT_FramePool( unsigned int size )
+void HostImpl::ReleaseFramePool(FramePool* pool)
+{
+	m_FramePoolListGC.append(pool);
+	m_FramePoolList.removeAll(pool);
+
+	/*
+	// while (m_FramePool.Size() != BUFFER_COUNT)
+	if (m_FramePool.Size() != BUFFER_COUNT)
+	{
+		WARNING_LOG("Waiting for frame pool to uninitialize (%s)... ", m_Path.toAscii());
+		QThread::sleep(1);
+	}*/
+}
+
+
+FramePool::FramePool( unsigned int size )
 {
 	for (unsigned int i=0; i<size; i++)
 	{
-		m_Pool.append(new YT_FrameImpl(this));
+		m_Pool.append(new FrameImpl(this));
 	}
 }
 
-YT_FramePool::~YT_FramePool()
+FramePool::~FramePool()
 {
 	for (unsigned int i=0; i<m_Pool.size(); i++)
 	{
@@ -750,29 +771,29 @@ YT_FramePool::~YT_FramePool()
 	}
 }
 
-void YT_FramePool::Recycle( YT_Frame* frame )
+void FramePool::Recycle( Frame* frame )
 {
 	QMutexLocker locker(&m_Mutex);
 
 	m_Pool.append(frame);
 }
 
-YT_Frame_Ptr YT_FramePool::Get()
+FramePtr FramePool::Get()
 {
 	if (m_Pool.size())
 	{
 		QMutexLocker locker(&m_Mutex);
 
-		YT_Frame* frame = m_Pool.first();
+		Frame* frame = m_Pool.first();
 		m_Pool.removeFirst();
 
-		return YT_Frame_Ptr(frame, YT_FrameImpl::Recyle);
+		return FramePtr(frame, FrameImpl::Recyle);
 	}
 
-	return YT_Frame_Ptr(NULL);
+	return FramePtr(NULL);
 }
 
-int YT_FramePool::Size()
+int FramePool::Size()
 {
 	return m_Pool.size();
 }

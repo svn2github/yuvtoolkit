@@ -3,49 +3,49 @@
 
 #define RENDER_FREQ	60
 
-Q_EXPORT_PLUGIN2(YT_QPaintRenderer, YT_QPaintRendererPlugin)
+Q_EXPORT_PLUGIN2(QPaintRenderer, QPaintRendererPlugin)
 
-YT_Host* g_Host = 0;
-YT_Host* GetHost()
+Host* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
 
-YT_RESULT YT_QPaintRendererPlugin::Init( YT_Host* host)
+RESULT QPaintRendererPlugin::Init( Host* host)
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, YT_PLUGIN_RENDERER, QString("QPaint (Slow)"));
+	g_Host->RegisterPlugin(this, PLUGIN_RENDERER, QString("QPaint (Slow)"));
 
-	return YT_OK;
+	return OK;
 }
 
 
-YT_Renderer* YT_QPaintRendererPlugin::NewRenderer(QWidget* widget, const QString& name )
+Renderer* QPaintRendererPlugin::NewRenderer(QWidget* widget, const QString& name )
 {
-	YT_QPaintRenderer* renderer = new YT_QPaintRenderer(g_Host, widget, name);
+	QPaintRenderer* renderer = new QPaintRenderer(g_Host, widget, name);
 
 	return renderer;
 }
 
-void YT_QPaintRendererPlugin::ReleaseRenderer( YT_Renderer* parent )
+void QPaintRendererPlugin::ReleaseRenderer( Renderer* parent )
 {
-	delete (YT_QPaintRenderer*)parent;
+	delete (QPaintRenderer*)parent;
 }
 
 
 
-YT_QPaintRenderer::YT_QPaintRenderer(YT_Host* host, QWidget* widget, const QString& name) 
+QPaintRenderer::QPaintRenderer(Host* host, QWidget* widget, const QString& name) 
 	: m_Host(host), QWidget(widget)
 {
 }
 
 
-YT_QPaintRenderer::~YT_QPaintRenderer()
+QPaintRenderer::~QPaintRenderer()
 {
 }
 
-YT_RESULT YT_QPaintRenderer::RenderScene(YT_Frame_List frames)
+RESULT QPaintRenderer::RenderScene(FrameList frames)
 {
 	int size = frames.size();
 
@@ -58,10 +58,10 @@ YT_RESULT YT_QPaintRenderer::RenderScene(YT_Frame_List frames)
 	
 	m_Frames.clear();
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_QPaintRenderer::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat )
+RESULT QPaintRenderer::Allocate( FramePtr& frame, FormatPtr sourceFormat )
 {
 	QImage* image = new QImage(sourceFormat->Width(), sourceFormat->Height(), QImage::Format_RGB888);
 
@@ -80,12 +80,12 @@ YT_RESULT YT_QPaintRenderer::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr source
 	frame->Format()->SetStride(2,0);
 	frame->Format()->SetStride(3,0);
 
-	frame->Format()->SetColor(YT_RGB24);
+	frame->Format()->SetColor(RGB24);
 	
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_QPaintRenderer::Deallocate( YT_Frame_Ptr frame )
+RESULT QPaintRenderer::Deallocate( FramePtr frame )
 {
 	QImage* image = (QImage*)frame->ExternData();
 
@@ -93,20 +93,20 @@ YT_RESULT YT_QPaintRenderer::Deallocate( YT_Frame_Ptr frame )
 
 	frame.clear();
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_QPaintRenderer::GetFrame( YT_Frame_Ptr& frame )
+RESULT QPaintRenderer::GetFrame( FramePtr& frame )
 {
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_QPaintRenderer::ReleaseFrame( YT_Frame_Ptr frame )
+RESULT QPaintRenderer::ReleaseFrame( FramePtr frame )
 {
-	return YT_OK;
+	return OK;
 }
 
-void YT_QPaintRenderer::paintEvent( QPaintEvent* )
+void QPaintRenderer::paintEvent( QPaintEvent* )
 {
 	if (m_Frames.size())
 	{
@@ -122,7 +122,7 @@ void YT_QPaintRenderer::paintEvent( QPaintEvent* )
 
 			for (int i=0; i<m_Frames.size(); ++i) 
 			{
-				YT_Frame_Ptr frame = m_Frames.at(i);
+				FramePtr frame = m_Frames.at(i);
 				if (!frame)
 				{
 					continue;

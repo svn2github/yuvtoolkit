@@ -11,8 +11,8 @@ ProcessThread::~ProcessThread(void)
 
 void ProcessThread::run()
 {
-	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
-	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<FramePtr>("FramePtr");
+	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 
@@ -49,7 +49,7 @@ void ProcessThread::ProcessFrameQueue()
 
 	/*if (!m_Play)
 	{
-		YT_Frame_List scene = FastSeekQueue(m_SeekingPTS);
+		FrameList scene = FastSeekQueue(m_SeekingPTS);
 		if (scene.size() == m_SourceViewIDs.size())
 		{
 			int siz = scene.size();
@@ -62,18 +62,18 @@ void ProcessThread::ProcessFrameQueue()
 	}*/
 	while (true)
 	{
-		YT_Frame_List scene;
-		QMapIterator<unsigned int, YT_Frame_List > i(m_Frames);
+		FrameList scene;
+		QMapIterator<unsigned int, FrameList > i(m_Frames);
 		while (i.hasNext()) 
 		{
 			i.next();
 		
 			unsigned int viewID = i.key();
-			YT_Frame_List& frameList = m_Frames[viewID];
+			FrameList& frameList = m_Frames[viewID];
 
 			if (frameList.size()>0)
 			{
-				YT_Frame_Ptr frame = frameList.first();
+				FramePtr frame = frameList.first();
 				frameList.removeFirst();
 
 				scene.append(frame);
@@ -90,12 +90,12 @@ void ProcessThread::ProcessFrameQueue()
 	}
 }
 
-void ProcessThread::ReceiveFrame( YT_Frame_Ptr frame )
+void ProcessThread::ReceiveFrame( FramePtr frame )
 {
 	unsigned int viewID = frame->Info(VIEW_ID).toUInt();
 	if (!m_Frames.contains(viewID))
 	{
-		m_Frames.insert(viewID, YT_Frame_List());
+		m_Frames.insert(viewID, FrameList());
 	}
 	m_Frames[viewID].append(frame);
 }
@@ -113,7 +113,7 @@ bool ProcessThread::IsPlaying()
 void ProcessThread::CleanQueue()
 {
 	// Find views that doesn't exist any more and delete
-	QMutableMapIterator<unsigned int, YT_Frame_List > i(m_Frames);
+	QMutableMapIterator<unsigned int, FrameList > i(m_Frames);
 	while (i.hasNext())
 	{
 		i.next();
@@ -126,23 +126,23 @@ void ProcessThread::CleanQueue()
 	}
 }
 
-YT_Frame_List ProcessThread::FastSeekQueue( unsigned int pts )
+FrameList ProcessThread::FastSeekQueue( unsigned int pts )
 {
 	// Clean up queue tills seeking frame is found, 
 	// clean up so that source has buffer to fill-up
 	// return list of seeking frame
-	YT_Frame_List scene;
-	QMapIterator<unsigned int, YT_Frame_List > i(m_Frames);
+	FrameList scene;
+	QMapIterator<unsigned int, FrameList > i(m_Frames);
 	while (i.hasNext())
 	{
 		i.next();
 
 		unsigned int viewID = i.key();
-		YT_Frame_List& frameList = m_Frames[viewID];
+		FrameList& frameList = m_Frames[viewID];
 
 		while (frameList.size()>0)
 		{
-			YT_Frame_Ptr frame = frameList.first();
+			FramePtr frame = frameList.first();
 			if (frame->Info(SEEKING_PTS).toUInt() == INVALID_PTS)
 			{
 				frameList.removeFirst();

@@ -44,7 +44,7 @@ void MeasureWindow::showEvent( QShowEvent *event )
 	for (int i=0; i<m_VideoViewList->size(); i++)
 	{
 		VideoView* vv = m_VideoViewList->at(i);
-		YT_Source* source = vv->GetSource();
+		Source* source = vv->GetSource();
 		if (source)
 		{
 			ui.originalList->addItem(vv->GetTitle());
@@ -91,17 +91,17 @@ void MeasureWindow::onComboIndexChanged( int )
 	{
 		PlugInInfo* plugInInfo = lst[i];
 
-		YT_Measure* measure = plugInInfo->plugin->NewMeasure(plugInInfo->string);
+		Measure* measure = plugInInfo->plugin->NewMeasure(plugInInfo->string);
 		m_MeasureList.append(measure);
 
-		YT_Source_Info origInfo, procInfo;
+		SourceInfo origInfo, procInfo;
 		m_Original->GetSource()->GetInfo(origInfo);
 		m_Processed->GetSource()->GetInfo(procInfo);
 		measure->GetSupportedModes(origInfo.format, procInfo.format, m_ViewOutItems, m_MeasureOutItems);
 
 		for (int i=0; i<m_MeasureOutItems.size(); i++)
 		{
-			YT_Measure::YT_Measure_Item item = m_MeasureOutItems.at(i);
+			Measure::MeasureItem item = m_MeasureOutItems.at(i);
 			m_OutputMeasureItems.insert(item, QVariant(-1));
 		}
 	}
@@ -124,7 +124,7 @@ void MeasureWindow::UpdateMeasure()
 		return;
 	}
 
-	YT_Measure* measure = m_MeasureList.at(0);
+	Measure* measure = m_MeasureList.at(0);
 
 	measure->Process(origFrame->source, procFrame->source, m_OutputViewItems, m_OutputMeasureItems);*/
 }
@@ -137,7 +137,7 @@ void MeasureWindow::UpdateMeasureWindow()
 		return;
 	}
 
-	QMapIterator<YT_Measure::YT_Measure_Item, QVariant> i(m_OutputMeasureItems);
+	QMapIterator<Measure::MeasureItem, QVariant> i(m_OutputMeasureItems);
 	while (i.hasNext()) {
 		i.next();
 		// cout << i.key() << ": " << i.value() << endl;

@@ -13,9 +13,9 @@ Flickers when continuously seeking in one direction
 ===================
 Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
-- Visualize frame difference
+- Visualize frame difference 
 - Can support more objective measures and visualization through plugin system
-
+- customize color mapping
 HOME and END keys for beginning and end of video
 Looped playback of a selected time interval (Set using Ctrl-HOME and Ctrl-END)
 Option to continue playback after seeking to a new frame during play

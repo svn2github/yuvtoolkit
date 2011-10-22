@@ -1,43 +1,43 @@
 #include "YT_TransformsBasic.h"
 
-YT_ShowYUVComponent::YT_ShowYUVComponent() : m_EmptyFrame(GetHost()->NewFrame())
+ShowYUVComponent::ShowYUVComponent() : m_EmptyFrame(GetHost()->NewFrame())
 {
 }
-YT_ShowYUVComponent::~YT_ShowYUVComponent()
+ShowYUVComponent::~ShowYUVComponent()
 {
 	m_EmptyFrame.clear();
 }
 
 
-void YT_ShowYUVComponent::ReleaseBuffers()
+void ShowYUVComponent::ReleaseBuffers()
 {
 	
 }
 
 
-YT_RESULT YT_ShowYUVComponent::GetSupportedModes( YT_Format_Ptr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames )
+RESULT ShowYUVComponent::GetSupportedModes( FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames )
 {
 	outputNames.clear();
 	statNames.clear();
 
 	switch (sourceFormat->Color())
 	{
-	case YT_I420:
-	case YT_IYUV:
-	case YT_YV12:
+	case I420:
+	case IYUV:
+	case YV12:
 		outputNames.append("Y Component");
 		outputNames.append("U Component");
 		outputNames.append("V Component");
 		break;
-	case YT_NV12:
+	case NV12:
 		outputNames.append("Y Component");
 		break;
 	}
 	
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_ShowYUVComponent::Process(const YT_Frame_Ptr input, QMap<QString, YT_Frame_Ptr>& outputs, QMap<QString, QVariant>& stats)
+RESULT ShowYUVComponent::Process(const FramePtr input, QMap<QString, FramePtr>& outputs, QMap<QString, QVariant>& stats)
 {
 	if (input->Format() != m_EmptyFrame->Format())
 	{
@@ -52,12 +52,12 @@ YT_RESULT YT_ShowYUVComponent::Process(const YT_Frame_Ptr input, QMap<QString, Y
 
 	stats.clear();
 
-	QMapIterator<QString, YT_Frame_Ptr> itr(outputs);
+	QMapIterator<QString, FramePtr> itr(outputs);
 	while (itr.hasNext()) 
 	{
 		itr.next();
 		const QString& name = itr.key();
-		YT_Frame_Ptr output = itr.value();
+		FramePtr output = itr.value();
 		QString component = QString(name.at(0));
 
 		for (int j=0; j<4; j++)
@@ -70,13 +70,13 @@ YT_RESULT YT_ShowYUVComponent::Process(const YT_Frame_Ptr input, QMap<QString, Y
 		}
 	}
 
-	return YT_OK;
+	return OK;
 }
 
-void YT_ShowYUVComponent::ProcessPlane( YT_Frame_Ptr input, YT_Frame_Ptr output, int plane )
+void ShowYUVComponent::ProcessPlane( FramePtr input, FramePtr output, int plane )
 {
 	output->Reset();
-	output->Format()->SetColor(YT_I420);
+	output->Format()->SetColor(I420);
 	output->Format()->SetStride(0, 0);
 	output->Format()->SetWidth(input->Format()->PlaneWidth(plane));
 	output->Format()->SetHeight(input->Format()->PlaneHeight(plane));
@@ -88,7 +88,7 @@ void YT_ShowYUVComponent::ProcessPlane( YT_Frame_Ptr input, YT_Frame_Ptr output,
 	}
 }
 
-YT_RESULT YT_ShowYUVComponent::GetFormat( YT_Format_Ptr sourceFormat, const QString& outputName, YT_Format_Ptr outputFormat )
+RESULT ShowYUVComponent::GetFormat( FormatPtr sourceFormat, const QString& outputName, FormatPtr outputFormat )
 {
 	QString component = QString(outputName.at(0));
 
@@ -96,12 +96,12 @@ YT_RESULT YT_ShowYUVComponent::GetFormat( YT_Format_Ptr sourceFormat, const QStr
 	{
 		if (component.compare(sourceFormat->PlaneName(j)) == 0)
 		{
-			outputFormat->SetColor(YT_I420);
+			outputFormat->SetColor(I420);
 			outputFormat->SetStride(0, 0);
 			outputFormat->SetWidth(sourceFormat->PlaneWidth(j));
 			outputFormat->SetHeight(sourceFormat->PlaneHeight(j));
-			return YT_OK;
+			return OK;
 		}
 	}
-	return YT_ERROR;
+	return E_UNKNOWN;
 }

@@ -57,12 +57,12 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
 		
-		connect(m_ProcessThread, SIGNAL(sceneReady(YT_Frame_List, unsigned int, bool)), 
-			m_RenderThread, SLOT(RenderScene(YT_Frame_List, unsigned int, bool)));
+		connect(m_ProcessThread, SIGNAL(sceneReady(FrameList, unsigned int, bool)), 
+			m_RenderThread, SLOT(RenderScene(FrameList, unsigned int, bool)));
 		connect(this, SIGNAL(layoutUpdated(UintList, RectList, RectList)), 
 			m_RenderThread, SLOT(SetLayout(UintList, RectList, RectList)));
-		connect(m_RenderThread, SIGNAL(sceneRendered(YT_Frame_List, unsigned int, bool)), 
-			this, SLOT(OnSceneRendered(YT_Frame_List, unsigned int, bool)));
+		connect(m_RenderThread, SIGNAL(sceneRendered(FrameList, unsigned int, bool)), 
+			this, SLOT(OnSceneRendered(FrameList, unsigned int, bool)));
 
 		m_RenderThread->Start();
 	}
@@ -174,17 +174,17 @@ void VideoViewList::CheckRenderReset()
 	{
 		m_RenderThread->Stop();
 
-		YT_RESULT res = m_RenderWidget->GetRenderer()->Reset();
-		assert(res == YT_OK);
+		RESULT res = m_RenderWidget->GetRenderer()->Reset();
+		assert(res == OK);
 
-		if (res == YT_OK)
+		if (res == OK)
 		{
 			m_RenderThread->Start();
 		}
 	}
 }
 /*
-bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsigned int& renderPTS )
+bool VideoViewList::GetRenderFrameList( QList<Render_Frame>& frameList, unsigned int& renderPTS )
 {
 	QTime time;
 	time.restart();
@@ -199,7 +199,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 
 	while (frameList.size() < m_VideoList.size())
 	{
-		YT_Render_Frame rf;
+		Render_Frame rf;
 		frameList.append(rf);
 	}
 
@@ -221,7 +221,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 		for (int i=0; i<m_VideoList.size(); ++i) 
 		{
 			VideoView* vv = m_VideoList.at(i);
-			if (vv->GetType() == YT_PLUGIN_SOURCE)
+			if (vv->GetType() == PLUGIN_SOURCE)
 			{
 				SourceThread* st = vv->GetSourceThread();
 				VideoQueue* vq = vv->GetVideoQueue();
@@ -262,13 +262,13 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 			shouldRender = false;
 		}
 
-		if (vv->GetType() == YT_PLUGIN_UNKNOWN)
+		if (vv->GetType() == PLUGIN_UNKNOWN)
 		{
 			shouldRender = false;
-		}else if (vv->GetType() == YT_PLUGIN_SOURCE)
+		}else if (vv->GetType() == PLUGIN_SOURCE)
 		{
 			VideoQueue::Frame* vqf = NULL;
-			YT_Source* source = vv->GetSource();
+			Source* source = vv->GetSource();
 			unsigned int sourcePTS = pts;
 			
 			if (source)
@@ -280,7 +280,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 
 			if (vqf)
 			{
-				YT_Render_Frame& rf = frameList[i];
+				Render_Frame& rf = frameList[i];
 				rf.frame = vqf->render;
 				COPY_RECT(rf.srcRect, vv->srcRect);
 				COPY_RECT(rf.dstRect, vv->dstRect);
@@ -318,7 +318,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);
-		if (vv->GetType() == YT_PLUGIN_TRANSFORM)
+		if (vv->GetType() == PLUGIN_TRANSFORM)
 		{
 			VideoQueue::Frame* ref  = vv->GetRefVideoQueue()->GetLastRenderFrame();			
 			if (!ref)
@@ -326,13 +326,13 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 				continue;
 			}
 
-			YT_Format_Ptr transformFormat = YT_Format_Ptr(new YT_FormatImpl);
+			FormatPtr transformFormat = FormatPtr(new FormatImpl);
 			vv->GetTransform()->GetFormat(ref->source->Format(), vv->GetOutputName(), transformFormat);
 			
 			VideoQueue::Frame* vqf = vv->GetVideoQueue()->GetSourceFrame(transformFormat);
 			if (vqf != NULL && vqf->source != NULL && vqf->render != NULL )
 			{
-				QMap<QString, YT_Frame_Ptr> outputs;
+				QMap<QString, FramePtr> outputs;
 				QMap<QString, QVariant> stats;
 				outputs.insert(vv->GetOutputName(), vqf->source);
 				vv->GetTransform()->Process(ref->source, outputs, stats);
@@ -345,7 +345,7 @@ bool VideoViewList::GetRenderFrameList( QList<YT_Render_Frame>& frameList, unsig
 				bool b;
 				unsigned int ptsNext = vv->GetVideoQueue()->GetNextPTS(INVALID_PTS, b); // find the PTS of next frame in the queue
 
-				YT_Render_Frame& rf = frameList[i];
+				Render_Frame& rf = frameList[i];
 				rf.frame = vqf->render;
 				COPY_RECT(rf.srcRect, vv->srcRect);
 				COPY_RECT(rf.dstRect, vv->dstRect);
@@ -403,8 +403,8 @@ void VideoViewList::CheckLoopFromStart()
 	{
 		VideoView* vv = m_LongestVideoView;
 		
-		YT_Source* src = vv->GetSource();
-		YT_Frame_Ptr frame = vv->GetLastFrame();
+		Source* src = vv->GetSource();
+		FramePtr frame = vv->GetLastFrame();
 
 		bool endOfFile = (frame && frame->Info(IS_LAST_FRAME).toBool());
 
@@ -427,9 +427,9 @@ void VideoViewList::UpdateDuration()
 		SourceThread* st = vv->GetSourceThread();
 		if (st)
 		{
-			YT_Source* source = st->GetSource();
+			Source* source = st->GetSource();
 
-			YT_Source_Info info;
+			SourceInfo info;
 			source->GetInfo(info);
 
 			if (info.duration>m_Duration)
@@ -465,7 +465,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	{
 		VideoView* vv2 = m_VideoList.at(i);
 		/*
-		if (vv2->GetType() == YT_PLUGIN_TRANSFORM && vv2->GetRefVideoQueue() == 
+		if (vv2->GetType() == PLUGIN_TRANSFORM && vv2->GetRefVideoQueue() == 
 			vv->GetVideoQueue() && vv2->GetOutputName() == data->outputName)
 		{
 			hasView = true;
@@ -477,7 +477,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	{
 		VideoView* planeVv = NewVideoView(data->outputName.toAscii());
 
-		YT_Transform* transform = data->transformPlugin->NewTransform(data->transformName);
+		Transform* transform = data->transformPlugin->NewTransform(data->transformName);
 
 		planeVv->Init(transform, vv->GetVideoQueue(), data->outputName);
 	}
@@ -513,7 +513,7 @@ void VideoViewList::UpdateMeasureWindows()
 	}
 }
 
-void VideoViewList::OnSceneRendered( YT_Frame_List scene, unsigned int pts, bool seeking )
+void VideoViewList::OnSceneRendered( FrameList scene, unsigned int pts, bool seeking )
 {
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
@@ -523,7 +523,7 @@ void VideoViewList::OnSceneRendered( YT_Frame_List scene, unsigned int pts, bool
 
 	for (int i=0; i<scene.size(); i++)
 	{
-		YT_Frame_Ptr frame = scene.at(i);
+		FramePtr frame = scene.at(i);
 		VideoView* vv = find(frame->Info(VIEW_ID).toUInt());
 		if (vv)
 		{
@@ -567,7 +567,7 @@ UintList VideoViewList::GetSourceIDList() const
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);
-		if (vv->GetType() == YT_PLUGIN_SOURCE)
+		if (vv->GetType() == PLUGIN_SOURCE)
 		{
 			lst.append(vv->GetID());
 		}		
@@ -582,13 +582,6 @@ unsigned int VideoViewList::StopSources()
 	{
 		currentPTS = GetCurrentPTS();
 
-		// Stop process thread + source thread
-		m_ProcessThread->Stop();
-		// SAFE_DELETE(m_ProcessThread);
-
-		// m_RenderThread->Stop();
-		// SAFE_DELETE(m_RenderThread);
-
 		for (int i=0; i<size(); ++i) 
 		{
 			VideoView* vv = at(i);
@@ -597,6 +590,15 @@ unsigned int VideoViewList::StopSources()
 				vv->GetSourceThread()->Stop();
 			}
 		}
+
+		// Stop process thread + source thread
+		m_ProcessThread->Stop();
+		// SAFE_DELETE(m_ProcessThread);
+
+		// m_RenderThread->Stop();
+		// SAFE_DELETE(m_RenderThread);
+
+		
 	}
 	return currentPTS;
 }

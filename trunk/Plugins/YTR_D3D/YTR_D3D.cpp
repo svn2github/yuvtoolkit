@@ -5,37 +5,37 @@
 
 Q_EXPORT_PLUGIN2(YTR_D3D, YTR_D3DPlugin)
 
-YT_Host* g_Host = 0;
-YT_Host* GetHost()
+Host* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
 
-YT_RESULT YTR_D3DPlugin::Init( YT_Host* host)
+RESULT YTR_D3DPlugin::Init( Host* host)
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, YT_PLUGIN_RENDERER, QString("D3D"));
+	g_Host->RegisterPlugin(this, PLUGIN_RENDERER, QString("D3D"));
 
-	return YT_OK;
+	return OK;
 }
 
 
-YT_Renderer* YTR_D3DPlugin::NewRenderer(QWidget* widget, const QString& name )
+Renderer* YTR_D3DPlugin::NewRenderer(QWidget* widget, const QString& name )
 {
 	YTR_D3D* renderer = new YTR_D3D(g_Host, widget, name);
 
 	return renderer;
 }
 
-void YTR_D3DPlugin::ReleaseRenderer( YT_Renderer* parent )
+void YTR_D3DPlugin::ReleaseRenderer( Renderer* parent )
 {
 	delete (YTR_D3D*)parent;
 }
 
 
 
-YTR_D3D::YTR_D3D(YT_Host* host, QWidget* widget, const QString& name) 
+YTR_D3D::YTR_D3D(Host* host, QWidget* widget, const QString& name) 
 : m_Host(host), D3DWidget(widget), m_NeedReset(false)
 {
 	QTimer *timer = new QTimer(widget);
@@ -65,19 +65,19 @@ void YTR_D3D::OnResizeTimer()
 #define RECT_WIDTH(rc) (rc->right-rc->left)
 #define RECT_HEIGHT(rc) (rc->bottom-rc->top)
 
-YT_RESULT YTR_D3D::RenderScene(YT_Frame_List frames)
+RESULT YTR_D3D::RenderScene(FrameList frames)
 {
 	if (FAILED(d3DDevice->TestCooperativeLevel()))
 	{
 		m_NeedReset = true;
-		return YT_E_RENDER_RESET;
+		return E_RENDER_RESET;
 	}
 
 	int width = QWidget::width();
 	int height = QWidget::height();
 	if (width == 0 || height == 0)
 	{
-		return YT_ERROR;
+		return E_UNKNOWN;
 	}
 
 	HRESULT hr = S_OK;
@@ -101,7 +101,7 @@ YT_RESULT YTR_D3D::RenderScene(YT_Frame_List frames)
 
 	for (int i=0; i<frames.size(); ++i) 
 	{
-		YT_Frame_Ptr frame = frames.at(i);
+		FramePtr frame = frames.at(i);
 		if (!frame)
 		{
 			continue;
@@ -145,17 +145,17 @@ YT_RESULT YTR_D3D::RenderScene(YT_Frame_List frames)
 	hr = d3DDevice->GetRasterStatus(0,&status);
 	assert(SUCCEEDED(hr));*/
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTR_D3D::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat )
+RESULT YTR_D3D::Allocate( FramePtr& frame, FormatPtr sourceFormat )
 {
 	IDirect3DDevice9* d3DDevice = GetDevice();
 
 	if (!d3DDevice || FAILED(d3DDevice->TestCooperativeLevel()))
 	{
 		m_NeedReset = true;
-		return YT_ERROR;
+		return E_UNKNOWN;
 	}
 
 	IDirect3DSurface9* surface = NULL;
@@ -163,14 +163,14 @@ YT_RESULT YTR_D3D::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat )
 		sourceFormat->Height(), D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &surface, NULL);
 	if (FAILED(hr))
 	{
-		return YT_E_RENDER_RESET;
+		return E_RENDER_RESET;
 	}
 
 	D3DLOCKED_RECT d3d_lr;
 	hr = surface->LockRect(&d3d_lr, NULL, D3DLOCK_READONLY);
 	if (FAILED(hr))
 	{
-		return YT_E_RENDER_RESET;
+		return E_RENDER_RESET;
 	}
 	surface->UnlockRect();
 	// D3DSURFACE_DESC d3d_sd;
@@ -186,22 +186,22 @@ YT_RESULT YTR_D3D::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat )
 	frame->Format()->SetStride(2,0);
 	frame->Format()->SetStride(3,0);
 
-	frame->Format()->SetColor(YT_XRGB32);
+	frame->Format()->SetColor(XRGB32);
 	
-	return YT_OK;
+	return OK;
 }
 
 #define RELEASE_SURFACE(frame) if (frame->ExternData()) {HRESULT hr = ((IDirect3DSurface9*)(frame->ExternData()))->Release(); assert(SUCCEEDED(hr)); frame->SetExternData(NULL);}
-YT_RESULT YTR_D3D::Deallocate( YT_Frame_Ptr frame )
+RESULT YTR_D3D::Deallocate( FramePtr frame )
 {
 	RELEASE_SURFACE(frame);
 
 	frame.clear();
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTR_D3D::GetFrame( YT_Frame_Ptr& frame )
+RESULT YTR_D3D::GetFrame( FramePtr& frame )
 {
 	D3DLOCKED_RECT d3d_lr;
 	IDirect3DSurface9* surface = (IDirect3DSurface9*)(frame->ExternData());
@@ -209,7 +209,7 @@ YT_RESULT YTR_D3D::GetFrame( YT_Frame_Ptr& frame )
 	assert(SUCCEEDED(hr));
 	if (FAILED(hr))
 	{
-		return YT_E_RENDER_RESET;
+		return E_RENDER_RESET;
 	}
 
 	frame->SetData(0, (unsigned char*)d3d_lr.pBits);
@@ -219,10 +219,10 @@ YT_RESULT YTR_D3D::GetFrame( YT_Frame_Ptr& frame )
 
 	counter ++;
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTR_D3D::ReleaseFrame( YT_Frame_Ptr frame )
+RESULT YTR_D3D::ReleaseFrame( FramePtr frame )
 {
 	frame->SetData(0, 0);
 	frame->SetData(1, 0);
@@ -236,10 +236,10 @@ YT_RESULT YTR_D3D::ReleaseFrame( YT_Frame_Ptr frame )
 
 	counter--;
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTR_D3D::Reset()
+RESULT YTR_D3D::Reset()
 {
 	HRESULT hr = ResetD3D();	
 
@@ -247,12 +247,12 @@ YT_RESULT YTR_D3D::Reset()
 	{
 		m_NeedReset = false;
 
-		return YT_OK;
+		return OK;
 	}else
 	{
 		m_NeedReset = true;
 
-		return YT_ERROR;
+		return E_UNKNOWN;
 	}
 }
 

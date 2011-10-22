@@ -9,13 +9,13 @@
 
 class VideoViewList;
 class RendererWidget;
-class YT_Renderer;
+class Renderer;
 class SourceThread;
 class VideoView;
 class QPlainTextEdit;
 class RenderThread;
-struct YT_Graph_Stats;
-struct YT_Source_Info;
+struct Graph_Stats;
+struct SourceInfo;
 
 class MainWindow : public QMainWindow, public sigslot::has_slots<>
 {
@@ -48,7 +48,7 @@ protected:
 private:
 	VideoViewList* m_VideoViewList;
 	
-	Ui::YT_MainWindow ui;
+	Ui::MainWindow ui;
 	QSlider* m_Slider;
 	QLabel* m_TimeLabel1;
 	QLabel* m_TimeLabel2;

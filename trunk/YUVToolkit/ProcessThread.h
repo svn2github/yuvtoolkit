@@ -19,10 +19,10 @@ public:
 	bool IsPlaying();
 signals:
 	// Signals that one scene is ready for render
-	void sceneReady(YT_Frame_List scene, unsigned int pts, bool seeking);
+	void sceneReady(FrameList scene, unsigned int pts, bool seeking);
 	
 public slots:
-	void ReceiveFrame(YT_Frame_Ptr frame);
+	void ReceiveFrame(FramePtr frame);
 	
 	void Play(bool play);
 
@@ -31,10 +31,10 @@ private slots:
 private:
 	void run();
 	
-	YT_Frame_List FastSeekQueue(unsigned int pts);
+	FrameList FastSeekQueue(unsigned int pts);
 	void CleanQueue();
 private:
-	QMap<unsigned int, YT_Frame_List > m_Frames;
+	QMap<unsigned int, FrameList > m_Frames;
 	UintList m_SourceViewIDs;
 	
 	// Play/Pause

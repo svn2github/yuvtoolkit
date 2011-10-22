@@ -3,42 +3,42 @@
 
 #define RENDER_FREQ	60
 
-Q_EXPORT_PLUGIN2(YT_OpenGLRenderer, YT_OpenGLRendererPlugin)
+Q_EXPORT_PLUGIN2(OpenGLRenderer, OpenGLRendererPlugin)
 
-YT_Host* g_Host = 0;
-YT_Host* GetHost()
+Host* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
 
-YT_RESULT YT_OpenGLRendererPlugin::Init( YT_Host* host)
+RESULT OpenGLRendererPlugin::Init( Host* host)
 {
 	g_Host = host;
 
 	if (QGLFormat::hasOpenGL() && QGLPixelBuffer::hasOpenGLPbuffers()) 
 	{
-		g_Host->RegisterPlugin(this, YT_PLUGIN_RENDERER, QString("OpenGL"));
+		g_Host->RegisterPlugin(this, PLUGIN_RENDERER, QString("OpenGL"));
 	}
 
-	return YT_OK;
+	return OK;
 }
 
 
-YT_Renderer* YT_OpenGLRendererPlugin::NewRenderer(QWidget* widget, const QString& name )
+Renderer* OpenGLRendererPlugin::NewRenderer(QWidget* widget, const QString& name )
 {
-	YT_OpenGLRenderer* renderer = new YT_OpenGLRenderer(g_Host, widget, name);
+	OpenGLRenderer* renderer = new OpenGLRenderer(g_Host, widget, name);
 
 	return renderer;
 }
 
-void YT_OpenGLRendererPlugin::ReleaseRenderer( YT_Renderer* parent )
+void OpenGLRendererPlugin::ReleaseRenderer( Renderer* parent )
 {
-	delete (YT_OpenGLRenderer*)parent;
+	delete (OpenGLRenderer*)parent;
 }
 
 
 
-YT_OpenGLRenderer::YT_OpenGLRenderer(YT_Host* host, QWidget* widget, const QString& name) 
+OpenGLRenderer::OpenGLRenderer(Host* host, QWidget* widget, const QString& name) 
 : m_Host(host), QGLWidget(widget), m_ReadyToRender(false)
 {
 	setAutoBufferSwap(false); // swap buffer in rendering thread	
@@ -53,11 +53,11 @@ YT_OpenGLRenderer::YT_OpenGLRenderer(YT_Host* host, QWidget* widget, const QStri
 }
 
 
-YT_OpenGLRenderer::~YT_OpenGLRenderer()
+OpenGLRenderer::~OpenGLRenderer()
 {
 }
 
-YT_RESULT YT_OpenGLRenderer::RenderScene(YT_Frame_List frames)
+RESULT OpenGLRenderer::RenderScene(FrameList frames)
 {
 	if (m_ReadyToRender) 
 	{
@@ -79,7 +79,7 @@ YT_RESULT YT_OpenGLRenderer::RenderScene(YT_Frame_List frames)
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);     // Background => dark blue
 		for (int i=0; i<frames.size(); ++i) 
 		{
-			YT_Frame_Ptr frame = frames.at(i);
+			FramePtr frame = frames.at(i);
 			if (!frame)
 			{
 				continue;
@@ -101,10 +101,10 @@ YT_RESULT YT_OpenGLRenderer::RenderScene(YT_Frame_List frames)
 		swapBuffers();
 	}
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_OpenGLRenderer::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr sourceFormat )
+RESULT OpenGLRenderer::Allocate( FramePtr& frame, FormatPtr sourceFormat )
 {
 	QImage* image = new QImage(sourceFormat->Width(), sourceFormat->Height(), QImage::Format_RGB888);
 
@@ -123,12 +123,12 @@ YT_RESULT YT_OpenGLRenderer::Allocate( YT_Frame_Ptr& frame, YT_Format_Ptr source
 	frame->Format()->SetStride(2,0);
 	frame->Format()->SetStride(3,0);
 
-	frame->Format()->SetColor(YT_RGB24);
+	frame->Format()->SetColor(RGB24);
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_OpenGLRenderer::Deallocate( YT_Frame_Ptr frame )
+RESULT OpenGLRenderer::Deallocate( FramePtr frame )
 {
 	QImage* image = (QImage*)frame->ExternData();
 
@@ -136,25 +136,25 @@ YT_RESULT YT_OpenGLRenderer::Deallocate( YT_Frame_Ptr frame )
 
 	frame.clear();
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_OpenGLRenderer::GetFrame( YT_Frame_Ptr& frame )
+RESULT OpenGLRenderer::GetFrame( FramePtr& frame )
 {
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YT_OpenGLRenderer::ReleaseFrame( YT_Frame_Ptr frame )
+RESULT OpenGLRenderer::ReleaseFrame( FramePtr frame )
 {
-	return YT_OK;
+	return OK;
 }
 
-void YT_OpenGLRenderer::paintEvent( QPaintEvent* )
+void OpenGLRenderer::paintEvent( QPaintEvent* )
 {
 	// Do nothing here, let render thread does rendering and prevent parent class to call makeCurrent()
 }
 
-void YT_OpenGLRenderer::showEvent( QShowEvent*)
+void OpenGLRenderer::showEvent( QShowEvent*)
 {
 	if (!m_ReadyToRender) {
 		doneCurrent();
@@ -162,11 +162,11 @@ void YT_OpenGLRenderer::showEvent( QShowEvent*)
 	}
 }
 
-void YT_OpenGLRenderer::OnResizeTimer()
+void OpenGLRenderer::OnResizeTimer()
 {	
 }
 
-void YT_OpenGLRenderer::resizeEvent( QResizeEvent* )
+void OpenGLRenderer::resizeEvent( QResizeEvent* )
 {
 	// Do nothing, but prevent parent class to call makeCurrent()		
 

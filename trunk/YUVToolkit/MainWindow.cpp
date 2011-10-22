@@ -649,7 +649,7 @@ void MainWindow::seekVideoFromSlider()
 		return;
 	}
 
-	YT_Source_Info info;
+	SourceInfo info;
 	longest->GetSource()->GetInfo(info);
 
 	int idx_new = m_Slider->value();
@@ -698,9 +698,9 @@ void MainWindow::on_action_Seek_End_triggered()
 	VideoView* longest = m_VideoViewList->longest();
 	if (longest)
 	{
-		YT_Source* source = longest->GetSource();
+		Source* source = longest->GetSource();
 		
-		YT_Source_Info info;
+		SourceInfo info;
 		source->GetInfo(info);
 
 		m_VideoViewList->Seek(info.duration, false);
@@ -730,12 +730,12 @@ void MainWindow::OnTimer()
 	VideoView* longest = m_VideoViewList->longest();
 	if (longest)
 	{
-		YT_Source* source = VV_SOURCE(longest);
-		YT_Frame_Ptr frame = VV_LASTFRAME(longest);
+		Source* source = VV_SOURCE(longest);
+		FramePtr frame = VV_LASTFRAME(longest);
 		
 		if (source && frame)
 		{
-			YT_Source_Info info;
+			SourceInfo info;
 			source->GetInfo(info);
 
 			OnUpdateSlider(info.duration, info.fps, frame->PTS());
@@ -753,12 +753,12 @@ void MainWindow::OnTimer()
 	QString str;
 	if (active)
 	{
-		YT_Source* source = VV_SOURCE(active);
-		YT_Frame_Ptr frame = VV_LASTFRAME(active);
+		Source* source = VV_SOURCE(active);
+		FramePtr frame = VV_LASTFRAME(active);
 
 		if (source && frame)
 		{
-			YT_Source_Info info;
+			SourceInfo info;
 			source->GetInfo(info);
 
 			str.clear();
@@ -821,9 +821,9 @@ void MainWindow::OnTimer()
 
 void MainWindow::stepVideo( int step )
 {
-	YT_Source* source = 0;
+	Source* source = 0;
 	VideoView* longest = m_VideoViewList->longest();
-	YT_Frame_Ptr lastFrame;
+	FramePtr lastFrame;
 	if (longest)
 	{
 		source = longest->GetSource();
@@ -835,7 +835,7 @@ void MainWindow::stepVideo( int step )
 		return;
 	}
 
-	YT_Source_Info info;
+	SourceInfo info;
 	source->GetInfo(info);
 
 	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), info.num_frames-1);
@@ -1002,7 +1002,7 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 	m_ActiveVideoView = NULL;
 	emit activeVideoViewChanged(NULL);
 
-	if (vv->GetType() == YT_PLUGIN_TRANSFORM)
+	if (vv->GetType() == PLUGIN_TRANSFORM)
 	{
 		// VideoQueue* vq = vv->GetRefVideoQueue();
 		for (int i=0; i<m_VideoViewList->size(); i++)

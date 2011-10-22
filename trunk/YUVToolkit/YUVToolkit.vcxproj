@@ -141,6 +141,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
     </ClCompile>
     <ClCompile Include="generatedfiles\release\moc_Layout.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="generatedfiles\release\moc_MainWindow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -152,6 +153,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
     </ClCompile>
     <ClCompile Include="generatedfiles\release\moc_RendererWidget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="generatedfiles\release\moc_RenderThread.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -185,6 +187,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
     </ClCompile>
     <ClCompile Include="generatedfiles\debug\moc_Layout.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="generatedfiles\debug\moc_MainWindow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -200,6 +203,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
     </ClCompile>
     <ClCompile Include="generatedfiles\debug\moc_RendererWidget.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="generatedfiles\debug\moc_RenderThread.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>

@@ -5,7 +5,7 @@
 #include <math.h>
 #include <assert.h>
 
-Q_EXPORT_PLUGIN2(YTS_Raw, YT_RawPlugin)
+Q_EXPORT_PLUGIN2(YTS_Raw, RawPlugin)
 
 #ifndef MyMin
 #	define MyMin(x,y) ((x>y)?y:x)
@@ -15,30 +15,30 @@ Q_EXPORT_PLUGIN2(YTS_Raw, YT_RawPlugin)
 #	define MyMax(x,y) ((x<y)?y:x)
 #endif
 
-YT_Host* g_Host = 0;
-YT_Host* GetHost()
+Host* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
 
 
-YT_RESULT YT_RawPlugin::Init( YT_Host* host)
+RESULT RawPlugin::Init( Host* host)
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, YT_PLUGIN_SOURCE, QString("Raw Video Files (*.yuv; *.raw)"));
+	g_Host->RegisterPlugin(this, PLUGIN_SOURCE, QString("Raw Video Files (*.yuv; *.raw)"));
 
-	return YT_OK;
+	return OK;
 }
 
-YT_Source* YT_RawPlugin::NewSource( const QString& name )
+Source* RawPlugin::NewSource( const QString& name )
 {
 	YTS_Raw* source = new YTS_Raw;
 
 	return source;
 }
 
-void YT_RawPlugin::ReleaseSource( YT_Source* source)
+void RawPlugin::ReleaseSource( Source* source)
 {
 	delete (YTS_Raw*)source;
 }
@@ -53,12 +53,12 @@ YTS_Raw::~YTS_Raw()
 {
 }
 
-YT_RESULT YTS_Raw::EnumSupportedItems( char** items )
+RESULT YTS_Raw::EnumSupportedItems( char** items )
 {
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTS_Raw::Init( const QString& path)
+RESULT YTS_Raw::Init( const QString& path)
 {
 	m_Format = GetHost()->NewFormat();
 	
@@ -68,7 +68,7 @@ YT_RESULT YTS_Raw::Init( const QString& path)
 	bool unknownResolution = true;
 	m_Format->SetWidth(640);
 	m_Format->SetHeight(480);
-	m_Format->SetColor(YT_I420);
+	m_Format->SetColor(I420);
 	m_FPS = 30;
 
 	// Parse resolution
@@ -100,13 +100,13 @@ YT_RESULT YTS_Raw::Init( const QString& path)
 		fourcc = fourcc.toUpper();
 		if (fourcc == "RGB24")
 		{
-			m_Format->SetColor(YT_RGB24);
+			m_Format->SetColor(RGB24);
 		}else if (fourcc == "GRAY8")
 		{
-			m_Format->SetColor(YT_GRAYSCALE8);
+			m_Format->SetColor(GRAYSCALE8);
 		}else
 		{
-			YT_COLOR_FORMAT cc = (YT_COLOR_FORMAT) YT_FOURCC(fourcc.at(0).toAscii(), 
+			COLOR_FORMAT cc = (COLOR_FORMAT) FOURCC(fourcc.at(0).toAscii(), 
 				fourcc.at(1).toAscii(), 
 				fourcc.at(2).toAscii(), 
 				fourcc.at(3).toAscii());
@@ -122,7 +122,7 @@ YT_RESULT YTS_Raw::Init( const QString& path)
 		GUINeeded();
 	}
 
-	return YT_OK;
+	return OK;
 }
 
 
@@ -148,7 +148,7 @@ void YTS_Raw::InitInternal()
 	m_FrameIndex = 0;
 }
 
-YT_RESULT YTS_Raw::GetInfo( YT_Source_Info& info )
+RESULT YTS_Raw::GetInfo( SourceInfo& info )
 {
 	info.format = m_Format;
 	info.duration = m_Duration;
@@ -156,17 +156,17 @@ YT_RESULT YTS_Raw::GetInfo( YT_Source_Info& info )
 	info.lastPTS = IndexToPTS(m_NumFrames-1);
 	info.fps = m_FPS;
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTS_Raw::UnInit()
+RESULT YTS_Raw::UnInit()
 {
 	fclose(m_File);
 
-	return YT_OK;
+	return OK;
 }
 
-YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
+RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int PTS )
 {
 	QMutexLocker locker(&m_Mutex);
 
@@ -205,10 +205,10 @@ YT_RESULT YTS_Raw::GetFrame( YT_Frame_Ptr frame, unsigned int PTS )
 		frame->SetFrameNumber(m_FrameIndex);
 		m_FrameIndex++;
 
-		return YT_OK;
+		return OK;
 	}else
 	{
-		return YT_END_OF_FILE;
+		return END_OF_FILE;
 	}
 }
 
@@ -239,7 +239,7 @@ QWidget* YTS_Raw::CreateGUI( QWidget* parent )
 	return widget;
 }
 
-void YTS_Raw::ReInit( const YT_Format_Ptr format, double FPS )
+void YTS_Raw::ReInit( const FormatPtr format, double FPS )
 {
 	QMutexLocker locker(&m_Mutex);
 	

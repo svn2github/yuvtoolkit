@@ -10,18 +10,18 @@
 
 #include <stdio.h>
 
-class YT_RawPlugin : public QObject, public YT_PlugIn
+class RawPlugin : public QObject, public YTPlugIn
 {
 	Q_OBJECT;
-	Q_INTERFACES(YT_PlugIn);
+	Q_INTERFACES(YTPlugIn);
 public:
-	virtual YT_RESULT Init(YT_Host*);
+	virtual RESULT Init(Host*);
 
-	virtual YT_Source* NewSource(const QString& name);
-	virtual void ReleaseSource(YT_Source*);
+	virtual Source* NewSource(const QString& name);
+	virtual void ReleaseSource(Source*);
 };
 
-class YTS_Raw : public QObject, public YT_Source
+class YTS_Raw : public QObject, public Source
 {
 	Q_OBJECT;
 
@@ -31,22 +31,22 @@ public:
 
 	// For file source, return list of supported file types, like "avi", "yuv" etc
 	// For capture source, return list of devices
-	virtual YT_RESULT EnumSupportedItems(char** items);
+	virtual RESULT EnumSupportedItems(char** items);
 
 	// Create and destroy
-	virtual YT_RESULT Init(const QString& path);
-	virtual YT_RESULT UnInit();
+	virtual RESULT Init(const QString& path);
+	virtual RESULT UnInit();
 
-	virtual YT_RESULT GetFrame(YT_Frame_Ptr frame, unsigned int PTS);
+	virtual RESULT GetFrame(FramePtr frame, unsigned int PTS);
 
-	virtual YT_RESULT GetInfo(YT_Source_Info& info);
+	virtual RESULT GetInfo(SourceInfo& info);
 	virtual unsigned int IndexToPTS(unsigned int frame_idx);
 	virtual unsigned int SeekPTS(unsigned int pts);
 
 	virtual bool HasGUI();
 	virtual QWidget* CreateGUI(QWidget* parent);
 
-	void ReInit(const YT_Format_Ptr format, double FPS);
+	void ReInit(const FormatPtr format, double FPS);
 	const QString GetPath() {return m_Path;}
 protected:
 	unsigned int PTSToIndex(unsigned int PTS);
@@ -61,7 +61,7 @@ private:
 
 	FILE* m_File;
 
-	YT_Format_Ptr m_Format;
+	FormatPtr m_Format;
 	QString m_Path;
 	RawFormatWidget* m_RawFormatWidget;
 

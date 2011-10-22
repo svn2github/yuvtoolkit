@@ -6,8 +6,8 @@
 #endif
 #include <QtGui/QApplication>
 
-YT_HostImpl* g_Host = 0;
-YT_Host* GetHost()
+HostImpl* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
@@ -25,12 +25,12 @@ int main(int argc, char *argv[])
 	app.setOrganizationName("Yocto.net");
 	app.setQuitOnLastWindowClosed(true);
 
-	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
-	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<FramePtr>("FramePtr");
+	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 
-	g_Host = new YT_HostImpl;
+	g_Host = new HostImpl;
 	QMainWindow* w = g_Host->NewMainWindow(argc, argv);
 	
 	w->show();

@@ -20,7 +20,7 @@
 unsigned int VideoView::m_IDCounter = 0;
 
 VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread) :
-	parent(_parent), m_Type(YT_PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
+	parent(_parent), m_Type(PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
 		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread)
 {
 	m_ViewID = m_IDCounter++;
@@ -40,9 +40,9 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThre
 	m_Measure = 0; 
 	m_SourceThread = 0;
 
-	m_RenderFormat = YT_Format_Ptr(new YT_FormatImpl);
-	m_SourceFormat = YT_Format_Ptr(new YT_FormatImpl); 
-	m_EmptyFrame = YT_Frame_Ptr(new YT_FrameImpl);
+	m_RenderFormat = FormatPtr(new FormatImpl);
+	m_SourceFormat = FormatPtr(new FormatImpl); 
+	// m_EmptyFrame = FramePtr(new FrameImpl);
 	
 	m_CloseAction = new QAction("Close", this);
 	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(OnClose()));
@@ -50,10 +50,10 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThre
 
 void VideoView::Init( const char* path, unsigned int pts)
 {
-	m_Type = YT_PLUGIN_SOURCE;
+	m_Type = PLUGIN_SOURCE;
 	m_SourceThread = new SourceThread(m_ViewID, path);
 
-	YT_Source* source = m_SourceThread->GetSource();
+	Source* source = m_SourceThread->GetSource();
 	if (source && source->HasGUI())
 	{
 		m_Dock = new QDockWidget("Video Source Options", m_MainWindow);
@@ -74,20 +74,20 @@ void VideoView::Init( const char* path, unsigned int pts)
 		source->GUINeeded.connect(this, &VideoView::OnSourceGUINeeded);
 	}
 
-	connect(m_SourceThread, SIGNAL(frameReady(YT_Frame_Ptr)), m_ProcessThread, SLOT(ReceiveFrame(YT_Frame_Ptr)));
+	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
 }
 
-void VideoView::Init( YT_Transform* transform, VideoQueue* source, QString outputName )
+void VideoView::Init( Transform* transform, VideoQueue* source, QString outputName )
 {
-	m_Type = YT_PLUGIN_TRANSFORM;
+	m_Type = PLUGIN_TRANSFORM;
 	m_Transform = transform;
 	// m_RefVideoQueue = source;
 	m_OutputName = outputName;
 }
 
-void VideoView::Init( YT_Measure* measure, VideoQueue* source, VideoQueue* source1 )
+void VideoView::Init( Measure* measure, VideoQueue* source, VideoQueue* source1 )
 {
-	m_Type = YT_PLUGIN_TRANSFORM;
+	m_Type = PLUGIN_TRANSFORM;
 	m_Measure = measure;
 	// m_RefVideoQueue = source;
 }
@@ -249,8 +249,8 @@ void VideoView::SetTitle( const char* title )
 
 bool VideoView::CheckResolutionDurationChanged()
 {
-	YT_Source* source = VV_SOURCE(this);
-	YT_Frame_Ptr frame = VV_LASTFRAME(this);
+	Source* source = VV_SOURCE(this);
+	FramePtr frame = VV_LASTFRAME(this);
 
 	UpdateTransformActionList();
 
@@ -260,7 +260,7 @@ bool VideoView::CheckResolutionDurationChanged()
 
 	if (source)
 	{
-		YT_Source_Info info;
+		SourceInfo info;
 		source->GetInfo(info);
 		width  = info.format->Width();
 		height = info.format->Height();
@@ -347,10 +347,10 @@ void VideoView::UpdateTransformActionList()
 {
 	if (!m_TransformActionListUpdated)	
 	{
-		YT_Source* source = GetSource();
+		Source* source = GetSource();
 		if (source)
 		{
-			YT_Source_Info info;
+			SourceInfo info;
 			source->GetInfo(info);
 
 			const QList<PlugInInfo*>& lst = GetHostImpl()->GetTransformPluginList();
@@ -359,7 +359,7 @@ void VideoView::UpdateTransformActionList()
 			{
 				PlugInInfo* plugInInfo = lst[i];
 
-				YT_Transform* transform = plugInInfo->plugin->NewTransform(plugInInfo->string);
+				Transform* transform = plugInInfo->plugin->NewTransform(plugInInfo->string);
 				
 				QStringList outputNames;
 				QStringList statNames;
@@ -417,7 +417,7 @@ void VideoView::OnDockFloating(bool f)
 	}
 }
 
-YT_Source* VideoView::GetSource()
+Source* VideoView::GetSource()
 {
 	if (m_SourceThread)
 	{

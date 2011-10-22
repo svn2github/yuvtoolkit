@@ -17,28 +17,28 @@ extern "C" {
 
 #include "FFMpeg_Formats.h"
 
-void PrepareCC(YT_COLOR_FORMAT& color, unsigned char* (&data)[4])
+void PrepareCC(COLOR_FORMAT& color, unsigned char* (&data)[4])
 {
 	switch (color)
 	{
-	case YT_YV12:
-		color = YT_I420;
+	case YV12:
+		color = I420;
 		// SWAP
 		data[3] = data[1];
 		data[1] = data[2];
 		data[2] = data[3];
 		data[3] = 0;
 		break;
-	case YT_IYUV:
-		color = YT_I420;
+	case IYUV:
+		color = I420;
 		break;
 	}
 }
 
-void ColorConversion(const YT_Frame& in, YT_Frame& out)
+void ColorConversion(const Frame& in, Frame& out)
 {
-	const YT_Format_Ptr format_in = in.Format();
-	YT_Format_Ptr format_out = out.Format();
+	const FormatPtr format_in = in.Format();
+	FormatPtr format_out = out.Format();
 
 	int step_in[4];
 	memcpy(step_in, format_in->Stride(), sizeof(step_in));
@@ -47,8 +47,8 @@ void ColorConversion(const YT_Frame& in, YT_Frame& out)
 	memcpy(data_in, in.Data(), sizeof(data_in));
 	memcpy(data_out, out.Data(), sizeof(data_out));
 
-	YT_COLOR_FORMAT color_in  = format_in->Color();
-	YT_COLOR_FORMAT color_out = format_out->Color();
+	COLOR_FORMAT color_in  = format_in->Color();
+	COLOR_FORMAT color_out = format_out->Color();
 
 	
 	PrepareCC(color_in, data_in);
@@ -59,8 +59,8 @@ void ColorConversion(const YT_Frame& in, YT_Frame& out)
 	{
 		// Try FFMpeg conversion if framewave doesn't support the conversion
 		struct SwsContext *ctx = sws_getContext(format_in->Width(), format_in->Height(),
-			YT_Format_to_FFMpeg_Format(color_in), format_out->Width(), format_out->Height(),
-			YT_Format_to_FFMpeg_Format(color_out),
+			YT2FFMpegFormat(color_in), format_out->Width(), format_out->Height(),
+			YT2FFMpegFormat(color_out),
 			SWS_BILINEAR, NULL,NULL,NULL );
 		if (ctx)
 		{

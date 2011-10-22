@@ -3,17 +3,17 @@
 
 #define COLOR_COUNT 9
 
-YT_COLOR_FORMAT colors[COLOR_COUNT] = 
+COLOR_FORMAT colors[COLOR_COUNT] = 
 {
-	YT_I420,
-	YT_YV12,
-	YT_YUY2,
-	YT_UYVY,
-	YT_NV12,
-	YT_GRAYSCALE8,
-	YT_RGB24,
-	YT_RGBX32,
-	YT_XRGB32,
+	I420,
+	YV12,
+	YUY2,
+	UYVY,
+	NV12,
+	GRAYSCALE8,
+	RGB24,
+	RGBX32,
+	XRGB32,
 };
 
 QString color_names[COLOR_COUNT] = 
@@ -82,7 +82,7 @@ void RawFormatWidget::showEvent( QShowEvent *event )
 		m_Format = GetHost()->NewFormat();
 	}
 
-	YT_Source_Info info;
+	SourceInfo info;
 	memset(&info, 0, sizeof(info));
 	info.format = m_Format;
 	rawSource->GetInfo(info);

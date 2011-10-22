@@ -1,29 +1,29 @@
 #include "YT_TransformsBasicPlugin.h"
 #include "YT_TransformsBasic.h"
 
-Q_EXPORT_PLUGIN2(YT_TransformsBasic, YT_TransformsBasicPlugin)
+Q_EXPORT_PLUGIN2(TransformsBasic, TransformsBasicPlugin)
 
-YT_Host* g_Host = 0;
-YT_Host* GetHost()
+Host* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
 
-YT_RESULT YT_TransformsBasicPlugin::Init( YT_Host* host)
+RESULT TransformsBasicPlugin::Init( Host* host)
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, YT_PLUGIN_TRANSFORM, QString("Show YUV Plane"));
+	g_Host->RegisterPlugin(this, PLUGIN_TRANSFORM, QString("Show YUV Plane"));
 
-	return YT_OK;
+	return OK;
 }
 
-YT_Transform* YT_TransformsBasicPlugin::NewTransform( const QString& name )
+Transform* TransformsBasicPlugin::NewTransform( const QString& name )
 {
-	return new YT_ShowYUVComponent;	
+	return new ShowYUVComponent;	
 }
 
-void YT_TransformsBasicPlugin::ReleaseTransform( YT_Transform* t)
+void TransformsBasicPlugin::ReleaseTransform( Transform* t)
 {
 	delete t;
 }

@@ -43,7 +43,7 @@ public:
 	bool IsPlaying();
 
 	unsigned int GetCurrentPTS() {return m_CurrentPTS; }
-	//bool GetRenderFrameList(QList<YT_Render_Frame>& list, unsigned int& pts);
+	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
 	unsigned int GetSeekingPTS() {return m_SeekingPTS; }
 	void CheckRenderReset();
@@ -60,7 +60,7 @@ public slots:
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
-	void OnSceneRendered(YT_Frame_List scene, unsigned int pts, bool seeking);
+	void OnSceneRendered(FrameList scene, unsigned int pts, bool seeking);
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);

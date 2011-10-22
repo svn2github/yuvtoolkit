@@ -1,15 +1,15 @@
-#ifndef YT_INTERFACE_IMPL_H
-#define YT_INTERFACE_IMPL_H
+#ifndef INTERFACE_IMPL_H
+#define INTERFACE_IMPL_H
 
 #include "../Plugins/YT_Interface.h"
 #include <QtGui>
 #include <QVariant>
 
-class YT_HostImpl;
+class HostImpl;
 
-class YT_FormatImpl : public YT_Format
+class FormatImpl : public Format
 {
-	YT_COLOR_FORMAT color;		    // color format listed in YT_COLOR_FORMAT or additional fourcc
+	COLOR_FORMAT color;		    // color format listed in COLOR_FORMAT or additional fourcc
 	int width;
 	int height;
 	int stride[4];				// number of bytes per row in each plane
@@ -18,11 +18,11 @@ class YT_FormatImpl : public YT_Format
 	bool format_changed;
 	char name[4][32];
 public:
-	YT_FormatImpl();
-	virtual ~YT_FormatImpl();
+	FormatImpl();
+	virtual ~FormatImpl();
 		// Get/Set color space
-	virtual YT_COLOR_FORMAT Color() const;
-	virtual void SetColor(YT_COLOR_FORMAT value);
+	virtual COLOR_FORMAT Color() const;
+	virtual void SetColor(COLOR_FORMAT value);
 
 	// Get/Set width
 	virtual int Width() const;
@@ -45,15 +45,15 @@ public:
 	virtual int PlaneHeight(int plane);
 
 	// Convenience functions
-	virtual bool operator== (const YT_Format &f);
-	virtual bool operator!= (const YT_Format &f);
-	virtual YT_Format& operator= (const YT_Format &f);
-	virtual YT_Format& operator= (YT_Format &f);
+	virtual bool operator== (const Format &f);
+	virtual bool operator!= (const Format &f);
+	virtual Format& operator= (const Format &f);
+	virtual Format& operator= (Format &f);
 };
 
-class YT_FramePool;
+class FramePool;
 
-class YT_FrameImpl : public YT_Frame
+class FrameImpl : public Frame
 {
 	unsigned char* data[4]; 	// pointers to the planes, for packed frame, only first one is used
 	unsigned int pts; // presentation timestamp in miliseconds
@@ -63,19 +63,19 @@ class YT_FrameImpl : public YT_Frame
 	unsigned char* allocated_data;
 	size_t allocated_size;
 
-	YT_Format_Ptr format;
-	YT_FramePool* pool;
+	FormatPtr format;
+	FramePool* pool;
 
-	QMap<YT_Info_Key, QVariant> info;
+	QMap<INFO_KEY, QVariant> info;
 
 	void Deallocate();
 public:
-	YT_FrameImpl(YT_FramePool* p=NULL);
-	virtual ~YT_FrameImpl();
+	FrameImpl(FramePool* p=NULL);
+	virtual ~FrameImpl();
 
-	virtual const YT_Format_Ptr Format() const;
-	virtual YT_Format_Ptr Format();
-	virtual void SetFormat(const YT_Format_Ptr);
+	virtual const FormatPtr Format() const;
+	virtual FormatPtr Format();
+	virtual void SetFormat(const FormatPtr);
 
 	// Get/Set data pointers of each plane
 	virtual unsigned char* Data(int plane) const;
@@ -92,56 +92,58 @@ public:
 	virtual unsigned int FrameNumber() const;
 	virtual void SetFrameNumber(unsigned int value);
 
-	virtual bool HasInfo(YT_Info_Key) const;
-	virtual QVariant Info(YT_Info_Key) const;
-	virtual void SetInfo(YT_Info_Key, QVariant);
+	virtual bool HasInfo(INFO_KEY) const;
+	virtual QVariant Info(INFO_KEY) const;
+	virtual void SetInfo(INFO_KEY, QVariant);
 
 	// Given the format, allocate the memory and populate Data
-	YT_RESULT Allocate(); 
+	RESULT Allocate(); 
 	// Reset the internal buffer, call me before changing the format
-	YT_RESULT Reset();
+	RESULT Reset();
 
-	static void Recyle(YT_Frame *obj);
+	static void Recyle(Frame *obj);
 };
 
-class YT_FramePool
+class FramePool
 {
-	QList<YT_Frame*> m_Pool;
+	QList<Frame*> m_Pool;
 	QMutex m_Mutex;
 public:
-	YT_FramePool(unsigned int size);
-	virtual ~YT_FramePool();
+	FramePool(unsigned int size);
+	virtual ~FramePool();
 
-	YT_Frame_Ptr Get();
-	void Recycle(YT_Frame* frame);
+	FramePtr Get();
+	void Recycle(Frame* frame);
 	int Size();
 };
 
 struct PlugInInfo
 {
-	YT_PlugIn* plugin;
-	YT_PLUGIN_TYPE type;
+	YTPlugIn* plugin;
+	PLUGIN_TYPE type;
 	QString string;
 };
 
-class YT_HostImpl : public QObject, public YT_Host
+class HostImpl : public QObject, public Host
 {
 	Q_OBJECT;
 
 	QList<QMainWindow*> m_MainWindowList;
-	QList<YT_PlugIn*> m_PlugInList;
+	QList<YTPlugIn*> m_PlugInList;
 
 	QList<PlugInInfo*> m_SourceList;
 	QList<PlugInInfo*> m_RendererList;
 	QList<PlugInInfo*> m_TransformList;
 	QList<PlugInInfo*> m_MeasureList;
+	QList<FramePool*> m_FramePoolList;
+	QList<FramePool*> m_FramePoolListGC;
 
 	volatile bool m_LoggingEnabled;
 	QFile m_LogFile;
 	QMutex m_MutexLogging;
 public:
-	YT_HostImpl();
-	~YT_HostImpl();
+	HostImpl();
+	~HostImpl();
 
 	void InitLogging(); 
 	void UnInitLogging();
@@ -149,29 +151,32 @@ public:
 	bool IsLoggingEnabled();
 	void OpenLoggingDirectory();
 
-	virtual YT_Format_Ptr NewFormat();
+	FramePool* NewFramePool(unsigned int size);
+	void ReleaseFramePool(FramePool*);
 
-	virtual YT_Frame_Ptr NewFrame();
+	virtual FormatPtr NewFormat();
 
-	virtual YT_RESULT RegisterPlugin(YT_PlugIn*, YT_PLUGIN_TYPE, const QString& name);
+	virtual FramePtr NewFrame();
+
+	virtual RESULT RegisterPlugin(YTPlugIn*, PLUGIN_TYPE, const QString& name);
 	// virtual QMainWindow* GetMainWindow();
 
 	QMainWindow* NewMainWindow(int argc, char *argv[]);
 
-	virtual void Logging(void* ptr, YT_LOGGING_LEVELS level, const char* fmt, ...);
+	virtual void Logging(void* ptr, LOGGING_LEVELS level, const char* fmt, ...);
 
 	/*
-	YT_Source* NewSource(const QString file_ext);
-	void ReleaseSource(YT_Source*);
+	Source* NewSource(const QString file_ext);
+	void ReleaseSource(Source*);
 */
-	YT_PlugIn* FindSourcePlugin(const QString file_ext);
-	YT_PlugIn* FindRenderPlugin(const QString& type);
+	YTPlugIn* FindSourcePlugin(const QString file_ext);
+	YTPlugIn* FindRenderPlugin(const QString& type);
 
 	const QList<PlugInInfo*>& GetRenderPluginList() {return m_RendererList; }
 	const QList<PlugInInfo*>& GetTransformPluginList() {return m_TransformList; }
 	const QList<PlugInInfo*>& GetMeasurePluginList() {return m_MeasureList; }
 };
 
-extern YT_HostImpl* GetHostImpl();
+extern HostImpl* GetHostImpl();
 
-#endif // YT_INTERFACE_IMPL_H
+#endif // INTERFACE_IMPL_H

@@ -6,7 +6,7 @@
 
 #include <assert.h>
 
-RenderThread::RenderThread(YT_Renderer* renderer, VideoViewList* list) : m_Renderer(renderer), 
+RenderThread::RenderThread(Renderer* renderer, VideoViewList* list) : m_Renderer(renderer), 
 	m_VideoViewList(list), m_SpeedRatio(1.0f)
 {
 	moveToThread(this);
@@ -20,14 +20,14 @@ RenderThread::~RenderThread(void)
 #define DIFF_PTS(x,y) qAbs<int>(((int)x)-((int)y))
 void RenderThread::run()
 {
-	qRegisterMetaType<YT_Frame_Ptr>("YT_Frame_Ptr");
-	qRegisterMetaType<YT_Frame_List>("YT_Frame_List");
+	qRegisterMetaType<FramePtr>("FramePtr");
+	qRegisterMetaType<FrameList>("FrameList");
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::DirectConnection);
-	timer->start(8);
+	timer->start(16);
 
 	exec();
 }
@@ -39,7 +39,7 @@ void RenderThread::Stop()
 
 	for (int i = 0; i < m_LastRenderFrames.size(); i++) 
 	{
-		YT_Frame_Ptr& renderFrame = m_LastRenderFrames[i];
+		FramePtr& renderFrame = m_LastRenderFrames[i];
 
 		if (renderFrame)
 		{
@@ -77,7 +77,7 @@ void RenderThread::Render()
 	int diffPts = 0;
 	if (m_SceneQueue.size()>0)
 	{		
-		YT_Frame_List newScene = m_SceneQueue.first();
+		FrameList newScene = m_SceneQueue.first();
 		unsigned int pts = m_PTSQueue.first();
 		bool seeking = m_SeekingQueue.first();
 		
@@ -103,10 +103,10 @@ void RenderThread::Render()
 	}
 
 	// Create render scene with layout info
-	YT_Frame_List renderScene;
+	FrameList renderScene;
 	for (int i=0; i<m_LastRenderFrames.size(); i++)
 	{
-		YT_Frame_Ptr renderFrame = m_LastRenderFrames.at(i);
+		FramePtr renderFrame = m_LastRenderFrames.at(i);
 		int j = m_ViewIDs.indexOf(renderFrame->Info(VIEW_ID).toUInt());
 		if (j == -1)
 		{
@@ -138,7 +138,7 @@ void RenderThread::Render()
 	emit sceneRendered(m_LastSourceFrames, m_LastPTS, m_LastSeeking);
 }
 
-void RenderThread::RenderScene( YT_Frame_List scene, unsigned int pts, bool seeking )
+void RenderThread::RenderScene( FrameList scene, unsigned int pts, bool seeking )
 {
 	int siz = scene.size();
 	m_SceneQueue.append(scene);
@@ -153,16 +153,16 @@ void RenderThread::SetLayout(UintList ids, RectList srcRects, RectList dstRects)
 	m_DstRects = dstRects;
 }
 
-YT_Frame_List RenderThread::RenderFrames(YT_Frame_List sourceFrames, YT_Frame_List renderFramesOld)
+FrameList RenderThread::RenderFrames(FrameList sourceFrames, FrameList renderFramesOld)
 {
 	if (sourceFrames.size()==2)
 	{
 		int i=0;
 	}
-	YT_Frame_List renderFramesNew;
+	FrameList renderFramesNew;
 	for (int i = 0; i < sourceFrames.size(); i++) 
 	{
-		YT_Frame_Ptr sourceFrame = sourceFrames.at(i);
+		FramePtr sourceFrame = sourceFrames.at(i);
 		if (!sourceFrame)
 		{
 			continue;
@@ -170,11 +170,11 @@ YT_Frame_List RenderThread::RenderFrames(YT_Frame_List sourceFrames, YT_Frame_Li
 
 		unsigned int viewID = sourceFrame->Info(VIEW_ID).toUInt();
 
-		YT_Frame_Ptr renderFrame;		
+		FramePtr renderFrame;		
 		// Find existing render frame and extract it
 		for (int k = 0; k < renderFramesOld.size(); k++) 
 		{
-			YT_Frame_Ptr _frame = renderFramesOld.at(k);
+			FramePtr _frame = renderFramesOld.at(k);
 			if (_frame && _frame->Info(VIEW_ID).toUInt() == viewID)
 			{
 				renderFramesOld.removeAt(k);
@@ -201,7 +201,7 @@ YT_Frame_List RenderThread::RenderFrames(YT_Frame_List sourceFrames, YT_Frame_Li
 		}
 
 		// Render frame
-		if (m_Renderer->GetFrame(renderFrame) == YT_OK)
+		if (m_Renderer->GetFrame(renderFrame) == OK)
 		{
 			if (sourceFrame->Format() == renderFrame->Format())
 			{
@@ -228,7 +228,7 @@ YT_Frame_List RenderThread::RenderFrames(YT_Frame_List sourceFrames, YT_Frame_Li
 	// Delete old frames
 	for (int i=0; i<renderFramesOld.size(); i++)
 	{
-		YT_Frame_Ptr renderFrame = renderFramesOld.at(i);
+		FramePtr renderFrame = renderFramesOld.at(i);
 		if (renderFrame)
 		{
 			m_Renderer->Deallocate(renderFrame);

@@ -1,29 +1,29 @@
 #include "YT_MeasuresBasic.h"
 #include "YT_MeasuresBasicPlugin.h"
 
-Q_EXPORT_PLUGIN2(YT_MeasuresBasic, YT_MeasuresBasicPlugin)
+Q_EXPORT_PLUGIN2(MeasuresBasic, MeasuresBasicPlugin)
 
-YT_Host* g_Host = 0;
-YT_Host* GetHost()
+Host* g_Host = 0;
+Host* GetHost()
 {
 	return g_Host;
 }
 
-YT_RESULT YT_MeasuresBasicPlugin::Init( YT_Host* host )
+RESULT MeasuresBasicPlugin::Init( Host* host )
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, YT_PLUGIN_MEASURE, QString("Compute PSNR/MSE"));
+	g_Host->RegisterPlugin(this, PLUGIN_MEASURE, QString("Compute PSNR/MSE"));
 
-	return YT_OK;
+	return OK;
 }
 
-YT_Measure* YT_MeasuresBasicPlugin::NewMeasure( const QString& name )
+Measure* MeasuresBasicPlugin::NewMeasure( const QString& name )
 {
-	return new YT_MeasuresBasic;
+	return new MeasuresBasic;
 }
 
-void YT_MeasuresBasicPlugin::ReleaseMeasure( YT_Measure* m )
+void MeasuresBasicPlugin::ReleaseMeasure( Measure* m )
 {
 	delete m;
 }
