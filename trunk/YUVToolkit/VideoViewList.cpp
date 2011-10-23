@@ -18,7 +18,7 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 	m_RenderWidget = rw;
 	m_MainWindow = mainWindow;
 
-	m_ProcessThread = new ProcessThread();	
+	m_ProcessThread = new ProcessThread(&m_Control);	
 	
 	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
 
@@ -54,7 +54,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		QString renderType = settings.value("main/renderer", "D3D").toString();
 		m_RenderWidget->Init(renderType);
 
-		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), this);
+		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), &m_Control);
 		
 		connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
 			m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
@@ -68,7 +68,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 
 	// m_RenderThread->Stop();
 
-	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget, m_ProcessThread);
+	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget, m_ProcessThread, &m_Control);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
 
 	m_RenderWidget->layout->AddView(vv);
@@ -153,6 +153,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 		m_RenderWidget->UnInit();
 		m_RenderWidget->repaint();
+		m_Control.Reset();
 	}else
 	{
 		StartSources();
@@ -370,18 +371,11 @@ public:
 	}
 };
 
-void VideoViewList::Seek( unsigned int pts )
-{
-	INFO_LOG("VideoViewList::Seek %d", pts);
-
-	assert(m_VideoList.size()>0);
-	
-	m_ProcessThread->Seek(pts);
-}
-
 void VideoViewList::CheckLoopFromStart()
 {
-	if (m_ProcessThread->IsPlaying())
+	PlaybackControl::Status status;
+	m_Control.GetStatus(&status);
+	if (status.isPlaying)
 	{
 		VideoView* vv = m_LongestVideoView;
 		
@@ -392,7 +386,7 @@ void VideoViewList::CheckLoopFromStart()
 
 		if (!m_EndOfFile && endOfFile)
 		{
-			Seek(0);
+			m_Control.Seek(0);
 		}
 
 		m_EndOfFile = endOfFile;
@@ -465,17 +459,6 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	}
 
 	action->setChecked(!hasView);
-}
-
-bool VideoViewList::IsPlaying()
-{
-	if (m_ProcessThread)
-	{
-		return m_ProcessThread->IsPlaying();
-	}else
-	{
-		return false;
-	}
 }
 
 VideoView* VideoViewList::longest() const

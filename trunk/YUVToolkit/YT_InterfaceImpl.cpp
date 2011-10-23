@@ -797,3 +797,76 @@ int FramePool::Size()
 {
 	return m_Pool.size();
 }
+
+PlaybackControl::PlaybackControl()
+{
+	Reset();
+}
+
+
+void PlaybackControl::Reset()
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.isPlaying = true;
+	m_Status.lastDisplayPTS = 0;
+	m_Status.lastProcessPTS = 0;
+	m_Status.seekingPTS = INVALID_PTS;
+}
+
+
+void PlaybackControl::Play( bool play )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.isPlaying = play;
+}
+
+void PlaybackControl::PlayPause()
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.isPlaying = !m_Status.isPlaying;
+}
+
+void PlaybackControl::Seek( unsigned int pts )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.seekingPTS = pts;
+}
+
+void PlaybackControl::Seek( unsigned int pts, bool play )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.seekingPTS = pts;
+	m_Status.isPlaying = play;
+}
+
+void PlaybackControl::GetStatus( Status* status )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	*status = m_Status;
+}
+
+void PlaybackControl::OnFrameProcessed( unsigned int pts, unsigned int seekingPTS )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	if (m_Status.seekingPTS == seekingPTS)
+	{
+		m_Status.seekingPTS = INVALID_PTS;
+	}
+
+	m_Status.lastProcessPTS = pts;
+}
+
+void PlaybackControl::OnFrameDisplayed( unsigned int pts, unsigned int seekingPTS )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.lastDisplayPTS = pts;
+}
+

@@ -243,14 +243,6 @@ public:
 	sigslot::signal0<> GUINeeded;
 };
 
-class PlaybackInfo
-{
-public:
-	virtual bool IsPlaying() = 0;
-	virtual unsigned int LastPTS() = 0;
-	virtual unsigned int SeekingPTS() = 0; // return INVALID_PTS when is not seeking
-};
-
 
 #define SET_RECT(rect, left, top, width, height) {rect[0]=left; rect[1]=top; rect[2]=left+width; rect[3]=top+height;}
 #define COPY_RECT(rc, qrc) {rc[0]=qrc.left(); rc[1]=qrc.top(); rc[2]=qrc.left()+qrc.width(); rc[3]=qrc.top()+qrc.height();}

@@ -1,15 +1,13 @@
 #pragma once
 
-#include "YT_Interface.h"
-
-class VideoViewList;
+#include "YT_InterfaceImpl.h"
 
 class RenderThread : public QThread
 {
 	Q_OBJECT;
 public:
 	
-	RenderThread(Renderer* renderer, VideoViewList* list);
+	RenderThread(Renderer* renderer, PlaybackControl* c);
 	~RenderThread(void);
 
 	void Start();
@@ -32,7 +30,7 @@ protected:
 	
 	float m_SpeedRatio;
 	Renderer* m_Renderer;
-	VideoViewList* m_VideoViewList;
+	PlaybackControl* m_Control;
 
 	// render queue
 	QList<FrameListPtr > m_SceneQueue;

@@ -19,9 +19,9 @@
 
 unsigned int VideoView::m_IDCounter = 0;
 
-VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread) :
+VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control) :
 	parent(_parent), m_Type(PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
-		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread)
+		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread), m_Control(control)
 {
 	m_ViewID = m_IDCounter++;
 	m_LastMousePoint.setX(-1);
@@ -51,7 +51,7 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThre
 void VideoView::Init( const char* path)
 {
 	m_Type = PLUGIN_SOURCE;
-	m_SourceThread = new SourceThread(m_ViewID, m_ProcessThread, path);
+	m_SourceThread = new SourceThread(m_ViewID, m_Control, path);
 
 	Source* source = m_SourceThread->GetSource();
 	if (source && source->HasGUI())

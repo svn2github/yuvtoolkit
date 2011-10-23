@@ -1,7 +1,7 @@
 #ifndef VIDEO_VIEW_LIST_H
 #define VIDEO_VIEW_LIST_H
 
-#include "YT_Interface.h"
+#include "YT_InterfaceImpl.h"
 #include "RenderThread.h"
 #include "ProcessThread.h"
 
@@ -22,6 +22,8 @@ class VideoViewList : public QObject
 	QMainWindow* m_MainWindow;
 	QList<MeasureWindow*> m_MeasureWindowList;
 	QList<QDockWidget*> m_DockWidgetList;
+
+	PlaybackControl m_Control;
 public:
 	VideoViewList(QMainWindow*, RendererWidget*);
 	virtual ~VideoViewList();
@@ -37,10 +39,7 @@ public:
 	VideoView* NewVideoView(const char* title);
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 	ProcessThread* GetProcessThread() {return m_ProcessThread;}
-
-	void Seek(unsigned int pts);
-
-	bool IsPlaying();
+	PlaybackControl* GetControl() {return &m_Control;}
 
 	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}

@@ -1,6 +1,6 @@
 #include "ProcessThread.h"
 
-ProcessThread::ProcessThread() : m_Play(true), m_LastPTS(INVALID_PTS), m_SeekingPTS(INVALID_PTS)
+ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c)
 {
 	moveToThread(this);
 }
@@ -45,18 +45,19 @@ void ProcessThread::ProcessFrameQueue()
 {
 	CleanQueue();
 
-	if (m_SeekingPTS != INVALID_PTS)
+	m_Control->GetStatus(&m_Status);
+
+	if (m_Status.seekingPTS != INVALID_PTS)
 	{
-		FrameListPtr scene = FastSeekQueue(m_SeekingPTS);
+		FrameListPtr scene = FastSeekQueue(m_Status.seekingPTS);
 		if (scene && scene->size() == m_SourceViewIDs.size())
 		{
-			emit sceneReady(scene, m_SeekingPTS, true);
-
-			m_SeekingPTS = INVALID_PTS;
+			m_Control->OnFrameProcessed(m_Status.seekingPTS, m_Status.seekingPTS);
+			emit sceneReady(scene, m_Status.seekingPTS, true);
 		}
 	}
 
-	if (!m_Play)
+	if (!m_Status.isPlaying)
 	{
 		return;
 	}
@@ -83,8 +84,9 @@ void ProcessThread::ProcessFrameQueue()
 
 		if (scene->size()>0)
 		{
-			m_LastPTS = scene->first()->PTS();
-			emit sceneReady(scene, m_LastPTS, false);
+			unsigned int pts = scene->first()->PTS();
+			m_Control->OnFrameProcessed(pts, INVALID_PTS);
+			emit sceneReady(scene, pts, false);
 		}else
 		{
 			break;
@@ -100,31 +102,6 @@ void ProcessThread::ReceiveFrame( FramePtr frame )
 		m_Frames.insert(viewID, FrameList());
 	}
 	m_Frames[viewID].append(frame);
-}
-
-void ProcessThread::Play( bool play )
-{
-	m_Play = play;
-}
-
-void ProcessThread::Seek( unsigned int pts )
-{
-	m_SeekingPTS = pts;
-}
-
-bool ProcessThread::IsPlaying()
-{
-	return m_Play;
-}
-
-unsigned int ProcessThread::LastPTS()
-{
-	return m_LastPTS;
-}
-
-unsigned int ProcessThread::SeekingPTS()
-{
-	return m_SeekingPTS;
 }
 
 void ProcessThread::CleanQueue()
@@ -160,7 +137,7 @@ FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts )
 		while (frameList.size()>0)
 		{
 			FramePtr frame = frameList.first();
-			if (frame->Info(SEEKING_PTS).toUInt() != m_SeekingPTS)
+			if (frame->Info(SEEKING_PTS).toUInt() != pts)
 			{
 				frameList.removeFirst();
 			}else

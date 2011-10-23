@@ -179,4 +179,32 @@ public:
 
 extern HostImpl* GetHostImpl();
 
+class PlaybackControl
+{
+public:
+	struct Status
+	{
+		bool isPlaying;
+		unsigned int lastDisplayPTS;
+		unsigned int lastProcessPTS;
+		unsigned int seekingPTS;
+	};
+
+	PlaybackControl();
+
+	void GetStatus(Status* status); 
+	void Reset();
+
+	void Play(bool play);
+	void PlayPause();
+	void Seek(unsigned int pts);
+	void Seek(unsigned int pts, bool play);
+	
+	void OnFrameProcessed(unsigned int pts, unsigned int seekingPTS);
+	void OnFrameDisplayed(unsigned int pts, unsigned int seekingPTS);
+private:
+	Status m_Status;
+	QMutex m_Mutex;
+};
+
 #endif // INTERFACE_IMPL_H

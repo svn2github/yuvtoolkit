@@ -8,8 +8,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-SourceThread::SourceThread(int id, PlaybackInfo* info, const char* p) : m_Path(p), 
-			m_Source(0), m_ViewID(id), m_EndOfFile(false), m_PlaybackInfo(info)
+SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) : m_Path(p), 
+			m_Source(0), m_ViewID(id), m_EndOfFile(false), m_Control(c)
 {
 	moveToThread(this);
 
@@ -65,14 +65,14 @@ void SourceThread::ReadFrames()
 {
 	while (true)
 	{
-		unsigned int seekPTS = m_PlaybackInfo->SeekingPTS();
+		m_Control->GetStatus(&m_Status);
 
 		if (!m_FramePool->Size())
 		{
 			return;
 		}
 
-		if (m_EndOfFile && seekPTS == INVALID_PTS)
+		if (m_EndOfFile && m_Status.seekingPTS == INVALID_PTS)
 		{
 			return;
 		}
@@ -94,12 +94,12 @@ void SourceThread::ReadFrames()
 		frame->SetInfo(SEEKING_PTS, INVALID_PTS);
 
 		// Get next frame or seek 
-		RESULT res = m_Source->GetFrame(frame, seekPTS);
+		RESULT res = m_Source->GetFrame(frame, m_Status.seekingPTS);
 
 		if (res == OK)
 		{
 			frame->SetInfo(IS_LAST_FRAME, frame->PTS() == info.lastPTS);
-			frame->SetInfo(SEEKING_PTS, seekPTS);
+			frame->SetInfo(SEEKING_PTS, m_Status.seekingPTS);
 
 			emit frameReady(frame);
 			WARNING_LOG("FrameReady %d", frame->PTS());
@@ -109,10 +109,10 @@ void SourceThread::ReadFrames()
 		{
 			if (res == END_OF_FILE)
 			{
-				INFO_LOG("m_Source->GetFrame returns END_OF_FILE, seek %X", seekPTS);
+				INFO_LOG("m_Source->GetFrame returns END_OF_FILE, seek %X", m_Status.seekingPTS);
 			}else
 			{
-				ERROR_LOG("m_Source->GetFrame returns error %d, seek %X", res, seekPTS);
+				ERROR_LOG("m_Source->GetFrame returns error %d, seek %X", res, m_Status.seekingPTS);
 			}
 			m_EndOfFile = true;
 		}

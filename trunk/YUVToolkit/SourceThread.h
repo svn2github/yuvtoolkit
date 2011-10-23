@@ -20,7 +20,7 @@ class SourceThread : public QThread
 {
 	Q_OBJECT;
 public:
-	SourceThread(int id, PlaybackInfo* info, const char* path);
+	SourceThread(int id, PlaybackControl* c, const char* path);
 	~SourceThread(void);
 
 	void Start();
@@ -47,7 +47,8 @@ private:
 	bool m_EndOfFile;
 	
 	FramePool* m_FramePool;
-	PlaybackInfo* m_PlaybackInfo;
+	PlaybackControl* m_Control;
+	PlaybackControl::Status m_Status;
 };
 
 #endif

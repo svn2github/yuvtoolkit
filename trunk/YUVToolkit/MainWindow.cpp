@@ -165,9 +165,9 @@ void MainWindow::closeEvent( QCloseEvent *event )
 	}
 }
 
-void MainWindow::on_action_Play_Pause_triggered(bool)
+void MainWindow::on_action_Play_Pause_triggered(bool p)
 {
-	play(!m_VideoViewList->IsPlaying());
+	m_VideoViewList->GetControl()->PlayPause();
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent *event )
@@ -439,7 +439,7 @@ void MainWindow::openFileInternal( QString strPath)
 
 void MainWindow::play( bool play )
 {
-	m_VideoViewList->GetProcessThread()->Play(play);
+	m_VideoViewList->GetControl()->Play(play);
 }
 
 
@@ -656,8 +656,7 @@ void MainWindow::seekVideoFromSlider()
 		unsigned int pts = qFloor(idx_new * 1000 / info.fps);
 		if (qRound(pts * info.fps / 1000) == idx_new)
 		{
-			m_VideoViewList->GetProcessThread()->Play(false);
-			m_VideoViewList->Seek(pts);
+			m_VideoViewList->GetControl()->Seek(pts, false);
 
 			return;
 		}
@@ -688,7 +687,7 @@ void MainWindow::on_action_Step_Back_Fast_triggered()
 
 void MainWindow::on_action_Seek_Beginning_triggered()
 {
-	m_VideoViewList->Seek(0);
+	m_VideoViewList->GetControl()->Seek(0, false);
 }
 
 void MainWindow::on_action_Seek_End_triggered()
@@ -701,18 +700,21 @@ void MainWindow::on_action_Seek_End_triggered()
 		SourceInfo info;
 		source->GetInfo(info);
 
-		m_VideoViewList->Seek(info.duration);
+		m_VideoViewList->GetControl()->Seek(info.duration, false);
 	}
 }
 
 void MainWindow::OnTimer()
 {
+	PlaybackControl::Status status;
+	m_VideoViewList->GetControl()->GetStatus(&status);
+
 	if (m_VideoViewList->size()>0)
 	{
 		m_VideoViewList->CheckResolutionChanged();
 		m_VideoViewList->CheckRenderReset();
 		
-		if (m_VideoViewList->IsPlaying())
+		if (status.isPlaying)
 		{
 			m_VideoViewList->CheckLoopFromStart();
 		}
@@ -768,7 +770,7 @@ void MainWindow::OnTimer()
 			m_TimeLabel2->setText(str);			
 		}
 
-		if (m_VideoViewList->IsPlaying())
+		if (status.isPlaying)
 		{
 			str.clear();
 			float renderSpeed = m_VideoViewList->GetRenderThread()->GetSpeedRatio();
@@ -776,7 +778,7 @@ void MainWindow::OnTimer()
 			m_RenderSpeedLabel->setText(str);
 		}else
 		{
-			unsigned int pts = m_VideoViewList->GetProcessThread()->SeekingPTS();
+			unsigned int pts = status.seekingPTS;
 			if (pts != INVALID_PTS)
 			{
 				str.clear();
@@ -794,7 +796,7 @@ void MainWindow::OnTimer()
 		m_RenderSpeedLabel->setText("   ");
 	}
 
-	if (m_VideoViewList->IsPlaying())
+	if (status.isPlaying)
 	{
 		if (!m_IsPlaying)
 		{
@@ -839,7 +841,7 @@ void MainWindow::stepVideo( int step )
 	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), info.num_frames-1);
 	unsigned int pts = source->IndexToPTS(frame_num);
 
-	m_VideoViewList->Seek(pts);
+	m_VideoViewList->GetControl()->Seek(pts, false);
 
 	bool old = m_Slider->blockSignals(true);
 	m_Slider->setSliderPosition(frame_num);
