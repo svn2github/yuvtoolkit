@@ -19,7 +19,7 @@ signals:
 
 public slots:
 	void RenderScene(FrameListPtr scene, unsigned int pts, bool seeking); 
-	void SetLayout(UintList, RectList, RectList);
+	void SetLayout(UintListPtr, RectListPtr, RectListPtr);
 
 private slots:
 	void Render();
@@ -44,9 +44,10 @@ protected:
 	bool m_LastSeeking;
 
 	// Layout
-	UintList m_ViewIDs;
-	RectList m_SrcRects;
-	RectList m_DstRects;
+	UintListPtr m_ViewIDs;
+	RectListPtr m_SrcRects;
+	RectListPtr m_DstRects;
 
-	QTime m_Timer, m_RenderSpeedTimer;
+	QTime m_RenderCycleTime, m_RenderSpeedTime;
+	QTimer* m_Timer;
 };

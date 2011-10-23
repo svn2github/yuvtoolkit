@@ -58,8 +58,8 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		
 		connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
 			m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
-		connect(this, SIGNAL(layoutUpdated(UintList, RectList, RectList)), 
-			m_RenderThread, SLOT(SetLayout(UintList, RectList, RectList)));
+		connect(this, SIGNAL(layoutUpdated(UintListPtr, RectListPtr, RectListPtr)), 
+			m_RenderThread, SLOT(SetLayout(UintListPtr, RectListPtr, RectListPtr)));
 		connect(m_RenderThread, SIGNAL(sceneRendered(FrameListPtr, unsigned int, bool)), 
 			this, SLOT(OnSceneRendered(FrameListPtr, unsigned int, bool)));
 
@@ -102,15 +102,16 @@ void VideoViewList::OnUpdateRenderWidgetPosition()
 	int width = rcClient.width();
 	m_RenderWidget->layout->UpdateGeometry();
 
-	UintList ids;
-	RectList srcRects, dstRects;
+	UintListPtr ids = UintListPtr(new UintList);
+	RectListPtr srcRects = RectListPtr(new RectList);
+	RectListPtr dstRects = RectListPtr(new RectList);
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);
 
-		ids.append(vv->GetID());
-		srcRects.append(vv->srcRect);
-		dstRects.append(vv->dstRect);
+		ids->append(vv->GetID());
+		srcRects->append(vv->srcRect);
+		dstRects->append(vv->dstRect);
 	}
 
 	emit layoutUpdated(ids, srcRects, dstRects);

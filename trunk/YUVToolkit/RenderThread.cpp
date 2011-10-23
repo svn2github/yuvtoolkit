@@ -28,17 +28,11 @@ void RenderThread::run()
 	qRegisterMetaType<UintListPtr>("UintListPtr");
 	qRegisterMetaType<RectListPtr>("RectListPtr");
 
-	QTimer* timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::DirectConnection);
-	timer->start(16);
+	WARNING_LOG("Render run start");
 
 	exec();
-}
 
-void RenderThread::Stop()
-{
-	quit();
-	wait();
+	WARNING_LOG("Render run cleaning up");
 
 	FrameListPtr lastFrames = m_LastRenderFrames;
 	if (lastFrames)
@@ -54,21 +48,51 @@ void RenderThread::Stop()
 		}
 		lastFrames->clear();
 	}
-	m_LastSourceFrames.clear();
+
+	if (m_LastSourceFrames)
+	{
+		m_LastSourceFrames->clear();
+		m_LastSourceFrames.clear();
+	}	
 
 	m_SceneQueue.clear();
 	m_PTSQueue.clear();
 	m_SeekingQueue.clear();
+
+	WARNING_LOG("Render run finish");
+}
+
+void RenderThread::Stop()
+{
+	WARNING_LOG("Render Stop");
+	quit();
+	wait();
+
+	if (m_Timer)
+	{
+		m_Timer->stop();
+		SAFE_DELETE(m_Timer);
+	}
+
+	WARNING_LOG("Render Stop - Done");
  }
 
 void RenderThread::Start()
 {
+	WARNING_LOG("Render Start");
+
 	m_LastPTS = INVALID_PTS;
 	m_LastSeeking = false;
 
 	QThread::start();
 
-	m_Timer.start();
+	m_Timer = new QTimer(this);
+	connect(m_Timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::QueuedConnection);
+	m_Timer->start(16);
+
+	m_RenderCycleTime.start();
+
+	WARNING_LOG("Render Start - Done");
 }
 
 float RenderThread::GetSpeedRatio()
@@ -78,7 +102,7 @@ float RenderThread::GetSpeedRatio()
 
 void RenderThread::Render()
 {
-	WARNING_LOG("Render start since last cycle: %d ms", m_Timer.restart());
+	WARNING_LOG("Render start since last cycle: %d ms", m_RenderCycleTime.restart());
 
 	int diffPts = 0;
 	if (m_SceneQueue.size()>0)
@@ -103,7 +127,7 @@ void RenderThread::Render()
 		m_LastPTS = pts;
 	}
 
-	if (!m_LastRenderFrames)
+	if (!m_LastRenderFrames || !m_LastSourceFrames)
 	{
 		return;
 	}
@@ -118,33 +142,33 @@ void RenderThread::Render()
 	for (int i=0; i<m_LastRenderFrames->size(); i++)
 	{
 		FramePtr renderFrame = m_LastRenderFrames->at(i);
-		int j = m_ViewIDs.indexOf(renderFrame->Info(VIEW_ID).toUInt());
+		int j = m_ViewIDs->indexOf(renderFrame->Info(VIEW_ID).toUInt());
 		if (j == -1)
 		{
 			continue;
 		}
 
-		renderFrame->SetInfo(SRC_RECT, m_SrcRects.at(j));
-		renderFrame->SetInfo(DST_RECT, m_DstRects.at(j));
+		renderFrame->SetInfo(SRC_RECT, m_SrcRects->at(j));
+		renderFrame->SetInfo(DST_RECT, m_DstRects->at(j));
 		renderScene->append(renderFrame);
 	}
 
-	WARNING_LOG("Render prepare scene took: %d ms", m_Timer.restart());
-	if (renderScene->size()>0 && renderScene->size() == m_ViewIDs.size())
+	WARNING_LOG("Render prepare scene took: %d ms", m_RenderCycleTime.restart());
+	if (renderScene->size()>0 && renderScene->size() == m_ViewIDs->size())
 	{
 		m_Renderer->RenderScene(renderScene);
 	}
 	
-	WARNING_LOG("Render render scene took: %d ms", m_Timer.restart());
+	WARNING_LOG("Render render scene took: %d ms", m_RenderCycleTime.restart());
 
 	// Compute render speed ratio
-	int elapsedSinceLastPTS = m_RenderSpeedTimer.elapsed();
+	int elapsedSinceLastPTS = m_RenderSpeedTime.elapsed();
 	if (diffPts > 0 && elapsedSinceLastPTS>0 && diffPts <= 1000 && elapsedSinceLastPTS<=1000)
 	{
 		WARNING_LOG("TIME %d, %d", diffPts, elapsedSinceLastPTS);
 		m_SpeedRatio = m_SpeedRatio + 0.1f * (diffPts*1.0f/ elapsedSinceLastPTS - m_SpeedRatio);
 	}
-	m_RenderSpeedTimer.start();
+	m_RenderSpeedTime.start();
 	
 	m_Control->OnFrameDisplayed(m_LastPTS, m_LastSeeking);
 
@@ -164,7 +188,7 @@ void RenderThread::RenderScene( FrameListPtr scene, unsigned int pts, bool seeki
 	m_SeekingQueue.append(seeking);
 }
 
-void RenderThread::SetLayout(UintList ids, RectList srcRects, RectList dstRects)
+void RenderThread::SetLayout(UintListPtr ids, RectListPtr srcRects, RectListPtr dstRects)
 {
 	m_ViewIDs = ids;
 	m_SrcRects = srcRects;
