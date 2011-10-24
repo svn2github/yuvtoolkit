@@ -30,34 +30,28 @@ void RenderThread::run()
 
 	WARNING_LOG("Render run start");
 
+	QTimer* timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::DirectConnection);
+	timer->start(16);
+
 	exec();
 
+	timer->stop();
+	SAFE_DELETE(timer);
 	WARNING_LOG("Render run cleaning up");
 
-	FrameListPtr lastFrames = m_LastRenderFrames;
-	if (lastFrames)
+	if (m_LastRenderFrames)
 	{
-		for (int i = 0; i < lastFrames->size(); i++) 
+		for (int i = 0; i < m_LastRenderFrames->size(); i++) 
 		{
-			FramePtr renderFrame = lastFrames->at(i);
-
+			FramePtr renderFrame = m_LastRenderFrames->at(i);
 			if (renderFrame)
 			{
 				m_Renderer->Deallocate(renderFrame);
 			}
 		}
-		lastFrames->clear();
+		GetHostImpl()->ReleaseFrameList(m_LastRenderFrames);
 	}
-
-	if (m_LastSourceFrames)
-	{
-		m_LastSourceFrames->clear();
-		m_LastSourceFrames.clear();
-	}	
-
-	m_SceneQueue.clear();
-	m_PTSQueue.clear();
-	m_SeekingQueue.clear();
 
 	WARNING_LOG("Render run finish");
 }
@@ -67,12 +61,6 @@ void RenderThread::Stop()
 	WARNING_LOG("Render Stop");
 	quit();
 	wait();
-
-	if (m_Timer)
-	{
-		m_Timer->stop();
-		SAFE_DELETE(m_Timer);
-	}
 
 	WARNING_LOG("Render Stop - Done");
  }
@@ -85,10 +73,6 @@ void RenderThread::Start()
 	m_LastSeeking = false;
 
 	QThread::start();
-
-	m_Timer = new QTimer(this);
-	connect(m_Timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::QueuedConnection);
-	m_Timer->start(16);
 
 	m_RenderCycleTime.start();
 
@@ -121,7 +105,16 @@ void RenderThread::Render()
 			diffPts = qAbs<int>(((int)pts)-((int)m_LastPTS));
 		}
 
-		m_LastRenderFrames = RenderFrames(newScene, m_LastRenderFrames);
+		FrameListPtr frameList = RenderFrames(newScene, m_LastRenderFrames);
+		if (m_LastRenderFrames)
+		{
+			GetHostImpl()->ReleaseFrameList(m_LastRenderFrames);
+		}
+		m_LastRenderFrames = frameList;
+		if (m_LastSourceFrames)
+		{
+			GetHostImpl()->ReleaseFrameList(m_LastSourceFrames);
+		}
 		m_LastSourceFrames = newScene;
 		m_LastSeeking = seeking;
 		m_LastPTS = pts;
@@ -134,29 +127,32 @@ void RenderThread::Render()
 
 	if (m_LastRenderFrames->size()== 0 && m_LastSourceFrames->size()>0)
 	{
-		m_LastRenderFrames = RenderFrames(m_LastSourceFrames, m_LastRenderFrames);
+		FrameListPtr frameList = RenderFrames(m_LastSourceFrames, m_LastRenderFrames);
+		GetHostImpl()->ReleaseFrameList(m_LastRenderFrames);
+		m_LastRenderFrames = frameList;
+
 	}
 
 	// Create render scene with layout info
-	FrameListPtr renderScene = FrameListPtr(new FrameList);
 	for (int i=0; i<m_LastRenderFrames->size(); i++)
 	{
 		FramePtr renderFrame = m_LastRenderFrames->at(i);
 		int j = m_ViewIDs->indexOf(renderFrame->Info(VIEW_ID).toUInt());
 		if (j == -1)
 		{
-			continue;
+			renderFrame->SetInfo(SRC_RECT, QRect());
+			renderFrame->SetInfo(DST_RECT, QRect());
+		}else
+		{
+			renderFrame->SetInfo(SRC_RECT, m_SrcRects->at(j));
+			renderFrame->SetInfo(DST_RECT, m_DstRects->at(j));
 		}
-
-		renderFrame->SetInfo(SRC_RECT, m_SrcRects->at(j));
-		renderFrame->SetInfo(DST_RECT, m_DstRects->at(j));
-		renderScene->append(renderFrame);
 	}
 
 	WARNING_LOG("Render prepare scene took: %d ms", m_RenderCycleTime.restart());
-	if (renderScene->size()>0 && renderScene->size() == m_ViewIDs->size())
+	if (m_LastRenderFrames->size()>0 && m_LastRenderFrames->size() == m_ViewIDs->size())
 	{
-		m_Renderer->RenderScene(renderScene);
+		m_Renderer->RenderScene(m_LastRenderFrames);
 	}
 	
 	WARNING_LOG("Render render scene took: %d ms", m_RenderCycleTime.restart());
@@ -170,13 +166,12 @@ void RenderThread::Render()
 	}
 	m_RenderSpeedTime.start();
 	
-	FrameListPtr sourceFrames = m_LastSourceFrames;
-	if (sourceFrames)
+	/*if (m_LastSourceFrames)
 	{
 		FrameListPtr rendered = FrameListPtr(new FrameList);
-		rendered->append(*sourceFrames);
+		rendered->append(*m_LastSourceFrames);
 		emit sceneRendered(rendered, m_LastPTS, m_LastSeeking);
-	}
+	}*/
 }
 
 void RenderThread::RenderScene( FrameListPtr scene, unsigned int pts, bool seeking )
@@ -195,7 +190,7 @@ void RenderThread::SetLayout(UintListPtr ids, RectListPtr srcRects, RectListPtr 
 
 FrameListPtr RenderThread::RenderFrames(FrameListPtr sourceFrames, FrameListPtr renderFramesOld)
 {
-	FrameListPtr renderFramesNew = FrameListPtr(new FrameList);
+	FrameListPtr renderFramesNew;
 	for (int i = 0; i < sourceFrames->size(); i++) 
 	{
 		FramePtr sourceFrame = sourceFrames->at(i);
@@ -259,6 +254,11 @@ FrameListPtr RenderThread::RenderFrames(FrameListPtr sourceFrames, FrameListPtr 
 			}
 
 			m_Renderer->ReleaseFrame(renderFrame);
+		}
+
+		if (!renderFramesNew)
+		{
+			renderFramesNew = GetHostImpl()->NewFrameList();
 		}
 
 		renderFramesNew->append(renderFrame);

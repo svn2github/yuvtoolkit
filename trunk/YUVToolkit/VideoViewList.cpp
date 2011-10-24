@@ -483,7 +483,7 @@ void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool 
 {
 	m_Control.OnFrameDisplayed(pts, seeking);
 
-
+	/*
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);
@@ -498,7 +498,7 @@ void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool 
 		{
 			vv->SetLastFrame(frame);
 		}
-	}
+	}*/
 }
 
 VideoView* VideoViewList::find( unsigned int id ) const

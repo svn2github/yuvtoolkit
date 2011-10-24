@@ -64,7 +64,7 @@ void ProcessThread::ProcessFrameQueue()
 
 	while (true)
 	{
-		FrameListPtr scene = FrameListPtr(new FrameList);
+		FrameListPtr scene; 
 		QMapIterator<unsigned int, FrameList > i(m_Frames);
 		while (i.hasNext()) 
 		{
@@ -77,12 +77,16 @@ void ProcessThread::ProcessFrameQueue()
 			{
 				FramePtr frame = frameList.first();
 				frameList.removeFirst();
-
+				
+				if (!scene)
+				{
+					scene = GetHostImpl()->NewFrameList();
+				}
 				scene->append(frame);
 			}
 		}
 
-		if (scene->size()>0)
+		if (scene && scene->size()>0)
 		{
 			unsigned int pts = scene->first()->PTS();
 			m_Control->OnFrameProcessed(pts, INVALID_PTS);

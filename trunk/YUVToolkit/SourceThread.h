@@ -14,7 +14,7 @@ class Format;
 class QDockWidget;
 class VideoView;
 
-#define BUFFER_COUNT 4
+#define BUFFER_COUNT 8
 
 class SourceThread : public QThread
 {

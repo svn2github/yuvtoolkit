@@ -754,6 +754,29 @@ void HostImpl::ReleaseFramePool(FramePool* pool)
 	}*/
 }
 
+FrameListPtr HostImpl::NewFrameList()
+{
+	QMutexLocker locker(&m_MutexFrameListList);
+	if (m_FrameListList.size()>0)
+	{
+		FrameListPtr frameList = m_FrameListList.first();
+		m_FrameListList.removeFirst();
+		return frameList;
+	}
+	return FrameListPtr(new FrameList);
+}
+
+void HostImpl::ReleaseFrameList( FrameListPtr& frameList)
+{
+	QMutexLocker locker(&m_MutexFrameListList);
+	if (frameList)
+	{
+		frameList->clear();
+		m_FrameListList.append(frameList);
+		frameList.clear();
+	}
+}
+
 
 FramePool::FramePool( unsigned int size )
 {

@@ -48,5 +48,4 @@ protected:
 	RectListPtr m_DstRects;
 
 	QTime m_RenderCycleTime, m_RenderSpeedTime;
-	QTimer* m_Timer;
 };
