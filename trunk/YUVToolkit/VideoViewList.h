@@ -62,7 +62,6 @@ signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
-	void layoutUpdated(UintListPtr, RectListPtr, RectListPtr);
 private:
 	RenderThread* m_RenderThread;
 	ProcessThread* m_ProcessThread;

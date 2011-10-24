@@ -25,8 +25,6 @@ void RenderThread::run()
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 	qRegisterMetaType<FrameListPtr>("FrameListPtr");
-	qRegisterMetaType<UintListPtr>("UintListPtr");
-	qRegisterMetaType<RectListPtr>("RectListPtr");
 
 	WARNING_LOG("Render run start");
 
@@ -86,6 +84,8 @@ float RenderThread::GetSpeedRatio()
 
 void RenderThread::Render()
 {
+	QMutexLocker locker(&m_MutexLayout);
+	
 	WARNING_LOG("Render start since last cycle: %d ms", m_RenderCycleTime.restart());
 
 	int diffPts = 0;
@@ -137,20 +137,20 @@ void RenderThread::Render()
 	for (int i=0; i<m_LastRenderFrames->size(); i++)
 	{
 		FramePtr renderFrame = m_LastRenderFrames->at(i);
-		int j = m_ViewIDs->indexOf(renderFrame->Info(VIEW_ID).toUInt());
+		int j = m_ViewIDs.indexOf(renderFrame->Info(VIEW_ID).toUInt());
 		if (j == -1)
 		{
 			renderFrame->SetInfo(SRC_RECT, QRect());
 			renderFrame->SetInfo(DST_RECT, QRect());
 		}else
 		{
-			renderFrame->SetInfo(SRC_RECT, m_SrcRects->at(j));
-			renderFrame->SetInfo(DST_RECT, m_DstRects->at(j));
+			renderFrame->SetInfo(SRC_RECT, m_SrcRects.at(j));
+			renderFrame->SetInfo(DST_RECT, m_DstRects.at(j));
 		}
 	}
 
 	WARNING_LOG("Render prepare scene took: %d ms", m_RenderCycleTime.restart());
-	if (m_LastRenderFrames->size()>0 && m_LastRenderFrames->size() == m_ViewIDs->size())
+	if (m_LastRenderFrames->size()>0 && m_LastRenderFrames->size() == m_ViewIDs.size())
 	{
 		m_Renderer->RenderScene(m_LastRenderFrames);
 	}
@@ -166,12 +166,12 @@ void RenderThread::Render()
 	}
 	m_RenderSpeedTime.start();
 	
-	/*if (m_LastSourceFrames)
+	if (m_LastSourceFrames)
 	{
 		FrameListPtr rendered = FrameListPtr(new FrameList);
 		rendered->append(*m_LastSourceFrames);
 		emit sceneRendered(rendered, m_LastPTS, m_LastSeeking);
-	}*/
+	}
 }
 
 void RenderThread::RenderScene( FrameListPtr scene, unsigned int pts, bool seeking )
@@ -181,8 +181,9 @@ void RenderThread::RenderScene( FrameListPtr scene, unsigned int pts, bool seeki
 	m_SeekingQueue.append(seeking);
 }
 
-void RenderThread::SetLayout(UintListPtr ids, RectListPtr srcRects, RectListPtr dstRects)
+void RenderThread::SetLayout(UintList ids, RectList srcRects, RectList dstRects)
 {
+	QMutexLocker locker(&m_MutexLayout);
 	m_ViewIDs = ids;
 	m_SrcRects = srcRects;
 	m_DstRects = dstRects;

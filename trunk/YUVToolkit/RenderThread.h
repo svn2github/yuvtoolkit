@@ -14,13 +14,15 @@ public:
 	void Stop();
 
 	float GetSpeedRatio();
+
+	void SetLayout(UintList, RectList, RectList);
+
 signals:
 	void sceneRendered(FrameListPtr scene, unsigned int pts, bool seeking);
 
 public slots:
 	void RenderScene(FrameListPtr scene, unsigned int pts, bool seeking); 
-	void SetLayout(UintListPtr, RectListPtr, RectListPtr);
-
+	
 private slots:
 	void Render();
 
@@ -43,9 +45,11 @@ protected:
 	bool m_LastSeeking;
 
 	// Layout
-	UintListPtr m_ViewIDs;
-	RectListPtr m_SrcRects;
-	RectListPtr m_DstRects;
+	UintList m_ViewIDs;
+	RectList m_SrcRects;
+	RectList m_DstRects;
 
 	QTime m_RenderCycleTime, m_RenderSpeedTime;
+
+	QMutex m_MutexLayout;
 };

@@ -47,6 +47,9 @@ void SourceThread::run()
 	timer->start(15);
 
 	exec();
+
+	timer->stop();
+	SAFE_DELETE(timer);
 }
 
 void SourceThread::Stop()

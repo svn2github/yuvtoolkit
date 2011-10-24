@@ -116,9 +116,7 @@ typedef QSharedPointer<Frame> FramePtr;
 typedef QList<FramePtr> FrameList;
 typedef QSharedPointer<FrameList> FrameListPtr;
 typedef QList<unsigned int> UintList;
-typedef QSharedPointer<UintList> UintListPtr;
 typedef QList<QRect> RectList;
-typedef QSharedPointer<RectList> RectListPtr;
 
 enum PLUGIN_TYPE {
 	PLUGIN_UNKNOWN       = -1,

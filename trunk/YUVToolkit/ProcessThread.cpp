@@ -16,14 +16,15 @@ void ProcessThread::run()
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 	qRegisterMetaType<FrameListPtr>("FrameListPtr");
-	qRegisterMetaType<UintListPtr>("UintListPtr");
-	qRegisterMetaType<RectListPtr>("RectListPtr");
 
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(ProcessFrameQueue()), Qt::DirectConnection);
 	timer->start(15);
 
 	exec();
+
+	timer->stop();
+	SAFE_DELETE(timer);
 }
 
 void ProcessThread::Stop()
