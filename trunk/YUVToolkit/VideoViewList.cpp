@@ -54,7 +54,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		QString renderType = settings.value("main/renderer", "D3D").toString();
 		m_RenderWidget->Init(renderType);
 
-		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), &m_Control);
+		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer());
 		
 		connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
 			m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
@@ -481,6 +481,9 @@ void VideoViewList::UpdateMeasureWindows()
 
 void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool seeking )
 {
+	m_Control.OnFrameDisplayed(pts, seeking);
+
+
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);

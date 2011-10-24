@@ -6,8 +6,8 @@
 
 #include <assert.h>
 
-RenderThread::RenderThread(Renderer* renderer, PlaybackControl* c) : m_Renderer(renderer), 
-	m_Control(c), m_SpeedRatio(1.0f)
+RenderThread::RenderThread(Renderer* renderer) : m_Renderer(renderer), 
+	m_SpeedRatio(1.0f)
 {
 	moveToThread(this);
 }
@@ -170,8 +170,6 @@ void RenderThread::Render()
 	}
 	m_RenderSpeedTime.start();
 	
-	m_Control->OnFrameDisplayed(m_LastPTS, m_LastSeeking);
-
 	FrameListPtr sourceFrames = m_LastSourceFrames;
 	if (sourceFrames)
 	{

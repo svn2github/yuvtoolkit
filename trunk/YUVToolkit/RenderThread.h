@@ -7,7 +7,7 @@ class RenderThread : public QThread
 	Q_OBJECT;
 public:
 	
-	RenderThread(Renderer* renderer, PlaybackControl* c);
+	RenderThread(Renderer* renderer);
 	~RenderThread(void);
 
 	void Start();
@@ -30,7 +30,6 @@ protected:
 	
 	float m_SpeedRatio;
 	Renderer* m_Renderer;
-	PlaybackControl* m_Control;
 
 	// render queue
 	QList<FrameListPtr > m_SceneQueue;
