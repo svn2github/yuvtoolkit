@@ -7,7 +7,7 @@
 #include <assert.h>
 
 RenderThread::RenderThread(Renderer* renderer) : m_Renderer(renderer), 
-	m_SpeedRatio(1.0f)
+	m_SpeedRatio(1.0f), m_Exit(false)
 {
 	moveToThread(this);
 }
@@ -28,14 +28,13 @@ void RenderThread::run()
 
 	WARNING_LOG("Render run start");
 
-	QTimer* timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), this, SLOT(Render()), Qt::DirectConnection);
-	timer->start(16);
+	QEventLoop eventLoop;
+	while (!m_Exit)
+	{
+		eventLoop.processEvents();
+		Render();
+	}
 
-	exec();
-
-	timer->stop();
-	SAFE_DELETE(timer);
 	WARNING_LOG("Render run cleaning up");
 
 	if (m_LastRenderFrames)
@@ -57,7 +56,7 @@ void RenderThread::run()
 void RenderThread::Stop()
 {
 	WARNING_LOG("Render Stop");
-	quit();
+	m_Exit = true;
 	wait();
 
 	WARNING_LOG("Render Stop - Done");
@@ -69,6 +68,7 @@ void RenderThread::Start()
 
 	m_LastPTS = INVALID_PTS;
 	m_LastSeeking = false;
+	m_Exit = false;
 
 	QThread::start();
 

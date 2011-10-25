@@ -52,4 +52,5 @@ protected:
 	QTime m_RenderCycleTime, m_RenderSpeedTime;
 
 	QMutex m_MutexLayout;
+	volatile bool m_Exit;
 };
