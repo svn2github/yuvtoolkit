@@ -257,7 +257,7 @@ public:
 
 	// frames should be frames allocated by renderer
 	// it should have SRC_RECT/DST_RECT properties
-	virtual RESULT RenderScene(FrameListPtr frames) = 0;
+	virtual RESULT RenderScene(const FrameList& frames) = 0;
 	   
 	// Allocate render specific buffers
 	virtual RESULT Allocate(FramePtr& frame, FormatPtr sourceFormat) = 0;

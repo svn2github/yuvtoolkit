@@ -33,7 +33,7 @@ public:
 	~YTR_D3D();
 
 	virtual QWidget* GetWidget() {return this;}
-	virtual RESULT RenderScene(FrameListPtr frames);
+	virtual RESULT RenderScene(const FrameList& frames);
 
 	// Allocate render specific buffers
 	virtual RESULT Allocate(FramePtr& frame, FormatPtr sourceFormat);

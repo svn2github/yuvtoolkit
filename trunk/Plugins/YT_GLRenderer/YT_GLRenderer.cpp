@@ -57,7 +57,7 @@ OpenGLRenderer::~OpenGLRenderer()
 {
 }
 
-RESULT OpenGLRenderer::RenderScene(FrameListPtr frames)
+RESULT OpenGLRenderer::RenderScene(const FrameList& frames)
 {
 	if (m_ReadyToRender) 
 	{
@@ -77,9 +77,9 @@ RESULT OpenGLRenderer::RenderScene(FrameListPtr frames)
 		}
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);     // Background => dark blue
-		for (int i=0; i<frames->size(); ++i) 
+		for (int i=0; i<frames.size(); ++i) 
 		{
-			FramePtr frame = frames->at(i);
+			FramePtr frame = frames.at(i);
 			if (!frame)
 			{
 				continue;

@@ -28,8 +28,13 @@ private slots:
 
 protected:
 	void run();
-	FrameListPtr RenderFrames(FrameListPtr sourceFrames, FrameListPtr renderFramesOld);
-	
+	void RenderFrames(FrameListPtr sourceFrames);
+
+	void UpdateLayout();
+	unsigned int GetNextPTS(bool& isSeeking);
+
+	int m_RenderCounter;
+	float m_RenderInterval;
 	float m_SpeedRatio;
 	Renderer* m_Renderer;
 
@@ -38,9 +43,8 @@ protected:
 	UintList m_PTSQueue;
 	QList<bool> m_SeekingQueue;
 
-	// Last rendered scene
+	// Last scene
 	FrameListPtr m_LastSourceFrames;
-	FrameListPtr m_LastRenderFrames;
 	unsigned int m_LastPTS;
 	bool m_LastSeeking;
 
@@ -48,6 +52,8 @@ protected:
 	UintList m_ViewIDs;
 	RectList m_SrcRects;
 	RectList m_DstRects;
+
+	FrameList m_RenderFrames;
 
 	QTime m_RenderCycleTime, m_RenderSpeedTime;
 

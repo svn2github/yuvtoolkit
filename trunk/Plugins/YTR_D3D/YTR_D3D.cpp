@@ -65,7 +65,7 @@ void YTR_D3D::OnResizeTimer()
 #define RECT_WIDTH(rc) (rc->right-rc->left)
 #define RECT_HEIGHT(rc) (rc->bottom-rc->top)
 
-RESULT YTR_D3D::RenderScene(FrameListPtr frames)
+RESULT YTR_D3D::RenderScene(const FrameList& frames)
 {
 	if (FAILED(d3DDevice->TestCooperativeLevel()))
 	{
@@ -99,9 +99,9 @@ RESULT YTR_D3D::RenderScene(FrameListPtr frames)
 		scale_y = ((double)desc.Height)/height;
 	}
 
-	for (int i=0; i<frames->size(); ++i) 
+	for (int i=0; i<frames.size(); ++i) 
 	{
-		FramePtr frame = frames->at(i);
+		FramePtr frame = frames.at(i);
 		if (!frame)
 		{
 			continue;
