@@ -71,7 +71,16 @@
     </Link>
     <PostBuildEvent>
       <Message>Copy QT binaries</Message>
-      <Command>copy /y "$(ProjectDir)\..\3rdparty\ffmpeg\bin\avutil-50.dll" "$(TargetDir)"</Command>
+      <Command>copy /y "$(ProjectDir)\..\3rdparty\ffmpeg\bin\avutil-50.dll" "$(TargetDir)"
+copy /y "$(ProjectDir)\..\3rdparty\ffmpeg\bin\swscale-0.dll" "$(TargetDir)"
+copy /y "$(QTDIR)\bin\QtCore4.dll" "$(TargetDir)"
+copy /y "$(QTDIR)\bin\QtGui4.dll" "$(TargetDir)"
+copy /y "$(QTDIR)\bin\QtScript4.dll" "$(TargetDir)"
+copy /y "$(QTDIR)\bin\QtScriptTools4.dll" "$(TargetDir)"
+copy /y "$(QTDIR)\bin\QtOpenGL4.dll" "$(TargetDir)"
+copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC100.CRT\msvcp100.dll" "$(TargetDir)"
+copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC100.CRT\msvcr100.dll" "$(TargetDir)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
