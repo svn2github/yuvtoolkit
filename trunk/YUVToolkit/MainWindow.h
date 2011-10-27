@@ -58,6 +58,7 @@ private:
 	unsigned int m_LastSliderValue;
 	bool m_IsPlaying;
 	QTimer* m_UpdateTimer;
+	QTime m_StepTime;
 
 	VideoView* m_ActiveVideoView;
 

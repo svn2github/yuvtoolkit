@@ -667,22 +667,51 @@ void MainWindow::seekVideoFromSlider()
 
 void MainWindow::on_action_Step_Forward_triggered()
 {
-	stepVideo(1);
+	int sinceLastStep = m_StepTime.restart();
+	if (sinceLastStep<100)
+	{
+		stepVideo(5);
+	}else
+	{
+		stepVideo(1);
+	}
+	
 }
 
 void MainWindow::on_action_Step_Back_triggered()
 {
-	stepVideo(-1);
+	int sinceLastStep = m_StepTime.restart();
+	if (sinceLastStep<100)
+	{
+		stepVideo(-5);
+	}else
+	{
+		stepVideo(-1);
+	}
 }
 
 void MainWindow::on_action_Step_Forward_Fast_triggered()
 {
-	stepVideo(10);
+	int sinceLastStep = m_StepTime.restart();
+	if (sinceLastStep<100)
+	{
+		stepVideo(20);
+	}else
+	{
+		stepVideo(10);
+	}
 }
 
 void MainWindow::on_action_Step_Back_Fast_triggered()
 {
-	stepVideo(-10);
+	int sinceLastStep = m_StepTime.restart();
+	if (sinceLastStep<100)
+	{
+		stepVideo(-20);
+	}else
+	{
+		stepVideo(-10);
+	}
 }
 
 void MainWindow::on_action_Seek_Beginning_triggered()
