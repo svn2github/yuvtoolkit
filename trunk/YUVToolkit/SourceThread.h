@@ -42,6 +42,7 @@ private:
 	
 private:
 	int m_ViewID;
+	unsigned int m_LastSeekingPTS;
 	QString m_Path;
 	Source* m_Source;
 	bool m_EndOfFile;
