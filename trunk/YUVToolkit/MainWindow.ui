@@ -123,11 +123,18 @@ background-color: rgb(0, 0, 0);
      <addaction name="action_Enable_Logging"/>
      <addaction name="actionShowLogging"/>
     </widget>
+    <widget class="QMenu" name="menu_Options">
+     <property name="title">
+      <string>&amp;Options</string>
+     </property>
+     <addaction name="action_File_Association"/>
+     <addaction name="action_Play_After_Seeking"/>
+    </widget>
     <addaction name="menu_Zoom"/>
     <addaction name="menu_Renderer"/>
     <addaction name="separator"/>
     <addaction name="menu_Logging"/>
-    <addaction name="action_File_Association"/>
+    <addaction name="menu_Options"/>
    </widget>
    <widget class="QMenu" name="menu_Play">
     <property name="title">
@@ -602,6 +609,17 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="statusTip">
     <string>Quality Measures (MSE etc)</string>
+   </property>
+  </action>
+  <action name="action_Play_After_Seeking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Continue play after seeking using mouse</string>
+   </property>
+   <property name="toolTip">
+    <string>Continue play after seeking using mouse</string>
    </property>
   </action>
  </widget>

@@ -656,7 +656,15 @@ void MainWindow::seekVideoFromSlider()
 		unsigned int pts = qFloor(idx_new * 1000 / info.fps);
 		if (qRound(pts * info.fps / 1000) == idx_new)
 		{
-			m_VideoViewList->GetControl()->Seek(pts, false);
+			QSettings settings;
+			bool play = settings.value("main/play_after_seeking", false).toBool();
+			if (play)
+			{
+				m_VideoViewList->GetControl()->Seek(pts);
+			}else
+			{
+				m_VideoViewList->GetControl()->Seek(pts, false);
+			}
 
 			return;
 		}
@@ -846,6 +854,8 @@ void MainWindow::OnTimer()
 	}
 	
 	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
+	QSettings settings;
+	ui.action_Play_After_Seeking->setChecked(settings.value("main/play_after_seeking", false).toBool());
 }
 
 void MainWindow::stepVideo( int step )
@@ -1068,5 +1078,12 @@ void MainWindow::OnVideoViewCreated( VideoView* vv)
 void MainWindow::on_action_Quality_Measures_triggered()
 {
 	
+}
+
+void MainWindow::on_action_Play_After_Seeking_triggered()
+{
+	QSettings settings;
+	bool enabled = ui.action_Play_After_Seeking->isChecked();
+	settings.setValue("main/play_after_seeking", enabled);	
 }
 
