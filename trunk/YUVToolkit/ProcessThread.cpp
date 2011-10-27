@@ -81,7 +81,7 @@ void ProcessThread::ProcessFrameQueue()
 				
 				if (!scene)
 				{
-					scene = GetHostImpl()->NewFrameList();
+					scene = GetHostImpl()->GetFrameList();
 				}
 				scene->append(frame);
 			}

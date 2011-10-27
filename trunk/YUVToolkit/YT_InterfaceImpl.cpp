@@ -754,27 +754,31 @@ void HostImpl::ReleaseFramePool(FramePool* pool)
 	}*/
 }
 
-FrameListPtr HostImpl::NewFrameList()
+FrameListPtr HostImpl::GetFrameList()
 {
-	QMutexLocker locker(&m_MutexFrameListList);
-	if (m_FrameListList.size()>0)
+	QMutexLocker locker(&m_MutexFrameListPool);
+	if (m_FrameListPool.size()>0)
 	{
-		FrameListPtr frameList = m_FrameListList.first();
-		m_FrameListList.removeFirst();
-		return frameList;
+		FrameList* list = m_FrameListPool.takeFirst();
+
+		return FrameListPtr(list, HostImpl::RecyleFrameList);
 	}
-	return FrameListPtr(new FrameList);
+	return FrameListPtr(new FrameList, HostImpl::RecyleFrameList);
 }
 
-void HostImpl::ReleaseFrameList( FrameListPtr& frameList)
+void HostImpl::ReleaseFrameList( FrameList* frameList)
 {
-	QMutexLocker locker(&m_MutexFrameListList);
+	QMutexLocker locker(&m_MutexFrameListPool);
 	if (frameList)
 	{
 		frameList->clear();
-		m_FrameListList.append(frameList);
-		frameList.clear();
+		m_FrameListPool.append(frameList);
 	}
+}
+
+void HostImpl::RecyleFrameList( FrameList* frameList)
+{
+	GetHostImpl()->ReleaseFrameList(frameList);
 }
 
 
@@ -807,9 +811,7 @@ FramePtr FramePool::Get()
 	{
 		QMutexLocker locker(&m_Mutex);
 
-		Frame* frame = m_Pool.first();
-		m_Pool.removeFirst();
-
+		Frame* frame = m_Pool.takeFirst();
 		return FramePtr(frame, FrameImpl::Recyle);
 	}
 

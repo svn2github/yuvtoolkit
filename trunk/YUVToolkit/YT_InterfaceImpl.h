@@ -142,8 +142,8 @@ class HostImpl : public QObject, public Host
 	QFile m_LogFile;
 	QMutex m_MutexLogging;
 
-	QMutex m_MutexFrameListList;
-	QList<FrameListPtr> m_FrameListList;
+	QMutex m_MutexFrameListPool;
+	QList<FrameList*> m_FrameListPool;
 public:
 	HostImpl();
 	~HostImpl();
@@ -157,8 +157,9 @@ public:
 	FramePool* NewFramePool(unsigned int size);
 	void ReleaseFramePool(FramePool*);
 
-	FrameListPtr NewFrameList();
-	void ReleaseFrameList(FrameListPtr&);
+	FrameListPtr GetFrameList();
+	void ReleaseFrameList(FrameList*);
+	static void RecyleFrameList(FrameList*);
 
 	virtual FormatPtr NewFormat();
 

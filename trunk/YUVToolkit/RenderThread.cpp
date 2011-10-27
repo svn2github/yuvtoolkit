@@ -127,20 +127,13 @@ void RenderThread::Render()
 			m_SpeedRatio = m_SpeedRatio + 0.1f * (diffPts*1.0f/ elapsedSinceLastPTS - m_SpeedRatio);
 		}
 
-		if (m_LastSourceFrames)
-		{
-			GetHostImpl()->ReleaseFrameList(m_LastSourceFrames);
-		}
-
 		m_LastSourceFrames = nextScene;
 		m_LastSeeking = nextIsSeeking;
 		m_LastPTS = nextPTS;
 
 		m_RenderCounter = 0;
 
-		FrameListPtr rendered = FrameListPtr(new FrameList);
-		rendered->append(*nextScene);
-		emit sceneRendered(rendered, m_LastPTS, m_LastSeeking);
+		emit sceneRendered(nextScene, m_LastPTS, m_LastSeeking);
 	}
 }
 
