@@ -37,7 +37,7 @@ public:
 	virtual RESULT Init(const QString& path);
 	virtual RESULT UnInit();
 
-	virtual RESULT GetFrame(FramePtr frame, unsigned int PTS);
+	virtual RESULT GetFrame(FramePtr frame, unsigned int seekingPTS);
 
 	virtual RESULT GetInfo(SourceInfo& info);
 	virtual unsigned int IndexToPTS(unsigned int frame_idx);

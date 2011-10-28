@@ -31,6 +31,15 @@ enum COLOR_FORMAT {
 	NV12   = 0x3231564E,
 };
 
+enum INFO_KEY {
+	VIEW_ID,          // unsigned int, view id
+	IS_LAST_FRAME,    // bool, indicate that it is the last frame
+	SEEKING_PTS,      // unsigned int, result of seeking pts
+	NEXT_PTS,         // unsigned int, PTS of next frame, INVALID_PTS for last frame
+	SRC_RECT,         // QRect, source rect for rendering
+	DST_RECT,         // QRect, destination rect for rendering
+};
+
 class Format
 {
 public:
@@ -69,14 +78,6 @@ public:
 };
 
 typedef QSharedPointer<Format> FormatPtr;
-
-enum INFO_KEY {
-	VIEW_ID,          // unsigned int, view id
-	IS_LAST_FRAME,    // bool, indicate that it is the last frame
-	SEEKING_PTS,      // unsigned int, result of seeking pts
-	SRC_RECT,         // QRect, source rect for rendering
-	DST_RECT,         // QRect, destination rect for rendering
-};
 
 class Frame
 {
@@ -222,7 +223,7 @@ public:
 	// if PTS != 0xFFFFFFFE, seek to PTS
 	// PTS might be larger than the duration, then returns the last frame
 	// Else get next frame
-	virtual RESULT GetFrame(FramePtr frame, unsigned int PTS=INVALID_PTS) = 0;
+	virtual RESULT GetFrame(FramePtr frame, unsigned int seekingPts=INVALID_PTS) = 0;
 
 	// Requesting source info
 	virtual RESULT GetInfo(SourceInfo& info) = 0;

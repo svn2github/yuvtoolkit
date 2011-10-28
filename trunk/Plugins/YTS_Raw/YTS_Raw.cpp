@@ -166,13 +166,13 @@ RESULT YTS_Raw::UnInit()
 	return OK;
 }
 
-RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int PTS )
+RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 {
 	QMutexLocker locker(&m_Mutex);
 
-	if (PTS < INVALID_PTS)
+	if (seekingPTS < INVALID_PTS)
 	{
-		m_FrameIndex = PTSToIndex(PTS);
+		m_FrameIndex = PTSToIndex(seekingPTS);
 		m_FrameIndex = MyMin(m_FrameIndex, m_NumFrames-1);
 	}
 
@@ -203,6 +203,16 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int PTS )
 		unsigned int pts = IndexToPTS(m_FrameIndex);
 		frame->SetPTS(pts);
 		frame->SetFrameNumber(m_FrameIndex);
+		frame->SetInfo(IS_LAST_FRAME, m_FrameIndex == m_NumFrames-1);
+		frame->SetInfo(SEEKING_PTS, seekingPTS);
+		if (m_FrameIndex == m_NumFrames-1)
+		{
+			frame->SetInfo(NEXT_PTS, INVALID_PTS);
+		}else
+		{
+			frame->SetInfo(NEXT_PTS, IndexToPTS(m_FrameIndex+1));
+		}		
+
 		m_FrameIndex++;
 
 		return OK;
