@@ -30,7 +30,7 @@ private slots:
 private:
 	void run();
 	
-	FrameListPtr FastSeekQueue(unsigned int pts, UintList sourceViewIds);
+	FrameListPtr FastSeekQueue(unsigned int pts, UintList sourceViewIds, bool& completed);
 	void CleanQueue(UintList& sourceViewIds);
 private:
 	QMap<unsigned int, FrameList > m_SourceFrames;

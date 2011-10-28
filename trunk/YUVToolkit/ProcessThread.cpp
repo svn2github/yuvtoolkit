@@ -53,17 +53,20 @@ void ProcessThread::ProcessFrameQueue()
 
 	if (status.seekingPTS != INVALID_PTS)
 	{
-		FrameListPtr scene = FastSeekQueue(status.seekingPTS, sourceViewIds);
-		if (scene)
+		bool completed = true;
+		FrameListPtr scene = FastSeekQueue(status.seekingPTS, sourceViewIds, completed);
+		
+		if (completed)
 		{
-			WARNING_LOG("ProcessThread seeking %d done", status.seekingPTS);
-
 			m_Control->OnFrameProcessed(status.seekingPTS, status.seekingPTS);
-			emit sceneReady(scene, status.seekingPTS, true);
+
+			WARNING_LOG("ProcessThread seeking %d done", status.seekingPTS);
 		}else
 		{
-			WARNING_LOG("ProcessThread seeking %d not found", status.seekingPTS);
+			WARNING_LOG("ProcessThread seeking %d ... %d found", status.seekingPTS, scene->size());
 		}
+
+		emit sceneReady(scene, status.seekingPTS, true);
 
 		return;
 	}
@@ -143,11 +146,12 @@ void ProcessThread::CleanQueue(UintList& sourceViewIds)
 	}
 }
 
-FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceViewIds )
+FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceViewIds, bool& completed )
 {
 	// Clean up queue tills seeking frame is found, 
 	// clean up so that source has buffer to fill-up
 	// return list of seeking frame
+	completed = true;
 	FrameListPtr scene = GetHostImpl()->GetFrameList();
 	QMapIterator<unsigned int, FrameList > i(m_SourceFrames);
 	while (i.hasNext())
@@ -174,7 +178,7 @@ FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceView
 
 		if (!found)
 		{
-			return FrameListPtr();
+			completed = false;
 		}
 	}
 
@@ -183,7 +187,7 @@ FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceView
 		// if not all source has provided the frame
 		if (!m_SourceFrames.contains(sourceViewIds.at(i)))
 		{
-			return FrameListPtr();
+			completed = false;
 		}
 	}
 
