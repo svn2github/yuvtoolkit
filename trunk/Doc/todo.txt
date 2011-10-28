@@ -13,6 +13,8 @@ another mac feedback: doesn't run on 32-bit system
 
 0.0.2 
 ===================
+New video pipeline, more efficient and more stable seeking
+- It can now do quite solid 720P 60FPS playback of three side-by-side videos using D3D renderer (read from laptop non-SSD)
 Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
