@@ -44,7 +44,6 @@ public:
 	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
 	void CheckRenderReset();
-	void CheckLoopFromStart();
 	void CheckResolutionChanged();
 	void UpdateMeasureWindows();
 	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}

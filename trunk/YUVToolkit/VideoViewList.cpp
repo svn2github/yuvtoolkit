@@ -373,28 +373,6 @@ public:
 	}
 };
 
-void VideoViewList::CheckLoopFromStart()
-{
-	PlaybackControl::Status status;
-	m_Control.GetStatus(&status);
-	if (status.isPlaying)
-	{
-		VideoView* vv = m_LongestVideoView;
-		
-		Source* src = vv->GetSource();
-		FramePtr frame = vv->GetLastFrame();
-
-		bool endOfFile = (frame && frame->Info(IS_LAST_FRAME).toBool());
-
-		if (!m_EndOfFile && endOfFile)
-		{
-			m_Control.Seek(0);
-		}
-
-		m_EndOfFile = endOfFile;
-	}
-}
-
 void VideoViewList::UpdateDuration()
 {
 	m_Duration = 0;

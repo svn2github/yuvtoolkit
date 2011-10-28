@@ -751,11 +751,6 @@ void MainWindow::OnTimer()
 		m_VideoViewList->CheckResolutionChanged();
 		m_VideoViewList->CheckRenderReset();
 		
-		if (status.isPlaying)
-		{
-			m_VideoViewList->CheckLoopFromStart();
-		}
-
 		if (m_VideoViewList->size()>1)
 		{
 			m_VideoViewList->UpdateMeasureWindows();

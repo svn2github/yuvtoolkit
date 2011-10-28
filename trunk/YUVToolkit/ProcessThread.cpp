@@ -65,6 +65,7 @@ void ProcessThread::ProcessFrameQueue()
 
 	while (true)
 	{
+		bool lastFrame = true;
 		FrameListPtr scene; 
 		QMapIterator<unsigned int, FrameList > i(m_Frames);
 		while (i.hasNext()) 
@@ -76,8 +77,11 @@ void ProcessThread::ProcessFrameQueue()
 
 			if (frameList.size()>0)
 			{
-				FramePtr frame = frameList.first();
-				frameList.removeFirst();
+				FramePtr frame = frameList.takeFirst();
+				if (frame->Info(SEEKING_PTS).toUInt()!=INVALID_PTS || !frame->Info(IS_LAST_FRAME).toBool())
+				{
+					lastFrame = false;
+				}
 				
 				if (!scene)
 				{
@@ -92,6 +96,11 @@ void ProcessThread::ProcessFrameQueue()
 			unsigned int pts = scene->first()->PTS();
 			m_Control->OnFrameProcessed(pts, INVALID_PTS);
 			emit sceneReady(scene, pts, false);
+
+			if (lastFrame)
+			{
+				m_Control->Seek(0);
+			}
 		}else
 		{
 			break;
@@ -155,4 +164,3 @@ FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts )
 
 	return scene;
 }
-
