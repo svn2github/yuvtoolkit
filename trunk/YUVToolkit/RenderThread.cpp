@@ -6,8 +6,8 @@
 
 #include <assert.h>
 
-RenderThread::RenderThread(Renderer* renderer) : m_Renderer(renderer), 
-	m_SpeedRatio(1.0f), m_Exit(false)
+RenderThread::RenderThread(Renderer* renderer, PlaybackControl* c) : m_Renderer(renderer), 
+	m_SpeedRatio(1.0f), m_Exit(false), m_Control(c)
 {
 	moveToThread(this);
 }
@@ -133,6 +133,7 @@ void RenderThread::Render()
 
 		m_RenderCounter = 0;
 
+		m_Control->OnFrameDisplayed(m_LastPTS, m_LastSeeking);
 		emit sceneRendered(nextScene, m_LastPTS, m_LastSeeking);
 	}
 }

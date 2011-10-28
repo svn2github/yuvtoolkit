@@ -859,6 +859,8 @@ void PlaybackControl::Seek( unsigned int pts )
 	QMutexLocker locker(&m_Mutex);
 
 	m_Status.seekingPTS = pts;
+
+	WARNING_LOG("Seeking %d play %d", pts, m_Status.isPlaying);
 }
 
 void PlaybackControl::Seek( unsigned int pts, bool play )
@@ -867,6 +869,8 @@ void PlaybackControl::Seek( unsigned int pts, bool play )
 
 	m_Status.seekingPTS = pts;
 	m_Status.isPlaying = play;
+
+	WARNING_LOG("Seeking %d play %d", pts, play);
 }
 
 void PlaybackControl::GetStatus( Status* status )

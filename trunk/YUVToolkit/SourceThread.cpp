@@ -117,7 +117,7 @@ void SourceThread::ReadFrames()
 			frame->SetInfo(SEEKING_PTS, m_Status.seekingPTS);
 
 			emit frameReady(frame);
-			WARNING_LOG("FrameReady %d", frame->PTS());
+			WARNING_LOG("Source %d - FrameReady %d", m_ViewID, frame->PTS());
 
 			m_LastSeekingPTS = m_Status.seekingPTS;
 			m_EndOfFile = false;
@@ -125,10 +125,10 @@ void SourceThread::ReadFrames()
 		{
 			if (res == END_OF_FILE)
 			{
-				INFO_LOG("m_Source->GetFrame returns END_OF_FILE, seek %X", m_Status.seekingPTS);
+				INFO_LOG("Source %d GetFrame returns END_OF_FILE, seek %X", m_ViewID, m_Status.seekingPTS);
 			}else
 			{
-				ERROR_LOG("m_Source->GetFrame returns error %d, seek %X", res, m_Status.seekingPTS);
+				ERROR_LOG("Source %d GetFrame returns error %d, seek %X", m_ViewID, res, m_Status.seekingPTS);
 			}
 			m_EndOfFile = true;
 		}

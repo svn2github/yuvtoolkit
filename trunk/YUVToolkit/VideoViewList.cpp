@@ -54,7 +54,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 		QString renderType = settings.value("main/renderer", "D3D").toString();
 		m_RenderWidget->Init(renderType);
 
-		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer());
+		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), &m_Control);
 		
 		connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
 			m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
@@ -62,6 +62,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 			this, SLOT(OnSceneRendered(FrameListPtr, unsigned int, bool)));
 
 		m_RenderThread->Start();
+		m_ProcessThread->Start();
 	}
 
 	// m_RenderThread->Stop();
@@ -74,14 +75,6 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 	
 	vv->SetTitle( title );
 
-	// Update id
-	UintList ids;
-	for (int i=0; i<m_VideoList.size(); ++i) 
-	{
-		VideoView* vv = m_VideoList.at(i);
-		ids.append(vv->GetID());
-	}
-	
 	OnUpdateRenderWidgetPosition();
 
 	// m_RenderThread->Start();
@@ -134,31 +127,24 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 	m_RenderThread->Stop();
 
-	StopSources();
-	
 	m_RenderWidget->layout->RemoveView(vv);
 	m_VideoList.removeOne(vv);
 	
-	// Update id
-	UintList ids;
-	for (int i=0; i<m_VideoList.size(); ++i) 
-	{
-		VideoView* vv = m_VideoList.at(i);
-		ids.append(vv->GetID());
-	}
+	GetProcessThread()->SetSources(GetSourceIDList());
 	
 	UpdateDuration();
 
 	if (m_VideoList.isEmpty())
 	{
 		SAFE_DELETE(m_RenderThread);
+		m_ProcessThread->Stop();
 
 		m_RenderWidget->UnInit();
 		m_RenderWidget->repaint();
 		m_Control.Reset();
 	}else
 	{
-		StartSources();
+		m_RenderThread->Start();
 	}
 
 	emit VideoViewClosed(vv);
@@ -460,8 +446,6 @@ void VideoViewList::UpdateMeasureWindows()
 
 void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool seeking )
 {
-	m_Control.OnFrameDisplayed(pts, seeking);
-
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
 		VideoView* vv = m_VideoList.at(i);
@@ -506,6 +490,7 @@ UintList VideoViewList::GetSourceIDList() const
 	return lst;
 }
 
+/*
 void VideoViewList::StopSources()
 {
 	if (size()>0)
@@ -547,3 +532,4 @@ void VideoViewList::StartSources()
 		}
 	}
 }
+*/

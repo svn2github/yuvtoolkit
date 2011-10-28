@@ -7,7 +7,7 @@ class RenderThread : public QThread
 	Q_OBJECT;
 public:
 	
-	RenderThread(Renderer* renderer);
+	RenderThread(Renderer* renderer, PlaybackControl* c);
 	~RenderThread(void);
 
 	void Start();
@@ -57,6 +57,7 @@ protected:
 
 	QTime m_RenderCycleTime, m_RenderSpeedTime;
 
+	PlaybackControl* m_Control;
 	QMutex m_MutexLayout;
 	volatile bool m_Exit;
 };

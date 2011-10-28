@@ -47,10 +47,7 @@ public:
 	void CheckResolutionChanged();
 	void UpdateMeasureWindows();
 	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
-
-	void StopSources();
-	void StartSources();
-		
+	
 public slots:
 	void UpdateDuration();
 	void CloseVideoView(VideoView*);

@@ -13,8 +13,11 @@ public:
 	ProcessThread(PlaybackControl*);
 	~ProcessThread();
 
-	void Start(UintList sourceViewIDs);
+	void Start();
 	void Stop();
+
+	// Manage list of source, transform and measure views
+	void SetSources(UintList sourceViewIds);
 signals:
 	// Signals that one scene is ready for render
 	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
@@ -27,13 +30,15 @@ private slots:
 private:
 	void run();
 	
-	FrameListPtr FastSeekQueue(unsigned int pts);
-	void CleanQueue();
+	FrameListPtr FastSeekQueue(unsigned int pts, UintList sourceViewIds);
+	void CleanQueue(UintList& sourceViewIds);
 private:
-	QMap<unsigned int, FrameList > m_Frames;
-	UintList m_SourceViewIDs;
+	QMap<unsigned int, FrameList > m_SourceFrames;
 	PlaybackControl* m_Control;
-	PlaybackControl::Status m_Status;
+	
+	// List of source, transform and measure views
+	QMutex m_Mutex;
+	UintList m_SourceViewIds;
 };
 
 #endif

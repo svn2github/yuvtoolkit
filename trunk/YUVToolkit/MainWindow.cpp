@@ -232,15 +232,27 @@ void MainWindow::openFiles( const QStringList& fileList )
 		return;
 	}
 
-	m_VideoViewList->StopSources();
-	
 	for ( int i=0; i<fileList2.size(); i++) // if at least one QUrl is present in list
 	{
 		const QString& fName = fileList2[i];
 		openFileInternal(fName);
 	}
 
-	m_VideoViewList->StartSources();
+	m_VideoViewList->GetProcessThread()->SetSources(m_VideoViewList->GetSourceIDList());
+	
+	PlaybackControl::Status status;
+	m_VideoViewList->GetControl()->GetStatus(&status);
+	m_VideoViewList->GetControl()->Seek(status.lastDisplayPTS, status.isPlaying);
+
+	for (int i=0; i<m_VideoViewList->size(); ++i) 
+	{
+		VideoView* vv = m_VideoViewList->at(i);
+		SourceThread* st = vv->GetSourceThread();
+		if (st && !st->isRunning())
+		{
+			st->Start();
+		}
+	}
 }
 
 
