@@ -22,8 +22,6 @@ void Layout::AddView( VideoView* vv)
 {
 	m_VideoList.append(vv);
 
-	connect(vv, SIGNAL(ViewPortUpdated(VideoView*,double,double)), this, SLOT(OnViewPortUpdated(VideoView*,double,double)));
-
 	UpdateGrid();
 }
 
@@ -163,17 +161,6 @@ void Layout::OnMouseReleaseEvent( QMouseEvent* e )
 	}
 }
 
-void Layout::OnViewPortUpdated( VideoView* _vv, double x, double y)
-{
-	for (int i=0; i<m_VideoList.size(); ++i) 
-	{
-		VideoView* vv = m_VideoList.at(i);
-		if (vv != _vv)
-		{
-			vv->UpdateViewPort(x,y);
-		}
-	}	
-}
 
 VideoView* Layout::FindVideoAtMoisePosition()
 {

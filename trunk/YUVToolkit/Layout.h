@@ -30,7 +30,7 @@ public:
 protected:
 	void UpdateGrid();
 private slots:
-	void OnViewPortUpdated(VideoView*, double x, double y);
+	
 private:
 	QWidget* parent;
 

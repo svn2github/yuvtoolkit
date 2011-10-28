@@ -48,12 +48,14 @@ public:
 	void UpdateMeasureWindows();
 	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
 	
+	void UpdateRenderLayout();
 public slots:
 	void UpdateDuration();
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
 	void OnSceneRendered(FrameListPtr scene, unsigned int pts, bool seeking);
+	void OnViewPortUpdated(VideoView*, double x, double y);
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);

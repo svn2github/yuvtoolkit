@@ -79,6 +79,7 @@ VideoView* VideoViewList::NewVideoView( const char* title )
 
 	// m_RenderThread->Start();
 
+	connect(vv, SIGNAL(ViewPortUpdated(VideoView*,double,double)), this, SLOT(OnViewPortUpdated(VideoView*,double,double)));
 	connect(vv, SIGNAL(Close(VideoView*)), this, SLOT(CloseVideoView(VideoView*)));
 	connect(vv, SIGNAL(TransformTriggered(QAction*, VideoView*, TransformActionData*)), this, SLOT(OnVideoViewTransformTriggered(QAction*, VideoView*, TransformActionData*)));
 
@@ -93,22 +94,7 @@ void VideoViewList::OnUpdateRenderWidgetPosition()
 	int width = rcClient.width();
 	m_RenderWidget->layout->UpdateGeometry();
 
-	if (m_RenderThread)
-	{
-		UintList ids;
-		RectList srcRects;
-		RectList dstRects;
-		for (int i=0; i<m_VideoList.size(); ++i) 
-		{
-			VideoView* vv = m_VideoList.at(i);
-
-			ids.append(vv->GetID());
-			srcRects.append(vv->srcRect);
-			dstRects.append(vv->dstRect);
-		}
-
-		m_RenderThread->SetLayout(ids, srcRects, dstRects);
-	}
+	UpdateRenderLayout();
 }
 
 void VideoViewList::CloseVideoView( VideoView* vv)
@@ -488,6 +474,40 @@ UintList VideoViewList::GetSourceIDList() const
 		}		
 	}
 	return lst;
+}
+
+void VideoViewList::OnViewPortUpdated( VideoView* _vv, double x, double y )
+{
+	for (int i=0; i<m_VideoList.size(); ++i) 
+	{
+		VideoView* vv = m_VideoList.at(i);
+		if (vv != _vv)
+		{
+			vv->UpdateViewPort(x,y);
+		}
+	}
+
+	UpdateRenderLayout();
+}
+
+void VideoViewList::UpdateRenderLayout()
+{
+	if (m_RenderThread)
+	{
+		UintList ids;
+		RectList srcRects;
+		RectList dstRects;
+		for (int i=0; i<m_VideoList.size(); ++i) 
+		{
+			VideoView* vv = m_VideoList.at(i);
+
+			ids.append(vv->GetID());
+			srcRects.append(vv->srcRect);
+			dstRects.append(vv->dstRect);
+		}
+
+		m_RenderThread->SetLayout(ids, srcRects, dstRects);
+	}
 }
 
 /*
