@@ -37,6 +37,7 @@ void ProcessThread::Stop()
 
 void ProcessThread::Start()
 {
+	m_LastPTS = INVALID_PTS;
 	start();
 }
 
@@ -49,15 +50,16 @@ void ProcessThread::ProcessFrameQueue()
 	UintList sourceViewIds = m_SourceViewIds;
 	m_Mutex.unlock();
 
-	CleanQueue(sourceViewIds);	
+	bool completed = CleanAndCheckQueue(sourceViewIds);	
 
 	if (status.seekingPTS != INVALID_PTS)
 	{
-		bool completed = true;
-		FrameListPtr scene = FastSeekQueue(status.seekingPTS, sourceViewIds, completed);
+		bool allfound = true;
+		FrameListPtr scene = FastSeekQueue(status.seekingPTS, sourceViewIds, allfound);
 		
-		if (completed)
+		if (allfound)
 		{
+			m_LastPTS = status.seekingPTS;
 			m_Control->OnFrameProcessed(status.seekingPTS, status.seekingPTS);
 
 			WARNING_LOG("ProcessThread seeking %d done", status.seekingPTS);
@@ -76,8 +78,34 @@ void ProcessThread::ProcessFrameQueue()
 		return;
 	}
 
+	if (!completed)
+	{
+		return;
+	}
+
 	while (true)
 	{
+		unsigned int ptsNext = 0;
+		if (m_LastPTS == INVALID_PTS)
+		{
+			ptsNext = GetFirstPTS(sourceViewIds);
+			if (ptsNext == INVALID_PTS)
+			{
+				return;
+			}
+		}else
+		{
+			ptsNext = GetNextPTS(sourceViewIds, m_LastPTS);
+			if (ptsNext == INVALID_PTS)
+			{
+				return;
+			}
+			if (ptsNext-m_LastPTS<15)
+			{
+				ptsNext = m_LastPTS + 15;
+			}
+		}
+
 		bool lastFrame = true;
 		FrameListPtr scene; 
 		QMapIterator<unsigned int, FrameList > i(m_SourceFrames);
@@ -88,35 +116,53 @@ void ProcessThread::ProcessFrameQueue()
 			unsigned int viewID = i.key();
 			FrameList& frameList = m_SourceFrames[viewID];
 
-			if (frameList.size()>0)
+			FramePtr frameToRender;
+			while (frameList.size()>0)
 			{
-				FramePtr frame = frameList.takeFirst();
-				if (frame->Info(SEEKING_PTS).toUInt()!=INVALID_PTS || !frame->Info(IS_LAST_FRAME).toBool())
+				FramePtr frame = frameList.first();
+				unsigned int _next = frame->Info(NEXT_PTS).toUInt();
+				if (_next <= ptsNext)
+				{
+					frameList.removeFirst();
+					continue;
+				}
+
+				frameToRender = frame;
+				break;
+			}
+
+			if (frameToRender)
+			{
+				if (!frameToRender->Info(IS_LAST_FRAME).toBool())
 				{
 					lastFrame = false;
 				}
-				
+
 				if (!scene)
 				{
 					scene = GetHostImpl()->GetFrameList();
 				}
-				scene->append(frame);
+				scene->append(frameToRender);
+			}else
+			{
+				// some frames missing
+				return;
 			}
 		}
 
 		if (scene && scene->size()>0)
 		{
-			unsigned int pts = scene->first()->PTS();
-			m_Control->OnFrameProcessed(pts, INVALID_PTS);
-			emit sceneReady(scene, pts, false);
+			m_Control->OnFrameProcessed(ptsNext, INVALID_PTS);
+			emit sceneReady(scene, ptsNext, false);
+			m_LastPTS = ptsNext;
 
-			if (lastFrame)
+			if (lastFrame && status.isPlaying)
 			{
 				m_Control->Seek(0);
 			}
 		}else
 		{
-			break;
+			return;
 		}
 	}
 }
@@ -131,7 +177,7 @@ void ProcessThread::ReceiveFrame( FramePtr frame )
 	m_SourceFrames[viewID].append(frame);
 }
 
-void ProcessThread::CleanQueue(UintList& sourceViewIds)
+bool ProcessThread::CleanAndCheckQueue(UintList& sourceViewIds)
 {
 	// Find views that doesn't exist any more and delete
 	QMutableMapIterator<unsigned int, FrameList > i(m_SourceFrames);
@@ -144,6 +190,16 @@ void ProcessThread::CleanQueue(UintList& sourceViewIds)
 			i.remove();
 		}
 	}
+
+	for (int i=0; i<sourceViewIds.size(); i++)
+	{
+		// if not all source has provided the frame
+		if (!m_SourceFrames.contains(sourceViewIds.at(i)))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceViewIds, bool& completed )
@@ -198,4 +254,55 @@ void ProcessThread::SetSources( UintList sourceViewIDs )
 {
 	QMutexLocker locker(&m_Mutex);
 	m_SourceViewIds = sourceViewIDs;
+}
+
+unsigned int ProcessThread::GetFirstPTS( UintList sourceViewIds )
+{
+	unsigned int ptsFirst = INVALID_PTS;
+	QMapIterator<unsigned int, FrameList > i(m_SourceFrames);
+	while (i.hasNext())
+	{
+		i.next();
+
+		unsigned int viewID = i.key();
+		FrameList& frameList = m_SourceFrames[viewID];
+
+		if (frameList.size() == 0)
+		{
+			return INVALID_PTS;
+		}
+
+		FramePtr frame = frameList.first();
+		unsigned int pts = frame->PTS();
+		ptsFirst = qMin<unsigned int>(pts, ptsFirst);
+	}
+	return ptsFirst;
+}
+
+unsigned int ProcessThread::GetNextPTS( UintList sourceViewIds, unsigned int currentPTS )
+{
+	unsigned int ptsNext = INVALID_PTS;
+	QMapIterator<unsigned int, FrameList > i(m_SourceFrames);
+	while (i.hasNext())
+	{
+		i.next();
+
+		unsigned int viewID = i.key();
+		FrameList& frameList = m_SourceFrames[viewID];
+
+		if (frameList.size() == 0)
+		{
+			return INVALID_PTS;
+		}
+
+		FramePtr frame = frameList.first();
+		unsigned int pts = frame->PTS();
+		if (pts<=currentPTS)
+		{
+			pts = frame->Info(NEXT_PTS).toUInt();
+		}
+		
+		ptsNext = qMin<unsigned int>(pts, ptsNext);
+	}
+	return ptsNext;
 }

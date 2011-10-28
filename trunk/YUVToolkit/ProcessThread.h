@@ -30,11 +30,14 @@ private slots:
 private:
 	void run();
 	
+	unsigned int GetFirstPTS(UintList sourceViewIds);
+	unsigned int GetNextPTS(UintList sourceViewIds, unsigned int currentPTS);
 	FrameListPtr FastSeekQueue(unsigned int pts, UintList sourceViewIds, bool& completed);
-	void CleanQueue(UintList& sourceViewIds);
+	bool CleanAndCheckQueue(UintList& sourceViewIds);
 private:
 	QMap<unsigned int, FrameList > m_SourceFrames;
 	PlaybackControl* m_Control;
+	unsigned int m_LastPTS;
 	
 	// List of source, transform and measure views
 	QMutex m_Mutex;
