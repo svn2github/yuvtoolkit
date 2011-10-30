@@ -40,6 +40,7 @@ enum INFO_KEY {
 	DST_RECT,         // QRect, destination rect for rendering
 };
 
+#define ALL_PLANE	4
 class Format
 {
 public:
@@ -277,10 +278,40 @@ public:
 	virtual RESULT Reset() = 0;
 };
 
+struct TransformCapabilities
+{
+	unsigned int transformId;
+	QString outputName;
+
+	unsigned int inputColorsCount;
+	COLOR_FORMAT inputColors[8];
+	
+	bool supportColor; // Can operate on all planes jointly
+	bool supportPlanes; // Can operate on each plane separately
+	bool need2Inputs;
+	bool outputDouble;
+	bool outputFrame;
+};
+
+struct TransformOperation
+{
+	unsigned int transformId;
+	int plane; // 0-3, or ALL_PLANE
+
+	double doubleResult;
+	FramePtr frameResult;
+};
+
 class Transform 
 {
 public:
 	virtual ~Transform() {}
+
+	virtual const QList<TransformCapabilities>& GetCapabilities() = 0;
+
+	virtual RESULT GetFormat(unsigned int transformId, int plane, FormatPtr sourceFormat, FormatPtr outputFormat) = 0;
+
+	virtual void Process(FramePtr source1, FramePtr source2, QList<TransformOperation>& operations) = 0;
 
 	 // Returns what format that is supported	
 	virtual RESULT GetSupportedModes(FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames) = 0;

@@ -11,12 +11,19 @@ class ShowYUVComponent : public QObject, public Transform
 
 	void ReleaseBuffers();
 	void ProcessPlane(FramePtr input, FramePtr output, int plane);
+
+	QList<TransformCapabilities> m_Capabilities;
 public:
 	ShowYUVComponent(); 
 	~ShowYUVComponent(); 
 
+	virtual const QList<TransformCapabilities>& GetCapabilities();
+
+	virtual void Process(FramePtr source1, FramePtr source2, QList<TransformOperation>& operations);
+
 	virtual RESULT GetSupportedModes(FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames);
 	virtual RESULT GetFormat(FormatPtr sourceFormat, const QString& outputName, FormatPtr outputFormat);
+	virtual RESULT GetFormat(unsigned int transformId, int plane, FormatPtr sourceFormat, FormatPtr outputFormat);
 
 	// Process
 	virtual RESULT Process(const FramePtr input, QMap<QString, FramePtr>& outputs, QMap<QString, QVariant>& stats);

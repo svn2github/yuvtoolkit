@@ -14,6 +14,10 @@ void ShowYUVComponent::ReleaseBuffers()
 	
 }
 
+enum TRANSFORM_ID
+{
+	TRANSFORM_SHOW_PLANE,
+};
 
 RESULT ShowYUVComponent::GetSupportedModes( FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames )
 {
@@ -73,19 +77,26 @@ RESULT ShowYUVComponent::Process(const FramePtr input, QMap<QString, FramePtr>& 
 	return OK;
 }
 
+void ShowYUVComponent::Process( FramePtr source1, FramePtr source2, QList<TransformOperation>& operations )
+{
+	for (int plane=0; plane<4; plane++)
+	{
+		for (int j=0; j<operations.size(); j++)
+		{
+			TransformOperation& t = operations[j];
+			if (t.plane == plane)
+			{
+				ProcessPlane(source1, t.frameResult, plane);
+			}
+		}
+	}
+}
+
 void ShowYUVComponent::ProcessPlane( FramePtr input, FramePtr output, int plane )
 {
-	output->Reset();
-	output->Format()->SetColor(I420);
-	output->Format()->SetStride(0, 0);
-	output->Format()->SetWidth(input->Format()->PlaneWidth(plane));
-	output->Format()->SetHeight(input->Format()->PlaneHeight(plane));
-	output->Format()->PlaneSize(0); // Update internal	
-	output->SetData(0, input->Data(plane));
-	for (int i=1; i<4; i++)
-	{
-		output->SetData(i, m_EmptyFrame->Data(i));
-	}
+	memcpy(output->Data(0), input->Data(plane), input->Format()->PlaneSize(0));
+	memset(output->Data(1), 128, output->Format()->PlaneSize(1));
+	memset(output->Data(2), 128, output->Format()->PlaneSize(2));
 }
 
 RESULT ShowYUVComponent::GetFormat( FormatPtr sourceFormat, const QString& outputName, FormatPtr outputFormat )
@@ -104,4 +115,39 @@ RESULT ShowYUVComponent::GetFormat( FormatPtr sourceFormat, const QString& outpu
 		}
 	}
 	return E_UNKNOWN;
+}
+
+RESULT ShowYUVComponent::GetFormat( unsigned int transformId, int plane, FormatPtr sourceFormat, FormatPtr outputFormat )
+{
+	if (plane>=0 && plane<=2)
+	{
+		outputFormat->SetColor(I420);
+		outputFormat->SetStride(0, 0);
+		outputFormat->SetWidth(sourceFormat->PlaneWidth(plane));
+		outputFormat->SetHeight(sourceFormat->PlaneHeight(plane));
+		return OK;
+	}
+	return E_UNKNOWN;
+}
+
+const QList<TransformCapabilities>& ShowYUVComponent::GetCapabilities()
+{
+	if (m_Capabilities.isEmpty())
+	{
+		TransformCapabilities cap;
+		memset(&cap, 0, sizeof(cap));
+
+		cap.transformId = TRANSFORM_SHOW_PLANE;
+		cap.outputName = "Show Plane";
+		
+		cap.inputColors[cap.inputColorsCount++] = I420;
+		cap.inputColors[cap.inputColorsCount++] = YV12;
+
+		cap.supportPlanes = true;
+		cap.outputFrame = true;
+
+		m_Capabilities.append(cap);
+	}
+
+	return m_Capabilities;
 }
