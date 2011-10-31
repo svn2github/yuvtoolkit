@@ -39,7 +39,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	setCentralWidget(ui.rendererWidget);
 	setAcceptDrops(TRUE);
 
-	m_Slider = new QClickableSlider(ui.mainToolBar);
+	m_Slider = new QClickableSlider(ui.playbackToolBar);
 	m_Slider->setMinimumSize(32, 10);
 	m_Slider->setFocusPolicy(Qt::NoFocus);
 	m_Slider->setTickPosition(QSlider::TicksBelow);
@@ -51,8 +51,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	connect(m_VideoViewList, SIGNAL(VideoViewClosed(VideoView*)), this, SLOT(OnVideoViewClosed(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
 
-	ui.mainToolBar->insertWidget(ui.action_Seek_Beginning, m_Slider);
-	ui.mainToolBar->insertSeparator(ui.action_Seek_Beginning);
+	ui.playbackToolBar->insertWidget(ui.action_Seek_Beginning, m_Slider);
+	ui.playbackToolBar->insertSeparator(ui.action_Seek_Beginning);
 
 	autoResizeWindow();
 

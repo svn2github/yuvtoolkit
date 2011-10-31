@@ -7,12 +7,12 @@ if platform.system() == "Windows":
     
     import increment_build_number
     
-    os.environ["QTDIR"] = "D:\\QtSQK\\Desktop\\Qt\\4.7.4\\msvc2008"
-    devenv = os.environ["ProgramFiles"] + "\\Microsoft Visual Studio 9.0\\Common7\\IDE\\devenv.exe"
+    os.environ["QTDIR"] = "D:\\QtSQK\\Desktop\\Qt\\4.8.0\\msvc2010"
+    devenv = os.environ["ProgramFiles"] + "\\Microsoft Visual Studio 10.0\\Common7\\IDE\\devenv.exe"
     nsis = os.environ["ProgramFiles"] + "\\NSIS\\makensis.exe"
 
-    os.system("\""+devenv+"\" ..\\YUVToolkitProject_vs2008.sln /Clean Release /out clean_log.txt")
-    os.system("\""+devenv+"\" ..\\YUVToolkitProject_vs2008.sln /Rebuild Release /out build_log.txt")
+    os.system("\""+devenv+"\" ..\\YUVToolkitProject_vs2010.sln /Clean Release /out clean_log.txt")
+    os.system("\""+devenv+"\" ..\\YUVToolkitProject_vs2010.sln /Rebuild Release /out build_log.txt")
     os.system("\""+nsis+"\" YUVToolkit.nsi")
     
     version = open("VERSION_1").read()+"."+ \

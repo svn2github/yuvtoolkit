@@ -186,7 +186,7 @@ public:
 	virtual void ReleaseMeasure(Measure*) {}
 };
 
-Q_DECLARE_INTERFACE(YTPlugIn, "net.yocto.YUVToolkit.PlugIn/1.0")
+Q_DECLARE_INTERFACE(YTPlugIn, "net.yocto.YUVToolkit.PlugIn/1.1")
 
 // Each module below should manage memory of its own
 enum SOURCE_TYPE {
