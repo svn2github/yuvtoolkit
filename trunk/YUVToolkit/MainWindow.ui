@@ -128,7 +128,6 @@ background-color: rgb(0, 0, 0);
       <string>&amp;Options</string>
      </property>
      <addaction name="action_File_Association"/>
-     <addaction name="action_Play_After_Seeking"/>
     </widget>
     <addaction name="menu_Zoom"/>
     <addaction name="menu_Renderer"/>
@@ -208,6 +207,9 @@ background-color: rgb(0, 0, 0);
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -451,6 +453,10 @@ background-color: rgb(0, 0, 0);
    </property>
   </action>
   <action name="action_Zoom_Switch">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/system-search.png</normaloff>:/RawVideoToolkit/Resources/system-search.png</iconset>
+   </property>
    <property name="text">
     <string>Switch &amp;Zoom Mode</string>
    </property>

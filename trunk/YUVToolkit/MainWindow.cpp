@@ -22,6 +22,9 @@
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+#define MINIMUM_WIDTH 480
+#define MINIMUM_HEIGHT 420
+
 
 int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
@@ -34,8 +37,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	windowCounter++;
 
 	ui.setupUi(this);
-	setMinimumWidth(320);
-	setMinimumHeight(240);
+	setMinimumWidth(MINIMUM_WIDTH);
+	setMinimumHeight(MINIMUM_HEIGHT);
 	setCentralWidget(ui.rendererWidget);
 	setAcceptDrops(TRUE);
 
@@ -135,6 +138,22 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	}
 
 	SetZoomMode(m_ZoomMode);
+
+	QToolButton* zoomButton = new QToolButton( ui.mainToolBar );
+	ui.mainToolBar->addSeparator();
+	ui.mainToolBar->addWidget(zoomButton);
+	zoomButton->setDefaultAction(ui.action_Zoom_Switch);
+	QMenu *zoomMenu = new QMenu( zoomButton );
+	zoomButton->setMenu( zoomMenu );
+	zoomButton->setPopupMode( QToolButton::MenuButtonPopup );
+	zoomMenu->addAction( ui.action_Zoom_Fit );
+	zoomMenu->addAction( ui.action_Zoom_50 );
+	zoomMenu->addAction( ui.action_Zoom_100 );
+	zoomMenu->addAction( ui.action_Zoom_200 );
+	zoomMenu->addAction( ui.action_Zoom_400 );
+
+	ui.mainToolBar->addSeparator();
+
 
 	ui.menu_Tools->addSeparator();
 	const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
@@ -569,7 +588,7 @@ void MainWindow::autoResizeWindow()
 		// adjustSize();
 	}else
 	{
-		resize(480, 420);
+		resize(MINIMUM_WIDTH, MINIMUM_HEIGHT);
 	}
 
 	m_VideoViewList->OnUpdateRenderWidgetPosition();
@@ -668,15 +687,7 @@ void MainWindow::seekVideoFromSlider()
 		unsigned int pts = qFloor(idx_new * 1000 / info.fps);
 		if (qRound(pts * info.fps / 1000) == idx_new)
 		{
-			QSettings settings;
-			bool play = settings.value("main/play_after_seeking", false).toBool();
-			if (play)
-			{
-				m_VideoViewList->GetControl()->Seek(pts);
-			}else
-			{
-				m_VideoViewList->GetControl()->Seek(pts, false);
-			}
+			m_VideoViewList->GetControl()->Seek(pts);
 
 			return;
 		}
@@ -861,8 +872,6 @@ void MainWindow::OnTimer()
 	}
 	
 	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
-	QSettings settings;
-	ui.action_Play_After_Seeking->setChecked(settings.value("main/play_after_seeking", false).toBool());
 }
 
 void MainWindow::stepVideo( int step )
@@ -904,6 +913,15 @@ void MainWindow::EnableButtons( bool enable )
 	ui.action_Seek_Beginning->setEnabled(enable);
 	ui.action_Seek_End->setEnabled(enable);
 	m_Slider->setEnabled(enable);
+
+	ui.action_Zoom_Switch->setEnabled(enable);
+	ui.action_Zoom_Fit->setEnabled(enable);
+	ui.action_Zoom_50->setEnabled(enable);
+	ui.action_Zoom_100->setEnabled(enable);
+	ui.action_Zoom_200->setEnabled(enable);
+	ui.action_Zoom_400->setEnabled(enable);
+
+	ui.action_Close->setEnabled(enable);
 
 	if (!enable)
 	{
@@ -1085,12 +1103,5 @@ void MainWindow::OnVideoViewCreated( VideoView* vv)
 void MainWindow::on_action_Quality_Measures_triggered()
 {
 	
-}
-
-void MainWindow::on_action_Play_After_Seeking_triggered()
-{
-	QSettings settings;
-	bool enabled = ui.action_Play_After_Seeking->isChecked();
-	settings.setValue("main/play_after_seeking", enabled);	
 }
 
