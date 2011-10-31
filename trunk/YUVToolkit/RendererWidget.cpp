@@ -77,17 +77,39 @@ void RendererWidget::UnInit()
 
 void RendererWidget::mouseMoveEvent( QMouseEvent* e )
 {
-	layout->OnMouseMoveEvent(e);
+	if (m_Renderer)
+	{
+		layout->OnMouseMoveEvent(e);
+	}
 }
 
 void RendererWidget::mousePressEvent( QMouseEvent* e )
 {
-	layout->OnMousePressEvent(e);
+	if (m_Renderer)
+	{
+		layout->OnMousePressEvent(e);
+	}
 }
 
 void RendererWidget::mouseReleaseEvent( QMouseEvent* e )
 {
-	layout->OnMouseReleaseEvent(e);
+	if (m_Renderer)
+	{
+		layout->OnMouseReleaseEvent(e);
+	}else
+	{
+		QRect rc;
+		QRect rcClient = this->rect();
+		rc.setLeft((rcClient.width()-m_Background.width())/2);
+		rc.setTop((rcClient.height()-m_Background.height())/2);
+		rc.setWidth(m_Background.width());
+		rc.setHeight(m_Background.height());
+
+		if (rc.contains(e->pos()))
+		{
+			QDesktopServices::openUrl(QUrl("http://www.yuvtoolkit.com", QUrl::TolerantMode));
+		}
+	}
 }
 
 void RendererWidget::resizeEvent( QResizeEvent* e)

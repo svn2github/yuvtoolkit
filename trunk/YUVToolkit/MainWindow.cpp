@@ -1105,3 +1105,8 @@ void MainWindow::on_action_Quality_Measures_triggered()
 	
 }
 
+void MainWindow::on_action_Homepage_triggered()
+{
+	QDesktopServices::openUrl(QUrl("http://www.yuvtoolkit.com", QUrl::TolerantMode));
+}
+

@@ -151,6 +151,7 @@ background-color: rgb(0, 0, 0);
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="action_Homepage"/>
     <addaction name="action_Tips_and_Tricks"/>
     <addaction name="separator"/>
     <addaction name="action_About"/>
@@ -636,6 +637,11 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="toolTip">
     <string>Continue play after seeking using mouse</string>
+   </property>
+  </action>
+  <action name="action_Homepage">
+   <property name="text">
+    <string>Visit &amp;home page</string>
    </property>
   </action>
  </widget>

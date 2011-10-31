@@ -90,6 +90,7 @@ private slots:
 	void on_action_Run_Script_triggered();
 	void on_action_Debug_Script_triggered();
 	void on_action_Close_triggered();
+	void on_action_Homepage_triggered();
 	void on_action_About_triggered();
 	void on_action_Exit_triggered();
 	void on_action_File_Association();
