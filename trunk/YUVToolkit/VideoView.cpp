@@ -223,6 +223,10 @@ void VideoView::RepositionVideo(bool emitSignal)
 
 void VideoView::computeAR( int src_width, int src_height, int& win_width, int& win_height )
 {
+	if (!src_width || !src_height)
+	{
+		return;
+	}
 	int win_height2 = win_width*src_height/src_width;
 
 	if (win_height2 > win_height)

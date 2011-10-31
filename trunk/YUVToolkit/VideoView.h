@@ -67,6 +67,8 @@ public:
 	virtual ~VideoView();
 	QRect srcRect, dstRect;
 
+	int Width() {return m_VideoWidth;}
+	int Height() {return m_VideoHeight;}
 	void SetZoomLevel(int mode);
 	void SetGeometry(int x, int y, int width, int height);
 	void SetTitle(const char* title);
@@ -111,6 +113,7 @@ public slots:
 protected:
 	void RenderPlane(FramePtr, int plane);
 	void RepositionVideo(bool emitSignal=false);
+public:
 	void computeAR( int src_width, int src_height, int& win_width, int& win_height );
 private:
 	int m_ScaleNum, m_ScaleDen;

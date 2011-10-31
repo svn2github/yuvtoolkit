@@ -37,32 +37,35 @@ void Layout::RemoveView( VideoView* vv)
 void Layout::UpdateGrid()
 {
 	int count = m_VideoList.size();
-	if (count>0)
+	if (count==0)
 	{
-		if (count == 1)
-		{
-			m_CountX = 1;
-		}else if (count<=4)
-		{
-			m_CountX = 2;
-		}else if (count<=9)
-		{
-			m_CountX = 3;
-		}else if (count<=12)
-		{
-			m_CountX = 4;
-		}else if (count<=20)
-		{
-			m_CountX = 5;
-		}else if (count<=24)
-		{
-			m_CountX = 6;
-		}else
-		{
-			m_CountX = ((int)qSqrt(count))+1;
-		}
+		return;
+	}
 
-		m_CountY = qCeil(((double)count)/m_CountX);
+	QSize szClient = parent->size();
+	float maxCoverage = 0;
+	for (int x=1; x<=count; x++)
+	{
+		int y = qCeil(((double)count)/x);
+
+		int viewWidth = (szClient.width()+1)/x;
+		int viewHeight = (szClient.height()+1)/y;
+		int area = 0;
+		for (int i=0; i<m_VideoList.size(); ++i) 
+		{
+			VideoView* vv = m_VideoList.at(i);
+			int w=viewWidth, h=viewHeight;
+			vv->computeAR( vv->Width(), vv->Height(), w, h);
+			area += w*h;
+		}
+		
+		float coverage = ((float)area)/(viewWidth*viewHeight);
+		if (coverage>=maxCoverage)
+		{
+			m_CountX = x;
+			m_CountY = y;
+			maxCoverage = coverage;
+		}
 	}
 }
 
@@ -74,6 +77,8 @@ void Layout::UpdateGeometry()
 		m_ViewHeight = 0;
 		return;
 	}
+
+	UpdateGrid();
 
 	QSize szClient = parent->size();
 	m_ViewWidth = (szClient.width()+1)/m_CountX;
@@ -96,6 +101,7 @@ int Layout::GetVideoCount()
 
 void Layout::GetDisplaySize( QSize& displaySize )
 {
+	UpdateGrid();
 	QSize max, cur, actual;
 
 	for (int i=0; i<m_VideoList.size(); ++i) 
