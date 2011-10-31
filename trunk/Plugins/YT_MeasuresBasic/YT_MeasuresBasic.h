@@ -3,7 +3,7 @@
 
 #include "../YT_Interface.h"
 
-class MeasuresBasic : public QObject, public Measure
+class MeasuresBasic : public QObject, public Transform
 {
 	Q_OBJECT;
 
@@ -12,6 +12,12 @@ class MeasuresBasic : public QObject, public Measure
 public:
 	MeasuresBasic();
 	~MeasuresBasic();
+
+	virtual const QList<TransformCapabilities>& GetCapabilities();
+
+	virtual RESULT GetFormat(unsigned int transformId, int plane, FormatPtr sourceFormat, FormatPtr outputFormat);
+
+	virtual void Process(FramePtr source1, FramePtr source2, QList<TransformOperation>& operations);
 
 	virtual RESULT GetMeasureString(MeasureItem item, FormatPtr sourceFormat1, FormatPtr sourceFormat2, QString& str);
 

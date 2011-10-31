@@ -141,3 +141,18 @@ RESULT MeasuresBasic::Process( const FramePtr input1, const FramePtr input2,
 	return OK;
 }
 
+void MeasuresBasic::Process( FramePtr source1, FramePtr source2, QList<TransformOperation>& operations )
+{
+
+}
+
+const QList<TransformCapabilities>& MeasuresBasic::GetCapabilities()
+{
+
+}
+
+RESULT MeasuresBasic::GetFormat( unsigned int transformId, int plane, FormatPtr sourceFormat, FormatPtr outputFormat )
+{
+
+}
+

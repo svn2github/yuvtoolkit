@@ -29,6 +29,11 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
+    <Filter Include="Generated Files\Template">
+      <UniqueIdentifier>{39d2b1c9-97ed-496b-821f-d0ac89f4c617}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="YT_TransformsBasic.cpp">
@@ -49,12 +54,27 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_YT_TransformsBasicPlugin.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_YT_MeasuresBasic.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_YT_MeasuresBasic.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_YT_MeasuresBasic.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="YT_MeasuresBasic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="YT_TransformsBasic.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="YT_TransformsBasicPlugin.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="YT_MeasuresBasic.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

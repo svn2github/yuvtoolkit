@@ -1,3 +1,4 @@
+#include "YT_TransformsBasicPlugin.h"
 #include "YT_TransformsBasic.h"
 
 ShowYUVComponent::ShowYUVComponent() : m_EmptyFrame(GetHost()->NewFrame())
@@ -13,11 +14,6 @@ void ShowYUVComponent::ReleaseBuffers()
 {
 	
 }
-
-enum TRANSFORM_ID
-{
-	TRANSFORM_SHOW_PLANE,
-};
 
 RESULT ShowYUVComponent::GetSupportedModes( FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames )
 {

@@ -314,12 +314,12 @@ public:
 	virtual void Process(FramePtr source1, FramePtr source2, QList<TransformOperation>& operations) = 0;
 
 	 // Returns what format that is supported	
-	virtual RESULT GetSupportedModes(FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames) = 0;
+	virtual RESULT GetSupportedModes(FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames) {return OK;}
 
-	virtual RESULT GetFormat(FormatPtr sourceFormat, const QString& outputName, FormatPtr outputFormat) = 0;
+	virtual RESULT GetFormat(FormatPtr sourceFormat, const QString& outputName, FormatPtr outputFormat) {return OK;}
 
 	// Process
-	virtual RESULT Process(const FramePtr input, QMap<QString, FramePtr>& outputs, QMap<QString, QVariant>& stats) = 0;
+	virtual RESULT Process(const FramePtr input, QMap<QString, FramePtr>& outputs, QMap<QString, QVariant>& stats) {return OK;}
 };
 
 #define ALL_PLANES	-1
