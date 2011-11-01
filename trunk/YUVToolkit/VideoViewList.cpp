@@ -117,7 +117,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 	m_VideoList.removeOne(vv);
 	
 	GetProcessThread()->SetSources(GetSourceIDList());
-	
+
 	UpdateDuration();
 
 	if (m_VideoList.isEmpty())
@@ -130,6 +130,12 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 		m_Control.Reset();
 	}else
 	{
+		PlaybackControl::Status status;
+		m_Control.GetStatus(&status);
+		if (status.lastDisplayPTS>=m_Duration)
+		{
+			m_Control.Seek(0);
+		}
 		m_RenderThread->Start();
 	}
 

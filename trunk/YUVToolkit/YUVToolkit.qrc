@@ -3,6 +3,7 @@
         <file>Resources/accessories-text-editor.png</file>
         <file>Resources/camera-photo.png</file>
         <file>Resources/camera-video.png</file>
+        <file>Resources/compare.png</file>
         <file>Resources/computer.png</file>
         <file>Resources/document-new.png</file>
         <file>Resources/document-properties.png</file>
@@ -38,6 +39,8 @@
         <file>Resources/media-seek-forward.png</file>
         <file>Resources/media-skip-backward.png</file>
         <file>Resources/media-skip-forward.png</file>
+        <file>Resources/overlay.png</file>
+        <file>Resources/plane.png</file>
         <file>Resources/preferences-system-session.png</file>
         <file>Resources/process-stop.png</file>
         <file>Resources/system-search.png</file>

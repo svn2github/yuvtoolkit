@@ -14,15 +14,18 @@ another mac feedback: doesn't run on 32-bit system
 0.0.2 
 ===================
 New video pipeline, more efficient and more stable seeking
-- It can now do quite solid 720P 60FPS playback of three side-by-side videos using D3D renderer (read from laptop non-SSD)
+- It can now do quite solid 720P 60FPS playback of 4 side-by-side videos using D3D renderer
 Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
 - Can support more objective measures and visualization through plugin system
 - customize color mapping
+(DONE) Accelerating seeking when pressing down arrow keys
+(DONE) Improved algorithm for video layout (minimizing background)
 (DONE) HOME and END keys for beginning and end of video
 Looped playback of a selected time interval (Set using Ctrl-HOME and Ctrl-END)
 (DONE) Option to continue playback after seeking to a new frame during play
+(DONE) New toolbar
 Logging av average/max/min time took for reading a frame
 Logging av average/max/min time took for rendering
 

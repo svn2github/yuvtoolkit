@@ -107,7 +107,7 @@ void RendererWidget::mouseReleaseEvent( QMouseEvent* e )
 
 		if (rc.contains(e->pos()))
 		{
-			QDesktopServices::openUrl(QUrl("http://www.yuvtoolkit.com", QUrl::TolerantMode));
+			// QDesktopServices::openUrl(QUrl("http://www.yuvtoolkit.com", QUrl::TolerantMode));
 		}
 	}
 }

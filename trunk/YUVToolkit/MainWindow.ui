@@ -210,7 +210,7 @@ background-color: rgb(0, 0, 0);
     <string>toolBar</string>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextBesideIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -642,6 +642,39 @@ background-color: rgb(0, 0, 0);
   <action name="action_Homepage">
    <property name="text">
     <string>Visit &amp;home page</string>
+   </property>
+  </action>
+  <action name="action_Save_As">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/document-save.png</normaloff>:/RawVideoToolkit/Resources/document-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save As ...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save video to new format</string>
+   </property>
+   <property name="statusTip">
+    <string>Open supported video files</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_Overlay">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/overlay.png</normaloff>:/RawVideoToolkit/Resources/overlay.png</iconset>
+   </property>
+   <property name="text">
+    <string>Overlay &amp;Visualization</string>
+   </property>
+   <property name="toolTip">
+    <string>Overlay Visualization</string>
    </property>
   </action>
  </widget>

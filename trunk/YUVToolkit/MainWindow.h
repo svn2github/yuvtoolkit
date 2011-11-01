@@ -112,6 +112,9 @@ private slots:
 	void on_actionShowLogging_triggered();
 	void on_action_Enable_Logging_triggered();
 	void on_action_Quality_Measures_triggered();
+private:
+	QToolButton* planeButton;
+	QToolButton* compareButton;
 };
 
 #endif // RAWVIDEOTOOLKIT_H

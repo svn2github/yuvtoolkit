@@ -25,6 +25,7 @@
 #define MINIMUM_WIDTH 480
 #define MINIMUM_HEIGHT 420
 
+#define SHOW_NEW_FEATURES 0
 
 int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
@@ -69,8 +70,6 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	connect(ui.rendererWidget, SIGNAL(repositioned()), m_VideoViewList, SLOT(OnUpdateRenderWidgetPosition()));
 	// ui.action_Step_Forward->setEnabled(true);
 	// connect(ui.action_Step_Forward, SIGNAL(clicked()), m_Slider, SLOT(setSingleStep(1)));
-
-	EnableButtons(false);	
 
 	m_TimeLabel1 = new QLabel(this);
 	ui.statusBar->addPermanentWidget(m_TimeLabel1);
@@ -139,10 +138,16 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 
 	SetZoomMode(m_ZoomMode);
 
-	QToolButton* zoomButton = new QToolButton( ui.mainToolBar );
+#if SHOW_NEW_FEATURES
+	ui.mainToolBar->addAction(ui.action_Save_As);
+	ui.action_Save_As->setEnabled(false);
+#endif
+
 	ui.mainToolBar->addSeparator();
+	QToolButton* zoomButton = new QToolButton( ui.mainToolBar );	
 	ui.mainToolBar->addWidget(zoomButton);
 	zoomButton->setDefaultAction(ui.action_Zoom_Switch);
+	// zoomButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	QMenu *zoomMenu = new QMenu( zoomButton );
 	zoomButton->setMenu( zoomMenu );
 	zoomButton->setPopupMode( QToolButton::MenuButtonPopup );
@@ -152,9 +157,52 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	zoomMenu->addAction( ui.action_Zoom_200 );
 	zoomMenu->addAction( ui.action_Zoom_400 );
 
+#if SHOW_NEW_FEATURES
+	ui.mainToolBar->addAction(ui.action_Overlay);
+	ui.action_Overlay->setEnabled(false);
+#endif
 	ui.mainToolBar->addSeparator();
 
+	QIcon iconPlane;
+	iconPlane.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/plane.png"), QSize(), QIcon::Normal, QIcon::Off);
+	planeButton = new QToolButton( ui.mainToolBar );
+	ui.mainToolBar->addWidget(planeButton);	
+	planeButton->setIcon(iconPlane);
+	planeButton->setText(QApplication::translate("MainWindow", "Show &Plane", 0, QApplication::UnicodeUTF8));
+	planeButton->setToolTip(QApplication::translate("MainWindow", "Show color plane", 0, QApplication::UnicodeUTF8));
+	planeButton->setStatusTip(QApplication::translate("MainWindow", "Show color plane", 0, QApplication::UnicodeUTF8));
+	planeButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	QMenu *planeMenu = new QMenu( planeButton );
+	planeButton->setMenu( planeMenu );
+	planeButton->setPopupMode( QToolButton::InstantPopup);
+	planeMenu->addAction(ui.action_Tips_and_Tricks);
 
+	QIcon iconCompare;
+	iconCompare.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/compare.png"), QSize(), QIcon::Normal, QIcon::Off);
+	compareButton = new QToolButton( ui.mainToolBar );
+	ui.mainToolBar->addWidget(compareButton);	
+	compareButton->setIcon(iconCompare);
+	compareButton->setText(QApplication::translate("MainWindow", "&Compare Frames", 0, QApplication::UnicodeUTF8));
+	compareButton->setToolTip(QApplication::translate("MainWindow", "Compare videos frame by frame", 0, QApplication::UnicodeUTF8));
+	compareButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos frame by frame with objective measures such as PSNR", 0, QApplication::UnicodeUTF8));
+	compareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	QMenu *compareMenu = new QMenu( compareButton );
+	compareButton->setMenu( compareMenu );
+	compareButton->setPopupMode( QToolButton::InstantPopup);
+
+#if SHOW_NEW_FEATURES
+	QIcon iconGraph;
+	iconGraph.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/utilities-system-monitor.png"), QSize(), QIcon::Normal, QIcon::Off);
+	QToolButton* graphButton = new QToolButton( ui.mainToolBar );
+	ui.mainToolBar->addWidget(graphButton);	
+	graphButton->setIcon(iconGraph);
+	graphButton->setText(QApplication::translate("MainWindow", "Show &Graph", 0, QApplication::UnicodeUTF8));
+	graphButton->setToolTip(QApplication::translate("MainWindow", "Compare videos and show graph", 0, QApplication::UnicodeUTF8));
+	graphButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos and show graph with results", 0, QApplication::UnicodeUTF8));
+	graphButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	graphButton->setEnabled(false);
+#endif
+	
 	ui.menu_Tools->addSeparator();
 	const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
 	for (int i=0; i<dockList.size(); ++i) 
@@ -162,7 +210,10 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 		QDockWidget* dock = dockList.at(i);
 
 		ui.menu_Tools->addAction(dock->toggleViewAction());
+		compareMenu->addAction(dock->toggleViewAction());
 	}
+
+	EnableButtons(false);
 }
 
 MainWindow::~MainWindow()
@@ -922,6 +973,9 @@ void MainWindow::EnableButtons( bool enable )
 	ui.action_Zoom_400->setEnabled(enable);
 
 	ui.action_Close->setEnabled(enable);
+
+	planeButton->setEnabled(enable);
+	compareButton->setEnabled(enable);
 
 	if (!enable)
 	{
