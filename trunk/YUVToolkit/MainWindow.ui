@@ -103,13 +103,14 @@ background-color: rgb(0, 0, 0);
      <property name="title">
       <string>&amp;Zoom</string>
      </property>
+     <addaction name="action_Zoom_Switch"/>
+     <addaction name="separator"/>
      <addaction name="action_Zoom_50"/>
      <addaction name="action_Zoom_100"/>
      <addaction name="action_Zoom_200"/>
      <addaction name="action_Zoom_400"/>
-     <addaction name="action_Zoom_Fit"/>
      <addaction name="separator"/>
-     <addaction name="action_Zoom_Switch"/>
+     <addaction name="action_Zoom_Fit"/>
     </widget>
     <widget class="QMenu" name="menu_Renderer">
      <property name="title">

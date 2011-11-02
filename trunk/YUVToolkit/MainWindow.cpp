@@ -25,7 +25,7 @@
 #define MINIMUM_WIDTH 480
 #define MINIMUM_HEIGHT 420
 
-#define SHOW_NEW_FEATURES 0
+#define SHOW_NEW_FEATURES 1
 
 int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
@@ -109,11 +109,11 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	}
 	
 	actionGroup = new QActionGroup(this);
-	actionGroup->addAction(ui.action_Zoom_Fit);	
 	actionGroup->addAction(ui.action_Zoom_50);	
 	actionGroup->addAction(ui.action_Zoom_100);	
 	actionGroup->addAction(ui.action_Zoom_200);	
 	actionGroup->addAction(ui.action_Zoom_400);	
+	actionGroup->addAction(ui.action_Zoom_Fit);	
 
 	m_ZoomMode = settings.value("main/zoom", 1).toInt();
 	m_ZoomMode = qMin(qMax(m_ZoomMode, 0), 4);
@@ -151,11 +151,12 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	QMenu *zoomMenu = new QMenu( zoomButton );
 	zoomButton->setMenu( zoomMenu );
 	zoomButton->setPopupMode( QToolButton::MenuButtonPopup );
-	zoomMenu->addAction( ui.action_Zoom_Fit );
 	zoomMenu->addAction( ui.action_Zoom_50 );
 	zoomMenu->addAction( ui.action_Zoom_100 );
 	zoomMenu->addAction( ui.action_Zoom_200 );
 	zoomMenu->addAction( ui.action_Zoom_400 );
+	zoomMenu->addSeparator();
+	zoomMenu->addAction( ui.action_Zoom_Fit );
 
 #if SHOW_NEW_FEATURES
 	ui.mainToolBar->addAction(ui.action_Overlay);
@@ -213,7 +214,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 		compareMenu->addAction(dock->toggleViewAction());
 	}
 
-	EnableButtons(false);
+	EnableButtons(0);
 }
 
 MainWindow::~MainWindow()
@@ -516,7 +517,7 @@ void MainWindow::openFileInternal( QString strPath)
 
 	m_VideoViewList->UpdateDuration();
 
-	EnableButtons(true);
+	EnableButtons(m_VideoViewList->GetSourceIDList().size());
 }
 
 void MainWindow::play( bool play )
@@ -954,30 +955,28 @@ void MainWindow::stepVideo( int step )
 	m_Slider->blockSignals(old);
 }
 
-void MainWindow::EnableButtons( bool enable )
+void MainWindow::EnableButtons( int nrSources )
 {
-	ui.action_Play_Pause->setEnabled(enable);
-	ui.action_Step_Back->setEnabled(enable);
-	ui.action_Step_Back_Fast->setEnabled(enable);
-	ui.action_Step_Forward->setEnabled(enable);
-	ui.action_Step_Forward_Fast->setEnabled(enable);
-	ui.action_Seek_Beginning->setEnabled(enable);
-	ui.action_Seek_End->setEnabled(enable);
-	m_Slider->setEnabled(enable);
+	ui.action_Play_Pause->setEnabled(nrSources!=0);
+	ui.action_Step_Back->setEnabled(nrSources!=0);
+	ui.action_Step_Back_Fast->setEnabled(nrSources!=0);
+	ui.action_Step_Forward->setEnabled(nrSources!=0);
+	ui.action_Step_Forward_Fast->setEnabled(nrSources!=0);
+	ui.action_Seek_Beginning->setEnabled(nrSources!=0);
+	ui.action_Seek_End->setEnabled(nrSources!=0);
+	m_Slider->setEnabled(nrSources!=0);
 
-	ui.action_Zoom_Switch->setEnabled(enable);
-	ui.action_Zoom_Fit->setEnabled(enable);
-	ui.action_Zoom_50->setEnabled(enable);
-	ui.action_Zoom_100->setEnabled(enable);
-	ui.action_Zoom_200->setEnabled(enable);
-	ui.action_Zoom_400->setEnabled(enable);
+	ui.action_Zoom_Switch->setEnabled(nrSources!=0);
+	ui.action_Zoom_Fit->setEnabled(nrSources!=0);
+	ui.action_Zoom_50->setEnabled(nrSources!=0);
+	ui.action_Zoom_100->setEnabled(nrSources!=0);
+	ui.action_Zoom_200->setEnabled(nrSources!=0);
+	ui.action_Zoom_400->setEnabled(nrSources!=0);
 
-	ui.action_Close->setEnabled(enable);
+	planeButton->setEnabled(nrSources!=0);
+	compareButton->setEnabled(nrSources>1);
 
-	planeButton->setEnabled(enable);
-	compareButton->setEnabled(enable);
-
-	if (!enable)
+	if (nrSources == 0)
 	{
 		m_Slider->setSliderPosition(0);
 	}
@@ -1141,10 +1140,7 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 		}
 	}
 
-	if (m_VideoViewList->size() == 0)
-	{
-		EnableButtons(false);
-	}
+	EnableButtons(m_VideoViewList->GetSourceIDList().size());
 
 	autoResizeWindow();	
 }

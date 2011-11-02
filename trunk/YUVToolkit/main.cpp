@@ -30,10 +30,33 @@ int main(int argc, char *argv[])
 	qRegisterMetaType<UintList>("UintList");
 	qRegisterMetaType<RectList>("RectList");
 	qRegisterMetaType<FrameListPtr>("FrameListPtr");
-	
+
 	g_Host = new HostImpl;
 	QMainWindow* w = g_Host->NewMainWindow(argc, argv);
 	
+	///////////////////////////////////////////////////
+	//Generate a grid
+	/*int gridSize = 16;
+	int width = 640;
+	int height = 480;
+	QPen penDarkGray = QPen(Qt::darkGray, 0.1);
+
+	QGraphicsScene scene(0,0,width,height);
+	for (qreal x = gridSize; x < width; x += gridSize)
+		scene.addLine(x, 0, x, height, penDarkGray);
+	for (qreal y = gridSize; y < height; y += gridSize)
+		scene.addLine(0, y, width, y, penDarkGray);
+
+	QPixmap pixmap(width,height);
+	pixmap.fill(Qt::transparent);
+	QPainter painter(&pixmap);
+	painter.setRenderHint(QPainter::Antialiasing);
+	scene.render(&painter);
+	bool c = painter.end();
+
+	bool b = pixmap.save("d:\\Temp\\scene.png");*/
+	///////////////////////////////////////////////////
+
 	w->show();
 	int res = app.exec();
 

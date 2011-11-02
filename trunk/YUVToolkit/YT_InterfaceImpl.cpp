@@ -560,7 +560,6 @@ QMainWindow* HostImpl::NewMainWindow(int argc, char *argv[])
 		QStringList fileList;
 		fileList.append(argv[1]);
         win->openFiles(fileList);
-		win->EnableButtons(true);
 	}
 
 	m_MainWindowList.append(win);

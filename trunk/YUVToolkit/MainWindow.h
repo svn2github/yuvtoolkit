@@ -29,7 +29,7 @@ public:
 	virtual void dropEvent(QDropEvent *event);
 	virtual void closeEvent(QCloseEvent *event);
 
-	void EnableButtons(bool enable);
+	void EnableButtons(int nrSources);
 
 signals:
 	void activeVideoViewChanged(VideoView*);

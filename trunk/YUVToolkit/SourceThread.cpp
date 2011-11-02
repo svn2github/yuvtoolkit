@@ -102,15 +102,20 @@ void SourceThread::ReadFrames()
 			frame->Reset();
 		}
 
-		frame->SetFormat(info.format);
-		frame->Allocate();
-		frame->SetInfo(VIEW_ID, m_ViewID);
-
+		if (frame->Data(0) == 0)
+		{
+			// Allocate
+			frame->SetFormat(info.format);
+			frame->Allocate();
+		}
+		
 		// Get next frame or seek 
 		RESULT res = m_Source->GetFrame(frame, m_Status.seekingPTS);
 
 		if (res == OK)
 		{
+			frame->SetInfo(VIEW_ID, m_ViewID);
+
 			emit frameReady(frame);
 			WARNING_LOG("Source %d - FrameReady %d", m_ViewID, frame->PTS());
 
