@@ -58,10 +58,11 @@ int main(int argc, char *argv[])
 	///////////////////////////////////////////////////
 
 	w->show();
-	QTimer::singleShot(200, g_Host, SLOT(Init()));
+	QTimer::singleShot(400, g_Host, SLOT(Init()));
 
 	int res = app.exec();
 
+	g_Host->UnInitLogging();
 	delete g_Host;
 	
 

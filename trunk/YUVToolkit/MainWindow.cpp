@@ -31,10 +31,6 @@ int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
 QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 {
-	if (windowCounter == 0)
-	{
-		GetHostImpl()->InitLogging();
-	}
 	windowCounter++;
 
 	ui.setupUi(this);
@@ -230,10 +226,6 @@ void MainWindow::closeEvent( QCloseEvent *event )
 	}
 
 	windowCounter--;
-	if (windowCounter == 0)
-	{
-		GetHostImpl()->UnInitLogging();
-	}
 }
 
 void MainWindow::on_action_Play_Pause_triggered(bool p)
@@ -536,7 +528,7 @@ void MainWindow::openScript( QString strPath, bool debug )
 	 QScriptEngineDebugger *debugger = NULL;
 	 QMainWindow* debuggerWindow = NULL;
 	 QScriptEngine engine(this);
-	 engine.setProcessEventsInterval(100);
+	 engine.setProcessEventsInterval(50);
 
 	 QFile file(strPath);
 	 if (file.size()>1000000)

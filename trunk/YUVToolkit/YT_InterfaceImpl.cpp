@@ -502,6 +502,8 @@ HostImpl::HostImpl(int argc, char *argv[]) : m_LogFile(this)
 
 void HostImpl::Init()
 {
+	InitLogging();
+
 	QDir pluginsDir(qApp->applicationDirPath());
 	QStringList files;
 #if defined(Q_WS_WIN)
