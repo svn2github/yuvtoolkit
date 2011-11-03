@@ -124,11 +124,12 @@ struct PlugInInfo
 	QString string;
 };
 
+class MainWindow;
 class HostImpl : public QObject, public Host
 {
 	Q_OBJECT;
 
-	QList<QMainWindow*> m_MainWindowList;
+	QList<MainWindow*> m_MainWindowList;
 	QList<YTPlugIn*> m_PlugInList;
 
 	QList<PlugInInfo*> m_SourceList;
@@ -144,10 +145,14 @@ class HostImpl : public QObject, public Host
 
 	QMutex m_MutexFrameListPool;
 	QList<FrameList*> m_FrameListPool;
+	QStringList m_InitFileList;
 public:
-	HostImpl();
+	HostImpl(int argc, char *argv[]);
 	~HostImpl();
 
+public slots:
+	void Init();
+public:
 	void InitLogging(); 
 	void UnInitLogging();
 	void EnableLogging(bool enable);
@@ -168,7 +173,7 @@ public:
 	virtual RESULT RegisterPlugin(YTPlugIn*, PLUGIN_TYPE, const QString& name);
 	// virtual QMainWindow* GetMainWindow();
 
-	QMainWindow* NewMainWindow(int argc, char *argv[]);
+	QMainWindow* NewMainWindow();
 
 	virtual void Logging(void* ptr, LOGGING_LEVELS level, const char* fmt, ...);
 

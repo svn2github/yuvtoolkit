@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
 	qRegisterMetaType<RectList>("RectList");
 	qRegisterMetaType<FrameListPtr>("FrameListPtr");
 
-	g_Host = new HostImpl;
-	QMainWindow* w = g_Host->NewMainWindow(argc, argv);
+	g_Host = new HostImpl(argc, argv);
+	QMainWindow* w = g_Host->NewMainWindow();
 	
 	///////////////////////////////////////////////////
 	//Generate a grid
@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
 	///////////////////////////////////////////////////
 
 	w->show();
+	QTimer::singleShot(200, g_Host, SLOT(Init()));
+
 	int res = app.exec();
 
 	delete g_Host;

@@ -485,13 +485,23 @@ FormatPtr HostImpl::NewFormat()
 	return FormatPtr(new FormatImpl);
 }
 
-HostImpl::HostImpl() : m_LogFile(this)
+HostImpl::HostImpl(int argc, char *argv[]) : m_LogFile(this)
 {
 	QCoreApplication::setOrganizationName("YUVToolkit");
 	QCoreApplication::setOrganizationDomain("YUVToolkit");
 	QCoreApplication::setApplicationName("YUVToolkit");
 
+	if (argc > 1)
+	{
+		for (int i=1; i<argc; i++)
+		{
+			m_InitFileList.append(argv[i]);
+		}
+	}
+}
 
+void HostImpl::Init()
+{
 	QDir pluginsDir(qApp->applicationDirPath());
 	QStringList files;
 #if defined(Q_WS_WIN)
@@ -519,6 +529,14 @@ HostImpl::HostImpl() : m_LogFile(this)
 				m_PlugInList.append(ytPlugin);
 			}
 		}
+	}
+
+	if (m_InitFileList.size()>0)
+	{
+		Q_ASSERT(m_MainWindowList.size()>0);
+		MainWindow* win = m_MainWindowList.first();
+		win->openFiles(m_InitFileList);
+		m_InitFileList.clear();
 	}
 }
 
@@ -551,16 +569,9 @@ RESULT HostImpl::RegisterPlugin( YTPlugIn* plugin, PLUGIN_TYPE type, const QStri
 	return OK;
 }
 
-QMainWindow* HostImpl::NewMainWindow(int argc, char *argv[])
+QMainWindow* HostImpl::NewMainWindow()
 {
 	MainWindow* win = new MainWindow;
-
-	if (argc == 2)
-	{
-		QStringList fileList;
-		fileList.append(argv[1]);
-        win->openFiles(fileList);
-	}
 
 	m_MainWindowList.append(win);
 
@@ -779,7 +790,6 @@ void HostImpl::RecyleFrameList( FrameList* frameList)
 {
 	GetHostImpl()->ReleaseFrameList(frameList);
 }
-
 
 FramePool::FramePool( unsigned int size )
 {

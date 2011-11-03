@@ -71,7 +71,6 @@ private:
 	static int windowCounter;
 	QList<QAction*> m_RendererList;
 	QString m_RenderType;
-
 public slots:
 	void OnUpdateSlider(unsigned int duration, float fps, unsigned int pts);	
 	void OnAutoResizeWindow();

@@ -670,7 +670,7 @@ void MainWindow::on_action_File_Association()
 
 void MainWindow::on_action_New_Window_triggered()
 {
-	QMainWindow* w = GetHostImpl()->NewMainWindow(0, NULL);
+	QMainWindow* w = GetHostImpl()->NewMainWindow();
 	w->show();
 }
 
