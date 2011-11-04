@@ -25,7 +25,7 @@
 #define MINIMUM_WIDTH 480
 #define MINIMUM_HEIGHT 420
 
-#define SHOW_NEW_FEATURES 1
+#define SHOW_NEW_FEATURES 0
 
 int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 

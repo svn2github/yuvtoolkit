@@ -2,30 +2,21 @@ Bugs
 ===================
 Double clicking YUV file in OsX doesnt start playback
 When changing FPS, only one clip is played at the new FPS in case of multiple clips
-(DONE) Sometimes playback speed is wrong after maximizing the window
 Crash when wrong stride is used
 Drag-drop two files when one file is already playing
 Double click one file and then you can drag same file back to player window
 Flickers when continuously seeking in one direction
 another mac feedback: doesn't run on 32-bit system
-(MAYBE DONE) The Apply button in "Video Source Options" dialog is only 66% visible
 
 
 0.0.2 
 ===================
-New video pipeline, more efficient and more stable seeking
-- It can now do quite solid 720P 60FPS playback of 4 side-by-side videos using D3D renderer
 Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
 - Can support more objective measures and visualization through plugin system
 - customize color mapping
-(DONE) Accelerating seeking when pressing down arrow keys
-(DONE) Improved algorithm for video layout (minimizing background)
-(DONE) HOME and END keys for beginning and end of video
 Looped playback of a selected time interval (Set using Ctrl-HOME and Ctrl-END)
-(DONE) Option to continue playback after seeking to a new frame during play
-(DONE) New toolbar
 Logging av average/max/min time took for reading a frame
 Logging av average/max/min time took for rendering
 
