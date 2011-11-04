@@ -292,15 +292,23 @@ void MainWindow::openFiles( const QStringList& fileList )
 
 void MainWindow::on_action_Open_triggered()
 {
-	QString openFilesPath;
+	QSettings settings;
+	QString openFilesPath = settings.value("main/openfilespath", "").toString();
+
 	QFileDialog::Options options;
 	QString selectedFilter;
 	QStringList files = QFileDialog::getOpenFileNames(
-		this, ("QFileDialog::getOpenFileNames()"),
+		this, ("Open Video Files"),
 		openFilesPath,
 		("All Files (*);;YUVToolkit Script (YTS) Files (*.yts)"),
 		&selectedFilter,
 		options);
+
+	if (files.size()>0)
+	{
+		QFileInfo fileInfo(files.first());
+		settings.setValue("main/openfilespath", fileInfo.path());
+	}
 
 	openFiles(files);
 }
@@ -308,7 +316,9 @@ void MainWindow::on_action_Open_triggered()
 
 void MainWindow::on_action_Run_Script_triggered()
 {
-	QString openFilesPath;
+	QSettings settings;
+	QString openFilesPath = settings.value("main/openscriptpath", "").toString();
+
 	QFileDialog::Options options;
 	QString selectedFilter;
 	QStringList fileList = QFileDialog::getOpenFileNames(
@@ -317,6 +327,12 @@ void MainWindow::on_action_Run_Script_triggered()
 		("YUVToolkit Script (YTS) Files (*.yts);;All Files (*)"),
 		&selectedFilter,
 		options);
+
+	if (fileList.size()>0)
+	{
+		QFileInfo fileInfo(fileList.first());
+		settings.setValue("main/openscriptpath", fileInfo.path());
+	}
 
 	for ( int i=0; i<fileList.size(); i++)
 	{
