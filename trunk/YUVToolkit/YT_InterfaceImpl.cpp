@@ -516,6 +516,7 @@ void HostImpl::Init()
 #	error Unsupported platform
 #endif
 	foreach (QString fileName, pluginsDir.entryList(files, QDir::Files)) {
+		QApplication::processEvents();
 		QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
 
 		QObject *plugin = loader.instance();
