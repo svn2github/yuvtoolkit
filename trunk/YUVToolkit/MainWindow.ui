@@ -95,9 +95,9 @@ background-color: rgb(0, 0, 0);
     <addaction name="separator"/>
     <addaction name="action_Exit"/>
    </widget>
-   <widget class="QMenu" name="menu_Tool">
+   <widget class="QMenu" name="menu_View">
     <property name="title">
-     <string>&amp;View</string>
+     <string>Vie&amp;w</string>
     </property>
     <widget class="QMenu" name="menu_Zoom">
      <property name="title">
@@ -117,24 +117,8 @@ background-color: rgb(0, 0, 0);
       <string>&amp;Renderer</string>
      </property>
     </widget>
-    <widget class="QMenu" name="menu_Logging">
-     <property name="title">
-      <string>&amp;Logging</string>
-     </property>
-     <addaction name="action_Enable_Logging"/>
-     <addaction name="actionShowLogging"/>
-    </widget>
-    <widget class="QMenu" name="menu_Options">
-     <property name="title">
-      <string>&amp;Options</string>
-     </property>
-     <addaction name="action_File_Association"/>
-    </widget>
     <addaction name="menu_Zoom"/>
     <addaction name="menu_Renderer"/>
-    <addaction name="separator"/>
-    <addaction name="menu_Logging"/>
-    <addaction name="menu_Options"/>
    </widget>
    <widget class="QMenu" name="menu_Play">
     <property name="title">
@@ -161,9 +145,39 @@ background-color: rgb(0, 0, 0);
     <property name="title">
      <string>&amp;Tools</string>
     </property>
+    <widget class="QMenu" name="menu_Actions">
+     <property name="title">
+      <string>&amp;Actions</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
+    <widget class="QMenu" name="menu_Logging">
+     <property name="title">
+      <string>&amp;Logging</string>
+     </property>
+     <addaction name="action_Enable_Logging"/>
+     <addaction name="actionShowLogging"/>
+    </widget>
+    <widget class="QMenu" name="menu_Options">
+     <property name="title">
+      <string>&amp;Options</string>
+     </property>
+     <addaction name="action_File_Association"/>
+    </widget>
+    <widget class="QMenu" name="menu_Compare">
+     <property name="title">
+      <string>&amp;Compare</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="menu_Actions"/>
+    <addaction name="menu_Compare"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Logging"/>
+    <addaction name="menu_Options"/>
    </widget>
    <addaction name="menu_File"/>
-   <addaction name="menu_Tool"/>
+   <addaction name="menu_View"/>
    <addaction name="menu_Play"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_Help"/>

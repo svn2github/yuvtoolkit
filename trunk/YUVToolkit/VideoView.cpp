@@ -21,7 +21,7 @@ unsigned int VideoView::m_IDCounter = 0;
 
 VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control) :
 	parent(_parent), m_Type(PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
-		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread), m_Control(control)
+		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread), m_Control(control), m_Menu(NULL)
 {
 	m_ViewID = m_IDCounter++;
 	m_LastMousePoint.setX(-1);
@@ -45,7 +45,10 @@ VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThre
 	// m_EmptyFrame = FramePtr(new FrameImpl);
 	
 	m_CloseAction = new QAction("Close", this);
+
 	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(OnClose()));
+
+	m_Menu = new QMenu(m_MainWindow);
 }
 
 void VideoView::Init( const char* path)
@@ -75,6 +78,8 @@ void VideoView::Init( const char* path)
 	}
 
 	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
+
+	UpdateMenu();
 }
 
 void VideoView::Init( Transform* transform, VideoQueue* source, QString outputName )
@@ -83,6 +88,8 @@ void VideoView::Init( Transform* transform, VideoQueue* source, QString outputNa
 	m_Transform = transform;
 	// m_RefVideoQueue = source;
 	m_OutputName = outputName;
+
+	UpdateMenu();
 }
 
 void VideoView::Init( Measure* measure, VideoQueue* source, VideoQueue* source1 )
@@ -90,6 +97,8 @@ void VideoView::Init( Measure* measure, VideoQueue* source, VideoQueue* source1 
 	m_Type = PLUGIN_TRANSFORM;
 	m_Measure = measure;
 	// m_RefVideoQueue = source;
+
+	UpdateMenu();
 }
 
 void VideoView::UnInit()
@@ -116,8 +125,6 @@ void VideoView::UnInit()
 
 VideoView::~VideoView()
 {
-	// TODO Clean up action list
-//	delete m_VideoQueue;
 }
 
 
@@ -249,6 +256,7 @@ void VideoView::SetGeometry( int x, int y, int width, int height )
 void VideoView::SetTitle( const char* title )
 {
 	m_Title = title;
+	m_Menu->setTitle(m_Title);
 }
 
 bool VideoView::CheckResolutionDurationChanged()
@@ -390,6 +398,8 @@ void VideoView::UpdateTransformActionList()
 			}
 
 			m_TransformActionListUpdated = true;
+
+			UpdateMenu();
 		}
 	}
 }
@@ -430,4 +440,31 @@ Source* VideoView::GetSource()
 	{
 		return NULL;
 	}
+}
+
+void VideoView::UpdateMenu()
+{
+	m_Menu->clear();
+	if (m_Dock)
+	{
+		m_Menu->addAction(m_Dock->toggleViewAction());
+	}
+
+	const QList<QAction*>& actionList = GetTransformActions();
+	if (actionList.size()>0)
+	{
+		m_Menu->addSeparator();
+		for (int i=0; i<actionList.size(); ++i)
+		{
+			m_Menu->addAction(actionList[i]);
+		}
+	}
+
+	m_Menu->addSeparator();
+	m_Menu->addAction(GetCloseAction());
+}
+
+QMenu* VideoView::GetMenu()
+{
+	return m_Menu;
 }

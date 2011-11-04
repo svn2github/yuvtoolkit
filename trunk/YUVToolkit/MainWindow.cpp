@@ -78,33 +78,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 
 	QSettings settings;
 	m_RenderType = settings.value("main/renderer", "D3D").toString();
-
-	QActionGroup* actionGroup;
-	actionGroup = new QActionGroup(this);
-	const QList<PlugInInfo*>& renderList = GetHostImpl()->GetRenderPluginList();
-	for (int i=0; i<renderList.count(); i++)
-	{
-		PlugInInfo* plugin = renderList.at(i);
-		
-		QAction* action = new QAction(this);
-		action->setObjectName(plugin->string);
-		action->setText(plugin->string);
-		action->setCheckable(true);
-
-		m_RendererList.append(action);
-
-		ui.menu_Renderer->addAction(action);
-		actionGroup->addAction(action);
-
-		connect(action, SIGNAL(triggered()), this, SLOT(OnRendererSelected()));
-
-		if (plugin->string == m_RenderType)
-		{
-			action->setChecked(true);
-		}		
-	}
 	
-	actionGroup = new QActionGroup(this);
+	QActionGroup* actionGroup = new QActionGroup(this);
 	actionGroup->addAction(ui.action_Zoom_50);	
 	actionGroup->addAction(ui.action_Zoom_100);	
 	actionGroup->addAction(ui.action_Zoom_200);	
@@ -162,30 +137,28 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 
 	QIcon iconPlane;
 	iconPlane.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/plane.png"), QSize(), QIcon::Normal, QIcon::Off);
-	planeButton = new QToolButton( ui.mainToolBar );
-	ui.mainToolBar->addWidget(planeButton);	
-	planeButton->setIcon(iconPlane);
-	planeButton->setText(QApplication::translate("MainWindow", "Show &Plane", 0, QApplication::UnicodeUTF8));
-	planeButton->setToolTip(QApplication::translate("MainWindow", "Show color plane", 0, QApplication::UnicodeUTF8));
-	planeButton->setStatusTip(QApplication::translate("MainWindow", "Show color plane", 0, QApplication::UnicodeUTF8));
-	planeButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	QMenu *planeMenu = new QMenu( planeButton );
-	planeButton->setMenu( planeMenu );
-	planeButton->setPopupMode( QToolButton::InstantPopup);
-	planeMenu->addAction(ui.action_Tips_and_Tricks);
+	m_ActionsButton = new QToolButton( ui.mainToolBar );
+	ui.mainToolBar->addWidget(m_ActionsButton);	
+	m_ActionsButton->setIcon(iconPlane);
+	m_ActionsButton->setText(QApplication::translate("MainWindow", "&Actions", 0, QApplication::UnicodeUTF8));
+	m_ActionsButton->setShortcut(tr("ALT+A"));
+	m_ActionsButton->setToolTip(QApplication::translate("MainWindow", "Show actions for opened videos", 0, QApplication::UnicodeUTF8));
+	m_ActionsButton->setStatusTip(QApplication::translate("MainWindow", "Show actions for opened videos", 0, QApplication::UnicodeUTF8));
+	m_ActionsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	m_ActionsButton->setMenu(ui.menu_Actions);
+	m_ActionsButton->setPopupMode( QToolButton::InstantPopup);
 
 	QIcon iconCompare;
 	iconCompare.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/compare.png"), QSize(), QIcon::Normal, QIcon::Off);
-	compareButton = new QToolButton( ui.mainToolBar );
-	ui.mainToolBar->addWidget(compareButton);	
-	compareButton->setIcon(iconCompare);
-	compareButton->setText(QApplication::translate("MainWindow", "&Compare Frames", 0, QApplication::UnicodeUTF8));
-	compareButton->setToolTip(QApplication::translate("MainWindow", "Compare videos frame by frame", 0, QApplication::UnicodeUTF8));
-	compareButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos frame by frame with objective measures such as PSNR", 0, QApplication::UnicodeUTF8));
-	compareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	QMenu *compareMenu = new QMenu( compareButton );
-	compareButton->setMenu( compareMenu );
-	compareButton->setPopupMode( QToolButton::InstantPopup);
+	m_CompareButton = new QToolButton( ui.mainToolBar );
+	ui.mainToolBar->addWidget(m_CompareButton);	
+	m_CompareButton->setIcon(iconCompare);
+	m_CompareButton->setText(QApplication::translate("MainWindow", "&Compare Frames", 0, QApplication::UnicodeUTF8));
+	m_CompareButton->setToolTip(QApplication::translate("MainWindow", "Compare videos frame by frame", 0, QApplication::UnicodeUTF8));
+	m_CompareButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos frame by frame with objective measures such as PSNR", 0, QApplication::UnicodeUTF8));
+	m_CompareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	m_CompareButton->setMenu( ui.menu_Compare );
+	m_CompareButton->setPopupMode( QToolButton::InstantPopup);
 
 #if SHOW_NEW_FEATURES
 	QIcon iconGraph;
@@ -200,14 +173,12 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	graphButton->setEnabled(false);
 #endif
 	
-	ui.menu_Tools->addSeparator();
 	const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
 	for (int i=0; i<dockList.size(); ++i) 
 	{
 		QDockWidget* dock = dockList.at(i);
 
-		ui.menu_Tools->addAction(dock->toggleViewAction());
-		compareMenu->addAction(dock->toggleViewAction());
+		ui.menu_Compare->addAction(dock->toggleViewAction());
 	}
 
 	EnableButtons(0);
@@ -965,8 +936,8 @@ void MainWindow::EnableButtons( int nrSources )
 	ui.action_Zoom_200->setEnabled(nrSources!=0);
 	ui.action_Zoom_400->setEnabled(nrSources!=0);
 
-	planeButton->setEnabled(nrSources!=0);
-	compareButton->setEnabled(nrSources>1);
+	m_ActionsButton->setEnabled(nrSources!=0);
+	m_CompareButton->setEnabled(nrSources>1);
 
 	if (nrSources == 0)
 	{
@@ -1063,51 +1034,44 @@ void MainWindow::UpdateStatusMessage( const QString& msg )
 
 void MainWindow::contextMenuEvent( QContextMenuEvent *event )
 {
-	QMenu menu(this);
-
 	UpdateActiveVideoView();
 
 	if (m_VideoViewList->size()==0 || m_ActiveVideoView == NULL)
 	{
+		QMenu menu(this);
 		menu.addAction(ui.action_Open);
 		menu.addAction(ui.action_New_Window);
 		menu.addSeparator();
 		menu.addAction(ui.action_About);
+		menu.exec(event->globalPos());
 	}else
 	{
-		QMenu* planeMenu = menu.addMenu(tr("&Zoom"));
-		planeMenu->addAction(ui.action_Zoom_50);
-		planeMenu->addAction(ui.action_Zoom_100);
-		planeMenu->addAction(ui.action_Zoom_200);
-		planeMenu->addAction(ui.action_Zoom_400);
-		planeMenu->addAction(ui.action_Zoom_Fit);
-
-		QDockWidget* dock = m_ActiveVideoView->GetDocketWidget();
-		if (dock)
+		QMenu* menu = m_ActiveVideoView->GetMenu();
+		if (menu)
 		{
-			menu.addSeparator();
-			menu.addAction(dock->toggleViewAction());
+			menu->exec(event->globalPos());
 		}
-
-		const QList<QAction*>& actionList = m_ActiveVideoView->GetTransformActions();
-		if (actionList.size()>0)
-		{
-			menu.addSeparator();
-			for (int i=0; i<actionList.size(); ++i)
-			{
-				menu.addAction(actionList[i]);
-			}
-		}
-
-		menu.addSeparator();
-		menu.addAction(m_ActiveVideoView->GetCloseAction());
-	}
-	
-	menu.exec(event->globalPos());
+	}	
 }
 
 void MainWindow::OnVideoViewClosed(VideoView* vv)
 {
+	ui.menu_Actions->clear();
+	for (int i=0; i<m_VideoViewList->size(); i++)
+	{
+		VideoView* vv = m_VideoViewList->at(i);
+		QMenu* menu = vv->GetMenu();
+		ui.menu_Actions->addMenu(menu);
+	}
+
+	if (m_VideoViewList->size() == 1)
+	{
+		m_ActionsButton->setMenu(m_VideoViewList->at(0)->GetMenu());
+	}else
+	{
+		m_ActionsButton->setMenu(ui.menu_Actions);
+	}
+
 	m_ActiveVideoView = NULL;
 	emit activeVideoViewChanged(NULL);
 
@@ -1138,8 +1102,18 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 }
 
 void MainWindow::OnVideoViewCreated( VideoView* vv)
-{
+{	
 	vv->SetZoomLevel(m_ZoomMode);
+
+	ui.menu_Actions->addMenu(vv->GetMenu());
+
+	if (m_VideoViewList->size() == 1)
+	{
+		m_ActionsButton->setMenu(m_VideoViewList->at(0)->GetMenu());
+	}else
+	{
+		m_ActionsButton->setMenu(ui.menu_Actions);
+	}
 }
 
 void MainWindow::on_action_Quality_Measures_triggered()
@@ -1150,5 +1124,33 @@ void MainWindow::on_action_Quality_Measures_triggered()
 void MainWindow::on_action_Homepage_triggered()
 {
 	QDesktopServices::openUrl(QUrl("http://www.yuvtoolkit.com", QUrl::TolerantMode));
+}
+
+void MainWindow::Init()
+{
+	QActionGroup* actionGroup;
+	actionGroup = new QActionGroup(this);
+	const QList<PlugInInfo*>& renderList = GetHostImpl()->GetRenderPluginList();
+	for (int i=0; i<renderList.count(); i++)
+	{
+		PlugInInfo* plugin = renderList.at(i);
+
+		QAction* action = new QAction(this);
+		action->setObjectName(plugin->string);
+		action->setText(plugin->string);
+		action->setCheckable(true);
+
+		m_RendererList.append(action);
+
+		ui.menu_Renderer->addAction(action);
+		actionGroup->addAction(action);
+
+		connect(action, SIGNAL(triggered()), this, SLOT(OnRendererSelected()));
+
+		if (plugin->string == m_RenderType)
+		{
+			action->setChecked(true);
+		}		
+	}
 }
 

@@ -30,6 +30,7 @@ public:
 	virtual void closeEvent(QCloseEvent *event);
 
 	void EnableButtons(int nrSources);
+	void Init();
 
 signals:
 	void activeVideoViewChanged(VideoView*);
@@ -112,8 +113,8 @@ private slots:
 	void on_action_Enable_Logging_triggered();
 	void on_action_Quality_Measures_triggered();
 private:
-	QToolButton* planeButton;
-	QToolButton* compareButton;
+	QToolButton* m_ActionsButton;
+	QToolButton* m_CompareButton;
 };
 
 #endif // RAWVIDEOTOOLKIT_H

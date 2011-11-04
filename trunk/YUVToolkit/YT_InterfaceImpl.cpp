@@ -534,6 +534,12 @@ void HostImpl::Init()
 		}
 	}
 
+	for (int i=0; i<m_MainWindowList.size(); i++)
+	{
+		MainWindow* win = m_MainWindowList.at(i);
+		win->Init();
+	}
+
 	if (m_InitFileList.size()>0)
 	{
 		Q_ASSERT(m_MainWindowList.size()>0);

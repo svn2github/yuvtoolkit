@@ -50,6 +50,7 @@ class VideoView : public QObject, public sigslot::has_slots<>
 	int m_Duration;
 	QString m_Title;
 
+	QMenu* m_Menu;
 	QAction* m_CloseAction;
 	bool m_TransformActionListUpdated;
 	QList<QAction*> m_TransformActionList;
@@ -101,6 +102,9 @@ public:
 	void OnMouseReleaseEvent( const QPoint& pt);
 
 	void OnSourceGUINeeded();
+
+	void UpdateMenu();
+	QMenu* GetMenu();
 signals:
 	void ViewPortUpdated(VideoView*, double x, double y);
 	void Close(VideoView*);
