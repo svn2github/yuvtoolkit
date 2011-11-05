@@ -278,7 +278,7 @@ public:
 	virtual RESULT Reset() = 0;
 };
 
-struct TransformCapabilities
+struct TransformCapability
 {
 	unsigned int transformId;
 	QString outputName;
@@ -289,17 +289,6 @@ struct TransformCapabilities
 	bool supportColor; // Can operate on all planes jointly
 	bool supportPlanes; // Can operate on each plane separately
 	bool need2Inputs;
-	bool outputDouble;
-	bool outputFrame;
-};
-
-struct TransformOperation
-{
-	unsigned int transformId;
-	int plane; // 0-3, or ALL_PLANE
-
-	double doubleResult;
-	FramePtr frameResult;
 };
 
 class Transform 
@@ -307,11 +296,9 @@ class Transform
 public:
 	virtual ~Transform() {}
 
-	virtual const QList<TransformCapabilities>& GetCapabilities() = 0;
+	virtual const QList<TransformCapability>& GetCapabilities() = 0;
 
-	virtual RESULT GetFormat(unsigned int transformId, int plane, FormatPtr sourceFormat, FormatPtr outputFormat) = 0;
-
-	virtual void Process(FramePtr source1, FramePtr source2, QList<TransformOperation>& operations) = 0;
+	virtual void Process(FramePtr source1, FramePtr source2, unsigned int transformId, int plane, FramePtr result) = 0;
 
 	 // Returns what format that is supported	
 	virtual RESULT GetSupportedModes(FormatPtr sourceFormat, QList<QString>& outputNames, QList<QString>& statNames) {return OK;}
@@ -324,38 +311,33 @@ public:
 
 #define ALL_PLANES	-1
 
+struct MeasureCapability
+{
+	unsigned int measureId;
+	QString outputName;
+
+	unsigned int inputColorsCount;
+	COLOR_FORMAT inputColors[8];
+
+	bool supportColor; // Can operate on all planes jointly
+	bool supportPlanes; // Can operate on each plane separately
+};
+
+struct MeasureOperation
+{
+	unsigned int MeasureId;
+	bool resultMask[5]; // mask to show the validity of the results
+	double results[5];  // plane 0-3 + all plane
+};
+
+
 class Measure
 {
 public:
-	struct MeasureItem
-	{
-		int measureType;
-		int plane;
-
-		bool operator < (const MeasureItem& ref) const
-		{
-			if (measureType==ref.measureType)
-			{
-				return plane < ref.plane;
-			}
-
-			return measureType < ref.measureType;
-		}
-
-	};
-
 	virtual ~Measure() {}
 
-	virtual RESULT GetMeasureString(MeasureItem item, FormatPtr sourceFormat1, FormatPtr sourceFormat2, QString& str) = 0;
-
-	// Returns what format that is supported	
-	virtual RESULT GetSupportedModes(FormatPtr sourceFormat1, FormatPtr sourceFormat2, 
-		QList<MeasureItem>& outputViewItems, QList<MeasureItem>& outputMeasureItems) = 0;
-
-	// Process
-	virtual RESULT Process(const FramePtr input1, const FramePtr input2, 
-		QMap<MeasureItem, FramePtr>& outputViewItems,
-		QMap<MeasureItem, QVariant>& outputMeasureItems) = 0;
+	virtual const QList<MeasureCapability>& GetCapabilities() = 0;
+	virtual void Process(FramePtr source1, FramePtr source2, QList<MeasureOperation>& operations) = 0;
 };
 
 

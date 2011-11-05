@@ -73,6 +73,11 @@ RESULT ShowYUVComponent::Process(const FramePtr input, QMap<QString, FramePtr>& 
 	return OK;
 }
 
+void ShowYUVComponent::Process(FramePtr source1, FramePtr source2, unsigned int transformId, int plane, FramePtr result)
+{
+
+}
+/*
 void ShowYUVComponent::Process( FramePtr source1, FramePtr source2, QList<TransformOperation>& operations )
 {
 	for (int plane=0; plane<4; plane++)
@@ -87,7 +92,7 @@ void ShowYUVComponent::Process( FramePtr source1, FramePtr source2, QList<Transf
 		}
 	}
 }
-
+*/
 void ShowYUVComponent::ProcessPlane( FramePtr input, FramePtr output, int plane )
 {
 	memcpy(output->Data(0), input->Data(plane), input->Format()->PlaneSize(0));
@@ -126,11 +131,11 @@ RESULT ShowYUVComponent::GetFormat( unsigned int transformId, int plane, FormatP
 	return E_UNKNOWN;
 }
 
-const QList<TransformCapabilities>& ShowYUVComponent::GetCapabilities()
+const QList<TransformCapability>& ShowYUVComponent::GetCapabilities()
 {
 	if (m_Capabilities.isEmpty())
 	{
-		TransformCapabilities cap;
+		TransformCapability cap;
 		memset(&cap, 0, sizeof(cap));
 
 		cap.transformId = TRANSFORM_SHOW_PLANE;
@@ -140,8 +145,7 @@ const QList<TransformCapabilities>& ShowYUVComponent::GetCapabilities()
 		cap.inputColors[cap.inputColorsCount++] = YV12;
 
 		cap.supportPlanes = true;
-		cap.outputFrame = true;
-
+		
 		m_Capabilities.append(cap);
 	}
 

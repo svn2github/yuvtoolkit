@@ -97,13 +97,14 @@ void MeasureWindow::onComboIndexChanged( int )
 		SourceInfo origInfo, procInfo;
 		m_Original->GetSource()->GetInfo(origInfo);
 		m_Processed->GetSource()->GetInfo(procInfo);
+		/*
 		measure->GetSupportedModes(origInfo.format, procInfo.format, m_ViewOutItems, m_MeasureOutItems);
 
 		for (int i=0; i<m_MeasureOutItems.size(); i++)
 		{
 			Measure::MeasureItem item = m_MeasureOutItems.at(i);
 			m_OutputMeasureItems.insert(item, QVariant(-1));
-		}
+		}*/
 	}
 
 
@@ -137,7 +138,7 @@ void MeasureWindow::UpdateMeasureWindow()
 		return;
 	}
 
-	QMapIterator<Measure::MeasureItem, QVariant> i(m_OutputMeasureItems);
+	/*QMapIterator<Measure::MeasureItem, QVariant> i(m_OutputMeasureItems);
 	while (i.hasNext()) {
 		i.next();
 		// cout << i.key() << ": " << i.value() << endl;
@@ -147,4 +148,5 @@ void MeasureWindow::UpdateMeasureWindow()
 			item->setText(i.value().toString());
 		}
 	}
+	*/
 }

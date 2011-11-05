@@ -15,11 +15,12 @@ class MeasureWindow : public QWidget
 	VideoView* m_Original;
 	VideoView* m_Processed;
 	QList<Measure*> m_MeasureList;
+	/*
 	QList<Measure::MeasureItem> m_MeasureOutItems;
 	QList<Measure::MeasureItem> m_ViewOutItems;
 
 	QMap<Measure::MeasureItem, FramePtr> m_OutputViewItems;
-	QMap<Measure::MeasureItem, QVariant> m_OutputMeasureItems;
+	QMap<Measure::MeasureItem, QVariant> m_OutputMeasureItems;*/
 public:
 	Ui::MeasureWindow ui;
 
