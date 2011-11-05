@@ -137,7 +137,6 @@ background-color: rgb(0, 0, 0);
      <string>&amp;Help</string>
     </property>
     <addaction name="action_Homepage"/>
-    <addaction name="action_Tips_and_Tricks"/>
     <addaction name="separator"/>
     <addaction name="action_About"/>
    </widget>
@@ -158,12 +157,6 @@ background-color: rgb(0, 0, 0);
      <addaction name="action_Enable_Logging"/>
      <addaction name="actionShowLogging"/>
     </widget>
-    <widget class="QMenu" name="menu_Options">
-     <property name="title">
-      <string>&amp;Options</string>
-     </property>
-     <addaction name="action_File_Association"/>
-    </widget>
     <widget class="QMenu" name="menu_Compare">
      <property name="title">
       <string>&amp;Compare</string>
@@ -174,7 +167,6 @@ background-color: rgb(0, 0, 0);
     <addaction name="menu_Compare"/>
     <addaction name="separator"/>
     <addaction name="menu_Logging"/>
-    <addaction name="menu_Options"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
