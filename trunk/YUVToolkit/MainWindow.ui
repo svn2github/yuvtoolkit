@@ -117,8 +117,17 @@ background-color: rgb(0, 0, 0);
       <string>&amp;Renderer</string>
      </property>
     </widget>
+    <widget class="QMenu" name="menu_Show">
+     <property name="title">
+      <string>&amp;Show</string>
+     </property>
+     <addaction name="action_Y"/>
+     <addaction name="action_U"/>
+     <addaction name="action_V"/>
+    </widget>
     <addaction name="menu_Zoom"/>
     <addaction name="menu_Renderer"/>
+    <addaction name="menu_Show"/>
    </widget>
    <widget class="QMenu" name="menu_Play">
     <property name="title">
@@ -682,6 +691,45 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="toolTip">
     <string>Overlay Visualization</string>
+   </property>
+  </action>
+  <action name="action_Y">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/y.png</normaloff>:/RawVideoToolkit/Resources/y.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Y Component</string>
+   </property>
+   <property name="statusTip">
+    <string>Show Y Component</string>
+   </property>
+  </action>
+  <action name="action_U">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/u.png</normaloff>:/RawVideoToolkit/Resources/u.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;U Component</string>
+   </property>
+   <property name="statusTip">
+    <string>Show U Component</string>
+   </property>
+  </action>
+  <action name="action_V">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/v.png</normaloff>:/RawVideoToolkit/Resources/v.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;V Component</string>
+   </property>
+   <property name="statusTip">
+    <string>Show V Component</string>
    </property>
   </action>
  </widget>

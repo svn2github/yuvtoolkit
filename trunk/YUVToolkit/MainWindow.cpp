@@ -109,11 +109,6 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 
 	SetZoomMode(m_ZoomMode);
 
-#if SHOW_NEW_FEATURES
-	ui.mainToolBar->addAction(ui.action_Save_As);
-	ui.action_Save_As->setEnabled(false);
-#endif
-
 	ui.mainToolBar->addSeparator();
 	QToolButton* zoomButton = new QToolButton( ui.mainToolBar );	
 	ui.mainToolBar->addWidget(zoomButton);
@@ -135,6 +130,11 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 #endif
 	ui.mainToolBar->addSeparator();
 
+	ui.mainToolBar->addAction(ui.action_Y);
+	ui.mainToolBar->addAction(ui.action_U);
+	ui.mainToolBar->addAction(ui.action_V);
+	ui.mainToolBar->addSeparator();
+
 	QIcon iconPlane;
 	iconPlane.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/plane.png"), QSize(), QIcon::Normal, QIcon::Off);
 	m_ActionsButton = new QToolButton( ui.mainToolBar );
@@ -153,7 +153,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_CompareButton = new QToolButton( ui.mainToolBar );
 	ui.mainToolBar->addWidget(m_CompareButton);	
 	m_CompareButton->setIcon(iconCompare);
-	m_CompareButton->setText(QApplication::translate("MainWindow", "&Compare Frames", 0, QApplication::UnicodeUTF8));
+	m_CompareButton->setText(QApplication::translate("MainWindow", "&Compare", 0, QApplication::UnicodeUTF8));
 	m_CompareButton->setToolTip(QApplication::translate("MainWindow", "Compare videos frame by frame", 0, QApplication::UnicodeUTF8));
 	m_CompareButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos frame by frame with objective measures such as PSNR", 0, QApplication::UnicodeUTF8));
 	m_CompareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -166,7 +166,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	QToolButton* graphButton = new QToolButton( ui.mainToolBar );
 	ui.mainToolBar->addWidget(graphButton);	
 	graphButton->setIcon(iconGraph);
-	graphButton->setText(QApplication::translate("MainWindow", "Show &Graph", 0, QApplication::UnicodeUTF8));
+	graphButton->setText(QApplication::translate("MainWindow", "&Graph", 0, QApplication::UnicodeUTF8));
 	graphButton->setToolTip(QApplication::translate("MainWindow", "Compare videos and show graph", 0, QApplication::UnicodeUTF8));
 	graphButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos and show graph with results", 0, QApplication::UnicodeUTF8));
 	graphButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);

@@ -57,5 +57,8 @@
         <file>Resources/background.png</file>
         <file>Resources/close.png</file>
         <file>Resources/document-open.png</file>
+        <file>Resources/y.png</file>
+        <file>Resources/u.png</file>
+        <file>Resources/v.png</file>
     </qresource>
 </RCC>
