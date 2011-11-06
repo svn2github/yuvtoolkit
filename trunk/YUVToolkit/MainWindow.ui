@@ -167,14 +167,8 @@ background-color: rgb(0, 0, 0);
      <addaction name="action_Enable_Logging"/>
      <addaction name="actionShowLogging"/>
     </widget>
-    <widget class="QMenu" name="menu_Compare">
-     <property name="title">
-      <string>&amp;Compare</string>
-     </property>
-     <addaction name="separator"/>
-    </widget>
     <addaction name="menu_Actions"/>
-    <addaction name="menu_Compare"/>
+    <addaction name="action_Compare"/>
     <addaction name="separator"/>
     <addaction name="menu_Logging"/>
    </widget>
@@ -712,10 +706,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;Y Component</string>
    </property>
    <property name="toolTip">
-    <string>Show Y Component (Ctrl+2)</string>
+    <string>Show Y component (Ctrl+2)</string>
    </property>
    <property name="statusTip">
-    <string>Show Y Component (Ctrl+2)</string>
+    <string>Show Y component (Ctrl+2)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+2</string>
@@ -733,10 +727,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;U Component</string>
    </property>
    <property name="toolTip">
-    <string>Show U Component (Ctrl+3)</string>
+    <string>Show U component (Ctrl+3)</string>
    </property>
    <property name="statusTip">
-    <string>Show U Component (Ctrl+3)</string>
+    <string>Show U component (Ctrl+3)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+3</string>
@@ -754,10 +748,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;V Component</string>
    </property>
    <property name="toolTip">
-    <string>Show V Component (Ctrl+4)</string>
+    <string>Show V component (Ctrl+4)</string>
    </property>
    <property name="statusTip">
-    <string>Show V Component (Ctrl+4)</string>
+    <string>Show V component (Ctrl+4)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+4</string>
@@ -775,13 +769,37 @@ background-color: rgb(0, 0, 0);
     <string>&amp;Color</string>
    </property>
    <property name="toolTip">
-    <string>Show Colors (Ctrl+1)</string>
+    <string>Show colors (Ctrl+1)</string>
    </property>
    <property name="statusTip">
-    <string>Show Colors (Ctrl+1)</string>
+    <string>Show colors (Ctrl+1)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="action_Compare">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare.png</normaloff>:/RawVideoToolkit/Resources/compare.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Compare</string>
+   </property>
+   <property name="iconText">
+    <string>Compare</string>
+   </property>
+   <property name="toolTip">
+    <string>Compare frame by frame (Alt+C)</string>
+   </property>
+   <property name="statusTip">
+    <string>Compare frame by frame (Alt+C)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
    </property>
   </action>
  </widget>

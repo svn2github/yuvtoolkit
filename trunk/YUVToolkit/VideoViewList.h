@@ -20,8 +20,8 @@ class VideoViewList : public QObject
 	RendererWidget* m_RenderWidget;
 	QList<VideoView*> m_VideoList;
 	QMainWindow* m_MainWindow;
-	QList<MeasureWindow*> m_MeasureWindowList;
-	QList<QDockWidget*> m_DockWidgetList;
+	MeasureWindow* m_MeasureWindow;
+	QDockWidget* m_MeasureDockWidget;
 
 	PlaybackControl m_Control;
 public:
@@ -46,7 +46,7 @@ public:
 	void CheckRenderReset();
 	void CheckResolutionChanged();
 	void UpdateMeasureWindows();
-	const QList<QDockWidget*>& GetDockWidgetList() {return m_DockWidgetList;}
+	QDockWidget* GetMeasureDock() {return m_MeasureDockWidget;}
 	
 	void UpdateRenderLayout();
 public slots:

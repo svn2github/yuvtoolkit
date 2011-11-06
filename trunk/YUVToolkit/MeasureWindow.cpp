@@ -9,21 +9,20 @@ MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags 
 	QWidget(parent, flags), m_VideoViewList(vvList)
 {
 	ui.setupUi(this);
-	setMinimumWidth(320);
+	setMinimumWidth(120);
 	setMinimumHeight(200);
 
 	QTableWidget* tableWidget = ui.tableWidget;
-	tableWidget->setRowCount(3);
-	tableWidget->setColumnCount(2);
-	tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("MSE"));
-	tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("PSNR"));
+	tableWidget->setRowCount(4);
+	tableWidget->setColumnCount(1);
+	tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("1"));
 
-	// tableWidget->setVerticalHeaderItem(0, new QTableWidgetItem("Overall"));
-	tableWidget->setVerticalHeaderItem(0, new QTableWidgetItem("Y Component"));
-	tableWidget->setVerticalHeaderItem(1, new QTableWidgetItem("U Component"));
-	tableWidget->setVerticalHeaderItem(2, new QTableWidgetItem("V Component"));
+	tableWidget->setVerticalHeaderItem(0, new QTableWidgetItem("Y"));
+	tableWidget->setVerticalHeaderItem(1, new QTableWidgetItem("U"));
+	tableWidget->setVerticalHeaderItem(2, new QTableWidgetItem("V"));
+	tableWidget->setVerticalHeaderItem(3, new QTableWidgetItem("Color"));
 
-	for (int i=0; i<2; i++)
+	for (int i=0; i<1; i++)
 	{
 		for (int j=0; j<4; j++)
 		{

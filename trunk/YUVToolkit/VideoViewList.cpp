@@ -22,23 +22,13 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 	
 	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
 
-	for (int i=0; i<4; i++)
-	{
-		QDockWidget* dock;
-		
-		QString str;
-		QTextStream(&str) << "Quality Measures Window " << i+1;
+	QString str("Compare");
+	m_MeasureDockWidget= new QDockWidget(str, m_MainWindow );
+	m_MeasureDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	m_MeasureDockWidget->setVisible(false);
 
-		dock = new QDockWidget(str, m_MainWindow );
-		dock->setAllowedAreas(NULL);
-		dock->setVisible(false);
-		dock->setFloating(true);
-		m_DockWidgetList.append(dock);
-
-		MeasureWindow* win = new MeasureWindow(this, dock);
-		dock->setWidget(win);
-		m_MeasureWindowList.append(win);
-	}
+	m_MeasureWindow = new MeasureWindow(this, m_MeasureDockWidget);
+	m_MeasureDockWidget->setWidget(m_MeasureWindow);
 }
 
 VideoViewList::~VideoViewList()
@@ -426,14 +416,7 @@ VideoView* VideoViewList::longest() const
 
 void VideoViewList::UpdateMeasureWindows()
 {
-	for (int i=0; i<m_MeasureWindowList.size(); i++)
-	{
-		MeasureWindow* win = m_MeasureWindowList.at(i);
-		if (win->isVisible())
-		{
-			win->UpdateMeasureWindow();
-		}
-	}
+	// win->UpdateMeasureWindow();
 }
 
 void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool seeking )

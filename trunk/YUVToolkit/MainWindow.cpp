@@ -22,8 +22,8 @@
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#define MINIMUM_WIDTH 480
-#define MINIMUM_HEIGHT 420
+#define MINIMUM_WIDTH 540
+#define MINIMUM_HEIGHT 460
 
 #define SHOW_NEW_FEATURES 0
 
@@ -149,7 +149,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_ActionsButton = new QToolButton( ui.mainToolBar );
 	ui.mainToolBar->addWidget(m_ActionsButton);	
 	m_ActionsButton->setIcon(iconPlane);
-	m_ActionsButton->setText(QApplication::translate("MainWindow", "&Actions", 0, QApplication::UnicodeUTF8));
+	m_ActionsButton->setText(QApplication::translate("MainWindow", "Actions", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setShortcut(tr("ALT+A"));
 	m_ActionsButton->setToolTip(QApplication::translate("MainWindow", "Show actions for opened videos (Alt+A)", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setStatusTip(QApplication::translate("MainWindow", "Show actions for opened videos (Alt+A)", 0, QApplication::UnicodeUTF8));
@@ -157,17 +157,13 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_ActionsButton->setMenu(ui.menu_Actions);
 	m_ActionsButton->setPopupMode( QToolButton::InstantPopup);
 
-	QIcon iconCompare;
-	iconCompare.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/compare.png"), QSize(), QIcon::Normal, QIcon::Off);
 	m_CompareButton = new QToolButton( ui.mainToolBar );
 	ui.mainToolBar->addWidget(m_CompareButton);	
-	m_CompareButton->setIcon(iconCompare);
-	m_CompareButton->setText(QApplication::translate("MainWindow", "&Compare", 0, QApplication::UnicodeUTF8));
-	m_CompareButton->setToolTip(QApplication::translate("MainWindow", "Compare videos frame by frame", 0, QApplication::UnicodeUTF8));
-	m_CompareButton->setStatusTip(QApplication::translate("MainWindow", "Compare videos frame by frame with objective measures such as PSNR", 0, QApplication::UnicodeUTF8));
+	m_CompareButton->setDefaultAction(ui.action_Compare);
 	m_CompareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	m_CompareButton->setMenu( ui.menu_Compare );
-	m_CompareButton->setPopupMode( QToolButton::InstantPopup);
+	
+	QDockWidget* dock = m_VideoViewList->GetMeasureDock();
+	addDockWidget(Qt::LeftDockWidgetArea, dock);
 
 #if SHOW_NEW_FEATURES
 	QIcon iconGraph;
@@ -182,13 +178,13 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	graphButton->setEnabled(false);
 #endif
 	
-	const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
+	/*const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
 	for (int i=0; i<dockList.size(); ++i) 
 	{
 		QDockWidget* dock = dockList.at(i);
 
 		ui.menu_Compare->addAction(dock->toggleViewAction());
-	}
+	}*/
 
 	EnableButtons(0);
 }
@@ -912,6 +908,9 @@ void MainWindow::OnTimer()
 	}
 	
 	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
+
+	QDockWidget* dock = m_VideoViewList->GetMeasureDock();
+	ui.action_Compare->setChecked(dock->toggleViewAction()->isChecked());
 }
 
 void MainWindow::stepVideo( int step )
@@ -957,7 +956,7 @@ void MainWindow::EnableButtons( int nrSources )
 	ui.action_Zoom_Switch->setEnabled(nrSources!=0);
 	
 	m_ActionsButton->setEnabled(nrSources!=0);
-	m_CompareButton->setEnabled(nrSources>1);
+	ui.action_Compare->setEnabled(nrSources>1);
 
 	m_ZoomGroup->setEnabled(nrSources!=0);
 	m_ColorGroup->setEnabled(nrSources!=0);
@@ -965,6 +964,12 @@ void MainWindow::EnableButtons( int nrSources )
 	if (nrSources == 0)
 	{
 		m_Slider->setSliderPosition(0);
+	}
+
+	if (nrSources<2)
+	{
+		QDockWidget* dock = m_VideoViewList->GetMeasureDock();
+		dock->hide();
 	}
 }
 
@@ -1203,5 +1208,12 @@ void MainWindow::OnColorActionTriggered( QAction* a )
 			m_VideoViewList->GetControl()->Seek(status.lastDisplayPTS, false);
 		}
 	}
+}
+
+void MainWindow::on_action_Compare_triggered()
+{
+	QDockWidget* dock = m_VideoViewList->GetMeasureDock();
+	
+	dock->toggleViewAction()->trigger();
 }
 
