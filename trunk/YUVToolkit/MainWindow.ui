@@ -246,10 +246,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;Open ...</string>
    </property>
    <property name="toolTip">
-    <string>Open supported video files</string>
+    <string>Open supported video files (Ctrl+O)</string>
    </property>
    <property name="statusTip">
-    <string>Open supported video files</string>
+    <string>Open supported video files (Ctrl+O)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -315,10 +315,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;Play/Pause</string>
    </property>
    <property name="toolTip">
-    <string>Play/Pause video playback</string>
+    <string>Play/Pause video playback (Space)</string>
    </property>
    <property name="statusTip">
-    <string>Play/Pause video playback</string>
+    <string>Play/Pause video playback (Space)</string>
    </property>
    <property name="shortcut">
     <string>Space</string>
@@ -336,10 +336,10 @@ background-color: rgb(0, 0, 0);
     <string>Step &amp;Back</string>
    </property>
    <property name="toolTip">
-    <string>Seek one frame in the past</string>
+    <string>Seek one frame in the past (Left)</string>
    </property>
    <property name="statusTip">
-    <string>Seek one frame in the past</string>
+    <string>Seek one frame in the past (Left)</string>
    </property>
    <property name="shortcut">
     <string>Left</string>
@@ -357,10 +357,10 @@ background-color: rgb(0, 0, 0);
     <string>10 Step Back</string>
    </property>
    <property name="toolTip">
-    <string>Seek 10 frames in the past</string>
+    <string>Seek 10 frames in the past (Ctrl+Left)</string>
    </property>
    <property name="statusTip">
-    <string>Seek 10 frames in the past</string>
+    <string>Seek 10 frames in the past (Ctrl+Left)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Left</string>
@@ -378,10 +378,10 @@ background-color: rgb(0, 0, 0);
     <string>Step &amp;Forward</string>
    </property>
    <property name="toolTip">
-    <string>Seek one frame in the future</string>
+    <string>Seek one frame in the future (Right)</string>
    </property>
    <property name="statusTip">
-    <string>Seek one frame in the future</string>
+    <string>Seek one frame in the future (Right)</string>
    </property>
    <property name="shortcut">
     <string>Right</string>
@@ -399,10 +399,10 @@ background-color: rgb(0, 0, 0);
     <string>10 Step Forward</string>
    </property>
    <property name="toolTip">
-    <string>Seek 10 frames in the future</string>
+    <string>Seek 10 frames in the future (Ctrl+Right)</string>
    </property>
    <property name="statusTip">
-    <string>Seek 10 frames in the future</string>
+    <string>Seek 10 frames in the future (Ctrl+Right)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Right</string>
@@ -413,10 +413,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;Close</string>
    </property>
    <property name="toolTip">
-    <string>Close the active video</string>
+    <string>Close the active video (Ctrl+W)</string>
    </property>
    <property name="statusTip">
-    <string>Close the active video</string>
+    <string>Close the active video (Ctrl+W)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -430,7 +430,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;100%</string>
    </property>
    <property name="toolTip">
-    <string>Zoom to 100%</string>
+    <string>Zoom to 100% (Alt+2)</string>
+   </property>
+   <property name="statusTip">
+    <string>Zoom to 100% (Alt+2)</string>
    </property>
    <property name="shortcut">
     <string>Alt+2</string>
@@ -444,10 +447,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;200%</string>
    </property>
    <property name="toolTip">
-    <string>Zoom to 200%</string>
+    <string>Zoom to 200% (Alt+3)</string>
    </property>
    <property name="statusTip">
-    <string>Zoom to 200%</string>
+    <string>Zoom to 200% (Alt+3)</string>
    </property>
    <property name="shortcut">
     <string>Alt+3</string>
@@ -461,10 +464,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;50%</string>
    </property>
    <property name="toolTip">
-    <string>Zoom to 50%</string>
+    <string>Zoom to 50% (Alt+1)</string>
    </property>
    <property name="statusTip">
-    <string>Zoom to 50%</string>
+    <string>Zoom to 50% (Alt+1)</string>
    </property>
    <property name="shortcut">
     <string>Alt+1</string>
@@ -476,13 +479,13 @@ background-color: rgb(0, 0, 0);
      <normaloff>:/RawVideoToolkit/Resources/system-search.png</normaloff>:/RawVideoToolkit/Resources/system-search.png</iconset>
    </property>
    <property name="text">
-    <string>Switch &amp;Zoom Mode</string>
+    <string>Switch &amp;Zoom Mode (+)</string>
    </property>
    <property name="iconText">
     <string>Switch Zoom Mode</string>
    </property>
    <property name="statusTip">
-    <string>Switch Zoom Mode</string>
+    <string>Switch Zoom Mode (+)</string>
    </property>
    <property name="shortcut">
     <string>+</string>
@@ -496,10 +499,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;Auto Fit</string>
    </property>
    <property name="toolTip">
-    <string>Auto zoom to fit to the window size</string>
+    <string>Auto zoom to fit to the window size (Alt+5)</string>
    </property>
    <property name="statusTip">
-    <string>Auto zoom to fit to the window size</string>
+    <string>Auto zoom to fit to the window size (Alt+5)</string>
    </property>
    <property name="shortcut">
     <string>Alt+5</string>
@@ -568,10 +571,10 @@ background-color: rgb(0, 0, 0);
     <string>&amp;400%</string>
    </property>
    <property name="toolTip">
-    <string>Zoom to 400%</string>
+    <string>Zoom to 400% (Alt+4)</string>
    </property>
    <property name="statusTip">
-    <string>Zoom to 400%</string>
+    <string>Zoom to 400% (Alt+4)</string>
    </property>
    <property name="shortcut">
     <string>Alt+4</string>
@@ -607,10 +610,10 @@ background-color: rgb(0, 0, 0);
     <string>Seek Be&amp;ginning</string>
    </property>
    <property name="toolTip">
-    <string>Seek beginning of video</string>
+    <string>Seek beginning of video (Home)</string>
    </property>
    <property name="statusTip">
-    <string>Seek beginning of video</string>
+    <string>Seek beginning of video (Home)</string>
    </property>
    <property name="shortcut">
     <string>Home</string>
@@ -628,10 +631,10 @@ background-color: rgb(0, 0, 0);
     <string>Seek &amp;End</string>
    </property>
    <property name="toolTip">
-    <string>Seek end of video</string>
+    <string>Seek end of video (End)</string>
    </property>
    <property name="statusTip">
-    <string>Seek end of video</string>
+    <string>Seek end of video (End)</string>
    </property>
    <property name="shortcut">
     <string>End</string>
@@ -708,8 +711,11 @@ background-color: rgb(0, 0, 0);
    <property name="text">
     <string>&amp;Y Component</string>
    </property>
+   <property name="toolTip">
+    <string>Show Y Component (Ctrl+2)</string>
+   </property>
    <property name="statusTip">
-    <string>Show Y Component</string>
+    <string>Show Y Component (Ctrl+2)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+2</string>
@@ -726,8 +732,11 @@ background-color: rgb(0, 0, 0);
    <property name="text">
     <string>&amp;U Component</string>
    </property>
+   <property name="toolTip">
+    <string>Show U Component (Ctrl+3)</string>
+   </property>
    <property name="statusTip">
-    <string>Show U Component</string>
+    <string>Show U Component (Ctrl+3)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+3</string>
@@ -744,8 +753,11 @@ background-color: rgb(0, 0, 0);
    <property name="text">
     <string>&amp;V Component</string>
    </property>
+   <property name="toolTip">
+    <string>Show V Component (Ctrl+4)</string>
+   </property>
    <property name="statusTip">
-    <string>Show V Component</string>
+    <string>Show V Component (Ctrl+4)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+4</string>
@@ -762,8 +774,11 @@ background-color: rgb(0, 0, 0);
    <property name="text">
     <string>&amp;Color</string>
    </property>
+   <property name="toolTip">
+    <string>Show Colors (Ctrl+1)</string>
+   </property>
    <property name="statusTip">
-    <string>Show colors</string>
+    <string>Show Colors (Ctrl+1)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+1</string>

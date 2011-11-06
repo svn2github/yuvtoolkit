@@ -151,8 +151,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_ActionsButton->setIcon(iconPlane);
 	m_ActionsButton->setText(QApplication::translate("MainWindow", "&Actions", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setShortcut(tr("ALT+A"));
-	m_ActionsButton->setToolTip(QApplication::translate("MainWindow", "Show actions for opened videos", 0, QApplication::UnicodeUTF8));
-	m_ActionsButton->setStatusTip(QApplication::translate("MainWindow", "Show actions for opened videos", 0, QApplication::UnicodeUTF8));
+	m_ActionsButton->setToolTip(QApplication::translate("MainWindow", "Show actions for opened videos (Alt+A)", 0, QApplication::UnicodeUTF8));
+	m_ActionsButton->setStatusTip(QApplication::translate("MainWindow", "Show actions for opened videos (Alt+A)", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	m_ActionsButton->setMenu(ui.menu_Actions);
 	m_ActionsButton->setPopupMode( QToolButton::InstantPopup);
