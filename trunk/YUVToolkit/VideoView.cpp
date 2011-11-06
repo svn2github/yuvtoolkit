@@ -367,6 +367,7 @@ void VideoView::UpdateTransformActionList()
 
 			const QList<PlugInInfo*>& lst = GetHostImpl()->GetTransformPluginList();
 			
+			/*
 			for (int i=0; i<lst.size(); i++)
 			{
 				PlugInInfo* plugInInfo = lst[i];
@@ -395,7 +396,7 @@ void VideoView::UpdateTransformActionList()
 					connect(action, SIGNAL(triggered()), this, SLOT(OnTransformTriggered()));
 					m_TransformActionList.append(action);
 				}
-			}
+			}*/
 
 			m_TransformActionListUpdated = true;
 

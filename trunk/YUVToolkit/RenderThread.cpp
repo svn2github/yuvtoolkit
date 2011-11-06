@@ -83,6 +83,9 @@ float RenderThread::GetSpeedRatio()
 
 void RenderThread::Render()
 {
+	PlaybackControl::Status status;
+	m_Control->GetStatus(&status);
+
 	m_RenderCounter ++;
 	bool nextIsSeeking = false;
 	unsigned int nextPTS = GetNextPTS(nextIsSeeking);
@@ -100,16 +103,15 @@ void RenderThread::Render()
 		nextIsSeeking = m_SeekingQueue.takeFirst();
 		nextScene = m_SceneQueue.takeFirst();
 
-		RenderFrames(nextScene);
+		RenderFrames(nextScene, status.plane);
 	}else if (m_RenderFrames.size()== 0 && m_LastSourceFrames && m_LastSourceFrames->size()>0)
 	{
 		// paused and render reset
-		RenderFrames(m_LastSourceFrames);
+		RenderFrames(m_LastSourceFrames, status.plane);
 	}
 
 	if (m_RenderFrames.size()>0)
 	{
-		UpdateLayout();
 		m_Renderer->RenderScene(m_RenderFrames);
 
 		int elapsedSinceLastRenderCycle = m_RenderCycleTime.restart();
@@ -153,17 +155,54 @@ void RenderThread::SetLayout(UintList ids, RectList srcRects, RectList dstRects)
 	m_DstRects = dstRects;
 }
 
-void RenderThread::RenderFrames(FrameListPtr sourceFrames)
+void RenderThread::RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane)
 {
+	FrameImpl tempFrame;
+
 	for (int i = 0; i < sourceFrames->size(); i++) 
 	{
-		FramePtr sourceFrame = sourceFrames->at(i);
-		if (!sourceFrame)
+		FramePtr sourceFrameOrig = sourceFrames->at(i);
+		if (!sourceFrameOrig)
 		{
 			continue;
 		}
+		unsigned int viewID = sourceFrameOrig->Info(VIEW_ID).toUInt();
 
-		unsigned int viewID = sourceFrame->Info(VIEW_ID).toUInt();
+		// Get layout
+		QRect srcRect, dstRect;
+		{
+			QMutexLocker locker(&m_MutexLayout);
+			int j = m_ViewIDs.indexOf(viewID);
+			if (j != -1)
+			{
+				srcRect = m_SrcRects.at(j);
+				dstRect = m_DstRects.at(j);				
+			}
+		}
+
+		Frame* sourceFrame = sourceFrameOrig.data();
+		if (plane != PLANE_ALL)
+		{
+			sourceFrame = &tempFrame;
+
+			FormatPtr format = sourceFrameOrig->Format();
+			sourceFrame->Format()->SetColor(GRAYSCALE8);
+			sourceFrame->Format()->SetWidth(format->PlaneWidth(plane));
+			sourceFrame->Format()->SetHeight(format->PlaneHeight(plane));
+			sourceFrame->Format()->SetStride(0, format->Stride(plane));
+			sourceFrame->Format()->PlaneSize(0);
+
+			sourceFrame->SetData(0, sourceFrameOrig->Data(plane));
+
+			float scaleX = ((float)format->PlaneWidth(plane))/format->Width();
+			float scaleY = ((float)format->PlaneHeight(plane))/format->Height();
+
+			srcRect.setLeft((int)(srcRect.left()*scaleX));
+			srcRect.setRight((int)(srcRect.right()*scaleX));
+			srcRect.setTop((int)(srcRect.top()*scaleY));
+			srcRect.setBottom((int)(srcRect.bottom()*scaleY));
+		}
+		
 		int pos = -1;
 		for (int k = 0; k < m_RenderFrames.size(); k++) 
 		{
@@ -195,9 +234,12 @@ void RenderThread::RenderFrames(FrameListPtr sourceFrames)
 		// Allocate if needed
 		if (!renderFrame)
 		{
-			m_Renderer->Allocate(renderFrame, sourceFrame->Format());
-			renderFrame->SetInfo(VIEW_ID, viewID);
+			m_Renderer->Allocate(renderFrame, sourceFrame->Format());			
 		}
+
+		renderFrame->SetInfo(VIEW_ID, viewID);
+		renderFrame->SetInfo(SRC_RECT, srcRect);
+		renderFrame->SetInfo(DST_RECT, dstRect);
 
 		// Render frame
 		if (m_Renderer->GetFrame(renderFrame) == OK)
@@ -221,9 +263,11 @@ void RenderThread::RenderFrames(FrameListPtr sourceFrames)
 			m_Renderer->ReleaseFrame(renderFrame);
 		}
 	}
+
+	CleanRenderList();
 }
 
-void RenderThread::UpdateLayout()
+void RenderThread::CleanRenderList()
 {
 	QMutexLocker locker(&m_MutexLayout);
 
@@ -243,10 +287,6 @@ void RenderThread::UpdateLayout()
 		{
 			m_Renderer->Deallocate(renderFrame);
 			i.remove();
-		}else
-		{
-			renderFrame->SetInfo(SRC_RECT, m_SrcRects.at(j));
-			renderFrame->SetInfo(DST_RECT, m_DstRects.at(j));
 		}
 	}
 }

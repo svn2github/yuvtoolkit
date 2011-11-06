@@ -28,9 +28,9 @@ private slots:
 
 protected:
 	void run();
-	void RenderFrames(FrameListPtr sourceFrames);
+	void RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane);
 
-	void UpdateLayout();
+	void CleanRenderList();
 	unsigned int GetNextPTS(bool& isSeeking);
 
 	int m_RenderCounter;

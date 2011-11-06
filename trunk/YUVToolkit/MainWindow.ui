@@ -121,10 +121,10 @@ background-color: rgb(0, 0, 0);
      <property name="title">
       <string>&amp;Show</string>
      </property>
+     <addaction name="action_Color"/>
      <addaction name="action_Y"/>
      <addaction name="action_U"/>
      <addaction name="action_V"/>
-     <addaction name="action_Color"/>
     </widget>
     <addaction name="menu_Zoom"/>
     <addaction name="menu_Renderer"/>
@@ -711,6 +711,9 @@ background-color: rgb(0, 0, 0);
    <property name="statusTip">
     <string>Show Y Component</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
   </action>
   <action name="action_U">
    <property name="checkable">
@@ -725,6 +728,9 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="statusTip">
     <string>Show U Component</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
    </property>
   </action>
   <action name="action_V">
@@ -741,6 +747,9 @@ background-color: rgb(0, 0, 0);
    <property name="statusTip">
     <string>Show V Component</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
   </action>
   <action name="action_Color">
    <property name="checkable">
@@ -755,6 +764,9 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="statusTip">
     <string>Show colors</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
    </property>
   </action>
  </widget>
