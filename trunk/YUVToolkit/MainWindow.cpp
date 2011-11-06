@@ -136,6 +136,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_ColorGroup->addAction(ui.action_U);
 	m_ColorGroup->addAction(ui.action_V);
 	ui.action_Color->setChecked(true);
+	connect(m_ColorGroup, SIGNAL(triggered(QAction*)), this, SLOT(OnColorActionTriggered(QAction*)));
 
 	ui.mainToolBar->addAction(ui.action_Color);
 	ui.mainToolBar->addAction(ui.action_Y);
@@ -1173,6 +1174,34 @@ void MainWindow::Init()
 		{
 			action->setChecked(true);
 		}		
+	}
+}
+
+void MainWindow::OnColorActionTriggered( QAction* a )
+{
+	YUV_PLANE plane = PLANE_ALL;
+	if (a == ui.action_Y)
+	{
+		plane = PLANE_Y;
+	}else if (a == ui.action_U)
+	{
+		plane = PLANE_U;
+	}else if (a == ui.action_V)
+	{
+		plane = PLANE_V;
+	}
+
+	PlaybackControl::Status status;
+	m_VideoViewList->GetControl()->GetStatus(&status);
+
+	if (status.plane != plane)
+	{
+		m_VideoViewList->GetControl()->ShowPlane(plane);
+
+		if (!status.isPlaying)
+		{
+			m_VideoViewList->GetControl()->Seek(status.lastDisplayPTS, false);
+		}
 	}
 }
 

@@ -855,6 +855,7 @@ void PlaybackControl::Reset()
 	m_Status.lastDisplayPTS = 0;
 	m_Status.lastProcessPTS = 0;
 	m_Status.seekingPTS = INVALID_PTS;
+	m_Status.plane = PLANE_ALL;
 }
 
 
@@ -891,6 +892,14 @@ void PlaybackControl::Seek( unsigned int pts, bool play )
 	WARNING_LOG("Seeking %d play %d", pts, play);
 }
 
+void PlaybackControl::ShowPlane( YUV_PLANE p )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.plane = p;
+	WARNING_LOG("Show plane %d", p);
+}
+
 void PlaybackControl::GetStatus( Status* status )
 {
 	QMutexLocker locker(&m_Mutex);
@@ -916,4 +925,3 @@ void PlaybackControl::OnFrameDisplayed( unsigned int pts, unsigned int seekingPT
 
 	m_Status.lastDisplayPTS = pts;
 }
-

@@ -200,6 +200,8 @@ public:
 		unsigned int lastDisplayPTS;
 		unsigned int lastProcessPTS;
 		unsigned int seekingPTS;
+
+		YUV_PLANE plane;
 	};
 
 	PlaybackControl();
@@ -211,6 +213,7 @@ public:
 	void PlayPause();
 	void Seek(unsigned int pts);
 	void Seek(unsigned int pts, bool play);
+	void ShowPlane(YUV_PLANE p);
 	
 	void OnFrameProcessed(unsigned int pts, unsigned int seekingPTS);
 	void OnFrameDisplayed(unsigned int pts, unsigned int seekingPTS);

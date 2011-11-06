@@ -40,7 +40,13 @@ enum INFO_KEY {
 	DST_RECT,         // QRect, destination rect for rendering
 };
 
-#define ALL_PLANE	4
+enum YUV_PLANE {
+	PLANE_Y = 0,
+	PLANE_U = 1,
+	PLANE_V = 2,
+	PLANE_ALL = 3,
+};
+
 class Format
 {
 public:
@@ -308,8 +314,6 @@ public:
 	// Process
 	virtual RESULT Process(const FramePtr input, QMap<QString, FramePtr>& outputs, QMap<QString, QVariant>& stats) {return OK;}
 };
-
-#define ALL_PLANES	-1
 
 struct MeasureCapability
 {
