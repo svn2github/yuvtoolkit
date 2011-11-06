@@ -45,6 +45,7 @@ enum YUV_PLANE {
 	PLANE_U = 1,
 	PLANE_V = 2,
 	PLANE_ALL = 3,
+	PLANE_COUNT = 4,
 };
 
 class Format
@@ -325,13 +326,14 @@ struct MeasureCapability
 
 	bool supportColor; // Can operate on all planes jointly
 	bool supportPlanes; // Can operate on each plane separately
+	bool supportDistortionMap; // Can generate distortion map
 };
 
 struct MeasureOperation
 {
 	unsigned int MeasureId;
-	bool resultMask[5]; // mask to show the validity of the results
-	double results[5];  // plane 0-3 + all plane
+	double results[PLANE_COUNT];
+	FramePtr distorionMap;
 };
 
 
@@ -341,7 +343,7 @@ public:
 	virtual ~Measure() {}
 
 	virtual const QList<MeasureCapability>& GetCapabilities() = 0;
-	virtual void Process(FramePtr source1, FramePtr source2, QList<MeasureOperation>& operations) = 0;
+	virtual void Process(FramePtr source1, FramePtr source2, YUV_PLANE plane, QList<MeasureOperation>& operations) = 0;
 };
 
 
