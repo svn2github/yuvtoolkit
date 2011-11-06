@@ -115,6 +115,8 @@ private slots:
 private:
 	QToolButton* m_ActionsButton;
 	QToolButton* m_CompareButton;
+	QActionGroup* m_ColorGroup;
+	QActionGroup* m_ZoomGroup;
 };
 
 #endif // RAWVIDEOTOOLKIT_H

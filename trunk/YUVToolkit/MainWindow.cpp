@@ -79,12 +79,12 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	QSettings settings;
 	m_RenderType = settings.value("main/renderer", "D3D").toString();
 	
-	QActionGroup* actionGroup = new QActionGroup(this);
-	actionGroup->addAction(ui.action_Zoom_50);	
-	actionGroup->addAction(ui.action_Zoom_100);	
-	actionGroup->addAction(ui.action_Zoom_200);	
-	actionGroup->addAction(ui.action_Zoom_400);	
-	actionGroup->addAction(ui.action_Zoom_Fit);	
+	m_ZoomGroup = new QActionGroup(this);
+	m_ZoomGroup->addAction(ui.action_Zoom_50);	
+	m_ZoomGroup->addAction(ui.action_Zoom_100);	
+	m_ZoomGroup->addAction(ui.action_Zoom_200);	
+	m_ZoomGroup->addAction(ui.action_Zoom_400);	
+	m_ZoomGroup->addAction(ui.action_Zoom_Fit);	
 
 	m_ZoomMode = settings.value("main/zoom", 1).toInt();
 	m_ZoomMode = qMin(qMax(m_ZoomMode, 0), 4);
@@ -130,11 +130,12 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 #endif
 	ui.mainToolBar->addSeparator();
 
-	QActionGroup* actionGroup2 = new QActionGroup(this);
-	actionGroup2->addAction(ui.action_Color);
-	actionGroup2->addAction(ui.action_Y);	
-	actionGroup2->addAction(ui.action_U);
-	actionGroup2->addAction(ui.action_V);
+	m_ColorGroup = new QActionGroup(this);
+	m_ColorGroup->addAction(ui.action_Color);
+	m_ColorGroup->addAction(ui.action_Y);	
+	m_ColorGroup->addAction(ui.action_U);
+	m_ColorGroup->addAction(ui.action_V);
+	ui.action_Color->setChecked(true);
 
 	ui.mainToolBar->addAction(ui.action_Color);
 	ui.mainToolBar->addAction(ui.action_Y);
@@ -953,14 +954,12 @@ void MainWindow::EnableButtons( int nrSources )
 	m_Slider->setEnabled(nrSources!=0);
 
 	ui.action_Zoom_Switch->setEnabled(nrSources!=0);
-	ui.action_Zoom_Fit->setEnabled(nrSources!=0);
-	ui.action_Zoom_50->setEnabled(nrSources!=0);
-	ui.action_Zoom_100->setEnabled(nrSources!=0);
-	ui.action_Zoom_200->setEnabled(nrSources!=0);
-	ui.action_Zoom_400->setEnabled(nrSources!=0);
-
+	
 	m_ActionsButton->setEnabled(nrSources!=0);
 	m_CompareButton->setEnabled(nrSources>1);
+
+	m_ZoomGroup->setEnabled(nrSources!=0);
+	m_ColorGroup->setEnabled(nrSources!=0);
 
 	if (nrSources == 0)
 	{
