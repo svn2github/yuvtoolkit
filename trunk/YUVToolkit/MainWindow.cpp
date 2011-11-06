@@ -130,6 +130,13 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 #endif
 	ui.mainToolBar->addSeparator();
 
+	QActionGroup* actionGroup2 = new QActionGroup(this);
+	actionGroup2->addAction(ui.action_Color);
+	actionGroup2->addAction(ui.action_Y);	
+	actionGroup2->addAction(ui.action_U);
+	actionGroup2->addAction(ui.action_V);
+
+	ui.mainToolBar->addAction(ui.action_Color);
 	ui.mainToolBar->addAction(ui.action_Y);
 	ui.mainToolBar->addAction(ui.action_U);
 	ui.mainToolBar->addAction(ui.action_V);

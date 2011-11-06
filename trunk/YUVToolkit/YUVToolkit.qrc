@@ -60,5 +60,6 @@
         <file>Resources/y.png</file>
         <file>Resources/u.png</file>
         <file>Resources/v.png</file>
+        <file>Resources/color.png</file>
     </qresource>
 </RCC>
