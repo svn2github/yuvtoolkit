@@ -991,6 +991,7 @@ void MainWindow::on_actionShowLogging_triggered()
 
 void MainWindow::OnRendererSelected()
 {
+	ui.action_Color->trigger();
 	QAction *action = qobject_cast<QAction *>(sender());
 	if (action)
 	{

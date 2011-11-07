@@ -104,9 +104,11 @@ RESULT OpenGLRenderer::RenderScene(const FrameList& frames)
 	return OK;
 }
 
+#define ALIGNED16(v)    ((v+15)&~15)
+
 RESULT OpenGLRenderer::Allocate( FramePtr& frame, FormatPtr sourceFormat )
 {
-	QImage* image = new QImage(sourceFormat->Width(), sourceFormat->Height(), QImage::Format_RGB888);
+	QImage* image = new QImage(ALIGNED16(sourceFormat->Width()), sourceFormat->Height(), QImage::Format_RGB888);
 
 	frame = m_Host->NewFrame();
 	frame->SetFormat(sourceFormat);
@@ -118,7 +120,7 @@ RESULT OpenGLRenderer::Allocate( FramePtr& frame, FormatPtr sourceFormat )
 	frame->SetData(3, 0);
 
 	// support only rgb24
-	frame->Format()->SetStride(0,sourceFormat->Width()*3);
+	frame->Format()->SetStride(0,ALIGNED16(sourceFormat->Width())*3);
 	frame->Format()->SetStride(1,0);
 	frame->Format()->SetStride(2,0);
 	frame->Format()->SetStride(3,0);
