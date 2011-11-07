@@ -14,6 +14,7 @@ class SourceThread;
 class VideoView;
 class QPlainTextEdit;
 class RenderThread;
+class QClickableSlider;
 struct Graph_Stats;
 struct SourceInfo;
 
@@ -46,11 +47,12 @@ public slots:
 protected:
 	void openScript(QString strPath, bool debug);
 	void openFileInternal(QString strPath);
+	void updateSelectionSlider();
 private:
 	VideoViewList* m_VideoViewList;
 	
 	Ui::MainWindow ui;
-	QSlider* m_Slider;
+	QClickableSlider* m_Slider;
 	QLabel* m_TimeLabel1;
 	QLabel* m_TimeLabel2;
 	QLabel* m_RenderSpeedLabel;
@@ -113,6 +115,11 @@ private slots:
 	void on_action_Enable_Logging_triggered();
 	void on_action_Quality_Measures_triggered();
 	void on_action_Compare_triggered();
+
+	void on_action_Select_From_triggered();
+	void on_action_Select_To_triggered();
+	void on_action_Clear_Selection_triggered();
+
 
 	void OnColorActionTriggered(QAction* a);
 private:

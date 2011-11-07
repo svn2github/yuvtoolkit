@@ -156,9 +156,18 @@ void ProcessThread::ProcessFrameQueue()
 			emit sceneReady(scene, ptsNext, false);
 			m_LastPTS = ptsNext;
 
-			if (lastFrame && status.isPlaying)
+			if (status.isPlaying)
 			{
-				m_Control->Seek(0);
+				if (status.selectionFrom != INVALID_PTS)
+				{
+					if (lastFrame || ptsNext>=status.selectionTo)
+					{
+						m_Control->Seek(status.selectionFrom);
+					}
+				}else if (lastFrame)
+				{
+					m_Control->Seek(0);
+				}
 			}
 		}else
 		{

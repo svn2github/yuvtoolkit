@@ -200,6 +200,8 @@ public:
 		unsigned int lastDisplayPTS;
 		unsigned int lastProcessPTS;
 		unsigned int seekingPTS;
+		unsigned int selectionFrom;
+		unsigned int selectionTo;
 
 		YUV_PLANE plane;
 	};
@@ -214,6 +216,9 @@ public:
 	void Seek(unsigned int pts);
 	void Seek(unsigned int pts, bool play);
 	void ShowPlane(YUV_PLANE p);
+	void SelectFrom();
+	void SelectTo();
+	void ClearSelection();
 	
 	void OnFrameProcessed(unsigned int pts, unsigned int seekingPTS);
 	void OnFrameDisplayed(unsigned int pts, unsigned int seekingPTS);

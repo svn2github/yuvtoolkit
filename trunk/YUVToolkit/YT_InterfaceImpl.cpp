@@ -856,6 +856,9 @@ void PlaybackControl::Reset()
 	m_Status.lastProcessPTS = 0;
 	m_Status.seekingPTS = INVALID_PTS;
 	m_Status.plane = PLANE_ALL;
+
+	m_Status.selectionFrom = INVALID_PTS;
+	m_Status.selectionTo = INVALID_PTS;
 }
 
 
@@ -924,4 +927,34 @@ void PlaybackControl::OnFrameDisplayed( unsigned int pts, unsigned int seekingPT
 	QMutexLocker locker(&m_Mutex);
 
 	m_Status.lastDisplayPTS = pts;
+}
+
+void PlaybackControl::SelectFrom()
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.selectionFrom = m_Status.lastProcessPTS;
+
+	if (m_Status.selectionTo <= m_Status.selectionFrom)
+	{
+		// Select to end
+		m_Status.selectionTo = INVALID_PTS;
+	}
+}
+
+void PlaybackControl::SelectTo()
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status.selectionTo = m_Status.lastProcessPTS;
+	if (m_Status.selectionFrom == INVALID_PTS || m_Status.selectionFrom>=m_Status.selectionTo)
+	{
+		m_Status.selectionFrom = 0;
+	}
+}
+
+void PlaybackControl::ClearSelection()
+{
+	QMutexLocker locker(&m_Mutex);
+	m_Status.selectionFrom = m_Status.selectionTo = INVALID_PTS;
 }

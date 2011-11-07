@@ -6,9 +6,32 @@
 class QClickableSlider : public QSlider 
 {
 	Q_OBJECT;
-public:
-	QClickableSlider(QWidget* parent) : QSlider(Qt::Horizontal, parent) {;}
 
+	int selectionFrom, selectionTo;
+public:
+	QClickableSlider(QWidget* parent) : QSlider(Qt::Horizontal, parent), selectionFrom(0), selectionTo(-1) {;}
+
+	void SetSelectionFrom(int i)
+	{
+		selectionFrom = i;
+		update();
+	}
+
+	int GetSelectionFrom()
+	{
+		return selectionFrom;
+	}
+
+	void SetSelectionTo(int i)
+	{
+		selectionTo = i;
+		update();
+	}
+
+	int GetSelectionTo()
+	{
+		return selectionTo;
+	}
 protected:
 	void mousePressEvent ( QMouseEvent * event )
 	{
@@ -28,21 +51,24 @@ protected:
 		QSlider::mousePressEvent(event);
 	}
 
-	/*
 	void paintEvent(QPaintEvent *ev)
 	{
-		QPainter painter(this);
-		painter.setBrush(Qt::darkGreen);
+		if (selectionTo>selectionFrom)
+		{
+			QPainter painter(this);
+			painter.setBrush(Qt::darkGreen);
+
+			QRect rcClient = this->rect();
+			rcClient.setLeft(QStyle::sliderPositionFromValue(minimum(), maximum(), selectionFrom, width()));
+			rcClient.setRight(QStyle::sliderPositionFromValue(minimum(), maximum(), selectionTo, width()));
+			rcClient.setTop(rcClient.top()+rcClient.height()/2+1);
+			rcClient.setBottom(rcClient.top()+3);
+			painter.drawRect(rcClient);
+		}
 		
-		QRect rcClient = this->rect();
-		rcClient.setLeft(rcClient.left()+50);
-		rcClient.setRight(rcClient.right()-50);
-		rcClient.setTop(rcClient.top()+rcClient.height()/2+1);
-		rcClient.setBottom(rcClient.top()+3);
-		painter.drawRect(rcClient);
 
 		QSlider::paintEvent(ev);
-	}*/
+	}
 };
 
 #endif

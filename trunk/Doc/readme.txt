@@ -18,6 +18,7 @@ Support for 720P 60FPS playback of 4 side-by-side videos using D3D renderer.
 Support for MSE and PSNR objective measures and error map visualization.
 
 * Minor New Features
+Playback of a selected time interval (Select using Ctrl-HOME and Ctrl-END)
 Improved perception of start-up time (i.e. show window early).
 Continue playback after seeking to a new frame using mouse.
 Accelerating seeking when pressing down arrow keys.

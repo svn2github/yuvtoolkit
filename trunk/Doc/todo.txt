@@ -15,7 +15,6 @@ Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
 - Can support more objective measures and visualization through plugin system
-Looped playback of a selected time interval (Set using Ctrl-HOME and Ctrl-END)
 
 0.0.3+
 ===================

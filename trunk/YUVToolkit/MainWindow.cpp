@@ -26,6 +26,7 @@
 #define MINIMUM_HEIGHT 400
 
 #define SHOW_NEW_FEATURES 0
+#define SLIDER_STEP_MS  100
 
 int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
@@ -43,7 +44,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_Slider->setMinimumSize(32, 10);
 	m_Slider->setFocusPolicy(Qt::NoFocus);
 	m_Slider->setTickPosition(QSlider::TicksBelow);
-	m_Slider->setTickInterval(1000);
+	m_Slider->setTickInterval(1000/SLIDER_STEP_MS);
 	m_Slider->setSingleStep(1);
 	
 	m_VideoViewList = new VideoViewList(this, ui.rendererWidget);
@@ -687,20 +688,20 @@ void MainWindow::on_action_About_triggered()
 
 void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int pts)
 {
-	int ticks = qCeil(duration * fps / 1000)-1;
-	if (m_Slider->maximum() != ticks)
+	// int ticks = qCeil(duration * fps / 1000)-1;
+
+	if (m_Slider->maximum() != duration)
 	{
 		bool old = m_Slider->blockSignals(true);
-		m_Slider->setRange(0, ticks);
-		m_Slider->setSingleStep(1);
+		m_Slider->setRange(0, duration/SLIDER_STEP_MS);
 		m_Slider->blockSignals(old);
 	}
 
-	int pos = qRound(pts * fps / 1000);
-	if (m_Slider->sliderPosition() != pos)
+	// int pos = qRound(pts * fps / 1000);
+	if (m_Slider->sliderPosition() != pts/SLIDER_STEP_MS)
 	{
 		bool old = m_Slider->blockSignals(true);
-		m_Slider->setSliderPosition(pos);
+		m_Slider->setSliderPosition(pts/SLIDER_STEP_MS);
 		m_Slider->blockSignals(old);
 	}
 }
@@ -716,20 +717,8 @@ void MainWindow::seekVideoFromSlider()
 	SourceInfo info;
 	longest->GetSource()->GetInfo(info);
 
-	int idx_new = m_Slider->value();
-
-	for (int i=idx_new-1; i<idx_new+1; i++)
-	{
-		unsigned int pts = qFloor(idx_new * 1000 / info.fps);
-		if (qRound(pts * info.fps / 1000) == idx_new)
-		{
-			m_VideoViewList->GetControl()->Seek(pts);
-
-			return;
-		}
-	}
-	
-	
+	unsigned int pts = m_Slider->value()*SLIDER_STEP_MS;
+	m_VideoViewList->GetControl()->Seek(pts);
 }
 
 void MainWindow::on_action_Step_Forward_triggered()
@@ -829,7 +818,7 @@ void MainWindow::OnTimer()
 			SourceInfo info;
 			source->GetInfo(info);
 
-			OnUpdateSlider(info.duration, info.fps, frame->PTS());
+			OnUpdateSlider(info.duration, info.fps, status.lastProcessPTS);
 		}
 	}
 
@@ -938,7 +927,7 @@ void MainWindow::stepVideo( int step )
 	m_VideoViewList->GetControl()->Seek(pts, false);
 
 	bool old = m_Slider->blockSignals(true);
-	m_Slider->setSliderPosition(frame_num);
+	m_Slider->setSliderPosition(pts/SLIDER_STEP_MS);
 	m_Slider->blockSignals(old);
 }
 
@@ -1218,3 +1207,46 @@ void MainWindow::on_action_Compare_triggered()
 	dock->toggleViewAction()->trigger();
 }
 
+void MainWindow::on_action_Select_From_triggered()
+{
+	m_VideoViewList->GetControl()->SelectFrom();
+
+	updateSelectionSlider();
+}
+
+void MainWindow::on_action_Select_To_triggered()
+{
+	m_VideoViewList->GetControl()->SelectTo();
+
+	updateSelectionSlider();
+
+	
+}
+
+void MainWindow::on_action_Clear_Selection_triggered()
+{
+	m_VideoViewList->GetControl()->ClearSelection();
+	updateSelectionSlider();
+}
+
+void MainWindow::updateSelectionSlider()
+{
+	PlaybackControl::Status status;
+	m_VideoViewList->GetControl()->GetStatus(&status);
+
+	if (status.selectionFrom == INVALID_PTS)
+	{
+		m_Slider->SetSelectionTo(-1);
+		m_Slider->SetSelectionFrom(0);
+	}else
+	{
+		m_Slider->SetSelectionFrom(status.selectionFrom/SLIDER_STEP_MS);
+		if (status.selectionTo == INVALID_PTS)
+		{
+			m_Slider->SetSelectionTo(m_Slider->maximum());
+		}else
+		{
+			m_Slider->SetSelectionTo(status.selectionTo/SLIDER_STEP_MS);
+		}
+	}
+}
