@@ -22,8 +22,8 @@
 #define MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#define MINIMUM_WIDTH 540
-#define MINIMUM_HEIGHT 460
+#define MINIMUM_WIDTH 520
+#define MINIMUM_HEIGHT 400
 
 #define SHOW_NEW_FEATURES 0
 

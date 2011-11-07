@@ -38,6 +38,8 @@ enum INFO_KEY {
 	NEXT_PTS,         // unsigned int, PTS of next frame, INVALID_PTS for last frame
 	SRC_RECT,         // QRect, source rect for rendering
 	DST_RECT,         // QRect, destination rect for rendering
+	RENDER_SRC_SCALE_X, // float, scale used inside renderer
+	RENDER_SRC_SCALE_Y, // float, scale used inside renderer
 };
 
 enum YUV_PLANE {

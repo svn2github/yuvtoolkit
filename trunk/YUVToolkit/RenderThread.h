@@ -30,7 +30,7 @@ protected:
 	void run();
 	void RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane);
 
-	void CleanRenderList();
+	void UpdateLayout();
 	unsigned int GetNextPTS(bool& isSeeking);
 
 	int m_RenderCounter;

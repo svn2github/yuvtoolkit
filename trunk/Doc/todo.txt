@@ -15,26 +15,25 @@ Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
 - Can support more objective measures and visualization through plugin system
-- customize color mapping
 Looped playback of a selected time interval (Set using Ctrl-HOME and Ctrl-END)
-Logging av average/max/min time took for reading a frame
-Logging av average/max/min time took for rendering
 
-0.0.3
+0.0.3+
+===================
+* View -> Show Grid (8x8, 16x16, 32x32, 64x64, Custom)
+* View -> Pixel Window, showing 2-8x zoom in of pixels under mouse pointer + YUV pixel values
+* Graph support, plot PSNR/MSE per frame
+* Custom time stamp support
+* Tools -> Histogram
+* SSIM support (maybe also other measures)
+* Support other YUV formats (Y4M/UYNV/Y422/IUYV/YUYV/YUNV/V422/YVYU/IYU2/YV16)
+
+Maybe features
 ===================
 Playback speed up and down 
-Support all commonly used YUV format (Y4M/UYVY/UYNV/Y422/IUYV/YUYV/YUNV/V422/YUY2/YVYU/IYU2/YV16/YV12/IYUV/I420)
 Support reading a list of image files as video
 File Format History (remember the format of earlier opened YUV files)
 Support for setting file format in javascript
-Tools -> Options, new UI to set options
-UI to set file associations
-View -> Pixel Window
-- Show 2-8x zoom in of pixels under mouse pointer
-- Show pixel values 
 
-0.0.4
-===================
 Format conversion (YUV->raw AVI)
 Save frames to images
 Editing mode
@@ -44,10 +43,16 @@ Editing mode
 - edit YUV pixels
 Drag and drop to reposition the video
 
-0.0.5 -> 1.0 Gold
-===================
-Data analysis and plotting (QWT), e.g., plot PSNR per frame
 Overlay visualization
 - plot motion vectors
 - plot blocks
 Support for compressed video format (h.264/vp8)
+
+Tools -> Options UI
+- new UI to set options
+- Support options for plugins
+- customize color mapping
+- UI to set file associations
+
+Statistics on average/max/min time took for reading a frame
+Statistics on average/max/min time took for rendering

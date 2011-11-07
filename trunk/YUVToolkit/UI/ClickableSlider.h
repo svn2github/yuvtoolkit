@@ -27,6 +27,22 @@ protected:
 
 		QSlider::mousePressEvent(event);
 	}
+
+	/*
+	void paintEvent(QPaintEvent *ev)
+	{
+		QPainter painter(this);
+		painter.setBrush(Qt::darkGreen);
+		
+		QRect rcClient = this->rect();
+		rcClient.setLeft(rcClient.left()+50);
+		rcClient.setRight(rcClient.right()-50);
+		rcClient.setTop(rcClient.top()+rcClient.height()/2+1);
+		rcClient.setBottom(rcClient.top()+3);
+		painter.drawRect(rcClient);
+
+		QSlider::paintEvent(ev);
+	}*/
 };
 
 #endif
