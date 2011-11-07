@@ -30,6 +30,8 @@ public:
 	void UpdateMeasure();
 
 	void UpdateMeasureWindow();
+
+	QSize sizeHint() const;
 protected:
 	void showEvent(QShowEvent *event);
 

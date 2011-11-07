@@ -11,27 +11,49 @@ MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags 
 	ui.setupUi(this);
 	setMinimumWidth(120);
 	setMinimumHeight(200);
+	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	// connect(ui.originalList, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboIndexChanged(int)));
+	// connect(ui.processedList, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboIndexChanged(int)));
 
-	QTableWidget* tableWidget = ui.tableWidget;
-	tableWidget->setRowCount(4);
-	tableWidget->setColumnCount(1);
-	tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("1"));
+	QTreeWidget* treeWidget = ui.tree_Results;
+	treeWidget->setColumnCount(3);
+	QStringList list;
+	list.append("Type");
+	list.append("Result 1");
+	list.append("Result 2");
+	treeWidget->setHeaderLabels(list);
+	QTreeWidgetItem* psnrItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("PSNR")));
+	treeWidget->addTopLevelItem(psnrItem);
 
-	tableWidget->setVerticalHeaderItem(0, new QTableWidgetItem("Y"));
-	tableWidget->setVerticalHeaderItem(1, new QTableWidgetItem("U"));
-	tableWidget->setVerticalHeaderItem(2, new QTableWidgetItem("V"));
-	tableWidget->setVerticalHeaderItem(3, new QTableWidgetItem("Color"));
+	psnrItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("All"))));
+	psnrItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("Y"))));
+	psnrItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("U"))));
+	psnrItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("V"))));
 
-	for (int i=0; i<1; i++)
-	{
-		for (int j=0; j<4; j++)
-		{
-			tableWidget->setItem(j, i, new QTableWidgetItem(""));
-		}
-	}
+	QTreeWidgetItem* mseItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("MSE")));
+	treeWidget->addTopLevelItem(mseItem);
 
-	connect(ui.originalList, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboIndexChanged(int)));
-	connect(ui.processedList, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboIndexChanged(int)));
+	mseItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("All"))));
+	mseItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("Y"))));
+	mseItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("U"))));
+	mseItem->addChild(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("V"))));
+
+	treeWidget->resizeColumnToContents(0);
+	treeWidget->expandAll();
+	
+	
+	treeWidget = ui.tree_Distortion_Map;
+	treeWidget->setColumnCount(1);
+	
+	QTreeWidgetItem* psnrMapItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("PSNR")));
+	psnrMapItem->setFlags(psnrMapItem->flags() | Qt::ItemIsUserCheckable);
+	psnrMapItem->setCheckState(0, Qt::Checked);
+	treeWidget->addTopLevelItem(psnrMapItem);
+
+	QTreeWidgetItem* mseMapItem = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("MSE")));
+	mseMapItem->setFlags(mseMapItem->flags() | Qt::ItemIsUserCheckable);
+	mseMapItem->setCheckState(0, Qt::Checked);
+	treeWidget->addTopLevelItem(mseMapItem);
 }
 
 MeasureWindow::~MeasureWindow()
@@ -40,6 +62,7 @@ MeasureWindow::~MeasureWindow()
 
 void MeasureWindow::showEvent( QShowEvent *event )
 {
+	/*
 	for (int i=0; i<m_VideoViewList->size(); i++)
 	{
 		VideoView* vv = m_VideoViewList->at(i);
@@ -64,12 +87,12 @@ void MeasureWindow::showEvent( QShowEvent *event )
 	{
 		ui.originalList->setEnabled(false);
 		ui.processedList->setEnabled(false);
-	}
+	}*/
 }
 
 void MeasureWindow::onComboIndexChanged( int )
 {
-	if (ui.originalList->count()<=1)
+	/*if (ui.originalList->count()<=1)
 	{
 		return;
 	}
@@ -96,17 +119,16 @@ void MeasureWindow::onComboIndexChanged( int )
 		SourceInfo origInfo, procInfo;
 		m_Original->GetSource()->GetInfo(origInfo);
 		m_Processed->GetSource()->GetInfo(procInfo);
-		/*
 		measure->GetSupportedModes(origInfo.format, procInfo.format, m_ViewOutItems, m_MeasureOutItems);
 
 		for (int i=0; i<m_MeasureOutItems.size(); i++)
 		{
 			Measure::MeasureItem item = m_MeasureOutItems.at(i);
 			m_OutputMeasureItems.insert(item, QVariant(-1));
-		}*/
+		}
 	}
 
-
+	*/
 }
 
 void MeasureWindow::UpdateMeasure()
@@ -148,4 +170,9 @@ void MeasureWindow::UpdateMeasureWindow()
 		}
 	}
 	*/
+}
+
+QSize MeasureWindow::sizeHint() const
+{
+	return QSize(150,250);
 }
