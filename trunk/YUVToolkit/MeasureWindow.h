@@ -7,6 +7,31 @@
 class VideoViewList;
 class VideoView;
 
+#include <QAbstractTableModel>
+
+class MeasureResultsModel : public QAbstractTableModel
+{
+	Q_OBJECT;
+public:
+	MeasureResultsModel(QObject *parent);
+	int rowCount(const QModelIndex &parent = QModelIndex()) const ;
+	int columnCount(const QModelIndex &parent = QModelIndex()) const;
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+	Qt::ItemFlags flags(const QModelIndex & /*index*/) const;
+};
+
+class DistortionMapModel : public QAbstractTableModel
+{
+	Q_OBJECT;
+public:
+	DistortionMapModel(QObject *parent);
+	int rowCount(const QModelIndex &parent = QModelIndex()) const ;
+	int columnCount(const QModelIndex &parent = QModelIndex()) const;
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+	Qt::ItemFlags flags(const QModelIndex & /*index*/) const;
+};
+
 class MeasureWindow : public QWidget
 {
 	Q_OBJECT;
@@ -21,6 +46,9 @@ class MeasureWindow : public QWidget
 
 	QMap<Measure::MeasureItem, FramePtr> m_OutputViewItems;
 	QMap<Measure::MeasureItem, QVariant> m_OutputMeasureItems;*/
+
+	MeasureResultsModel m_ResultsModel;
+	DistortionMapModel m_DistortionMapModel;
 public:
 	Ui::MeasureWindow ui;
 

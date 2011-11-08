@@ -3,34 +3,38 @@
 
 #include <QtGui>
 
-class TextLabel : public QTextEdit
+class TextLabel : public QLabel
 {
 	Q_OBJECT;
+	Q_PROPERTY(QString text READ text WRITE setText)
 public:
-	TextLabel(const QString& text, QWidget* parent = 0) : QTextEdit(text, parent)
+	TextLabel(QWidget* parent = 0) : QLabel(parent)
 	{
-		setReadOnly(true);
-		setFrameStyle(QFrame::NoFrame);
-		QPalette pal = palette();
-		pal.setColor(QPalette::Base, Qt::transparent);
-		setPalette(pal);
-
-		setLineWrapMode(QTextEdit::WidgetWidth);
-		setWordWrapMode(QTextOption::WrapAnywhere);
-		//label->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
-		connect(document()->documentLayout(), 
-			SIGNAL(documentSizeChanged(QSizeF)), 
-			this, SLOT(OnAdjustMinimumSize(QSizeF)));
+		setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	}
 
-
-private slots:
-	void OnAdjustMinimumSize(const QSizeF& size)
+	void setText(const QString &text)
 	{
-		//setMinimumHeight(size.height() + 2 * frameWidth());
-		setMinimumHeight(size.height());
-		setMaximumHeight(size.height());
+		content = text;
+		update();
 	}
+	const QString & text() const { return content; }
+protected:
+	void paintEvent(QPaintEvent *event)
+	{
+		QRect rc = rect();
+		rc.adjust(3,0,-3,0);
+
+		QLabel::paintEvent(event);
+
+		QPainter painter(this);
+		QFontMetrics fontMetrics = painter.fontMetrics();
+		QString elidedLastLine = fontMetrics.elidedText(content, Qt::ElideRight, rc.width());
+		
+		painter.drawText(rc, Qt::AlignLeft|Qt::AlignVCenter, elidedLastLine);
+	}
+private:
+	QString content;
 };
 
 #endif

@@ -282,7 +282,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 	
 	PlaybackControl::Status status;
 	m_VideoViewList->GetControl()->GetStatus(&status);
-	m_VideoViewList->GetControl()->Seek(status.lastDisplayPTS, status.isPlaying);
+	m_VideoViewList->GetControl()->Seek(status.lastProcessPTS, status.isPlaying);
 
 	for (int i=0; i<m_VideoViewList->size(); ++i) 
 	{
@@ -1117,6 +1117,11 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 	EnableButtons(m_VideoViewList->GetSourceIDList().size());
 
 	autoResizeWindow();	
+
+	if (m_VideoViewList->size() == 0)
+	{
+		on_action_Clear_Selection_triggered();
+	}
 }
 
 void MainWindow::OnVideoViewCreated( VideoView* vv)

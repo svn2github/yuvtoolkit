@@ -27,19 +27,25 @@ QTreeView::item::section {
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>2</number>
      </property>
-     <item row="0" column="0">
+     <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Orig.</string>
+        <string>Original</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_Original">
+     <item>
+      <widget class="TextLabel" name="label_Original">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>100</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
        </property>
@@ -52,36 +58,23 @@ QTreeView::item::section {
        <property name="textFormat">
         <enum>Qt::PlainText</enum>
        </property>
-       <property name="margin">
-        <number>3</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="label_Processed">
-       <property name="frameShape">
-        <enum>QFrame::Panel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Sunken</enum>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
+       <property name="scaledContents">
+        <bool>true</bool>
        </property>
        <property name="margin">
         <number>3</number>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_Processed2_Header">
-       <property name="text">
-        <string>2:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
+     <item>
       <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Processed</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="TextLabel" name="label_Processed">
        <property name="frameShape">
         <enum>QFrame::Panel</enum>
        </property>
@@ -96,10 +89,26 @@ QTreeView::item::section {
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_Processed_Header">
+     <item>
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>1:</string>
+        <string>Processed 2</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="TextLabel" name="label_Processed_2">
+       <property name="frameShape">
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+       <property name="margin">
+        <number>3</number>
        </property>
       </widget>
      </item>
@@ -121,7 +130,7 @@ QTreeView::item::section {
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="optionsButton">
+      <widget class="QPushButton" name="button_Options">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -140,27 +149,13 @@ QTreeView::item::section {
     </widget>
    </item>
    <item>
-    <widget class="QTreeWidget" name="tree_Results">
+    <widget class="QTableView" name="table_Measure_Results">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
-       <verstretch>5</verstretch>
+       <verstretch>10</verstretch>
       </sizepolicy>
      </property>
-     <property name="indentation">
-      <number>4</number>
-     </property>
-     <property name="rootIsDecorated">
-      <bool>false</bool>
-     </property>
-     <property name="itemsExpandable">
-      <bool>false</bool>
-     </property>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
     </widget>
    </item>
    <item>
@@ -178,34 +173,30 @@ QTreeView::item::section {
     </widget>
    </item>
    <item>
-    <widget class="QTreeWidget" name="tree_Distortion_Map">
+    <widget class="QTableView" name="table_Distortion_Map">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
      </property>
-     <property name="indentation">
-      <number>4</number>
-     </property>
-     <property name="rootIsDecorated">
-      <bool>false</bool>
-     </property>
-     <property name="itemsExpandable">
-      <bool>false</bool>
-     </property>
-     <attribute name="headerVisible">
+     <attribute name="horizontalHeaderVisible">
       <bool>false</bool>
      </attribute>
-     <column>
-      <property name="text">
-       <string notr="true">1</string>
-      </property>
-     </column>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TextLabel</class>
+   <extends>QLabel</extends>
+   <header>UI/TextLabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
