@@ -7,7 +7,6 @@
 #include "SourceThread.h"
 #include "Layout.h"
 #include "ColorConversion.h"
-#include "MeasureWindow.h"
 
 #include <assert.h>
 
@@ -21,14 +20,6 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 	m_ProcessThread = new ProcessThread(&m_Control);	
 	
 	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
-
-	QString str("Compare");
-	m_MeasureDockWidget= new QDockWidget(str, m_MainWindow );
-	m_MeasureDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
-	m_MeasureDockWidget->setVisible(false);
-
-	m_MeasureWindow = new MeasureWindow(this, m_MeasureDockWidget);
-	m_MeasureDockWidget->setWidget(m_MeasureWindow);
 }
 
 VideoViewList::~VideoViewList()
@@ -36,7 +27,7 @@ VideoViewList::~VideoViewList()
 	delete m_ProcessThread;
 }
 
-VideoView* VideoViewList::NewVideoView( const char* title )
+VideoView* VideoViewList::NewVideoViewInternal( const char* title )
 {
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
@@ -89,6 +80,7 @@ void VideoViewList::OnUpdateRenderWidgetPosition()
 
 void VideoViewList::CloseVideoView( VideoView* vv)
 {
+	PLUGIN_TYPE plugin = vv->GetType();
 	INFO_LOG("VideoViewList::CloseVideoView %X", vv);
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
@@ -133,6 +125,13 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 	vv->UnInit();
 	SAFE_DELETE(vv);
+
+	emit VideoViewListChanged();
+
+	if (plugin == PLUGIN_SOURCE)
+	{
+		emit VideoViewSourceListChanged();
+	}
 }
 
 void VideoViewList::CheckRenderReset()
@@ -399,7 +398,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 
 	if (!hasView)
 	{
-		VideoView* planeVv = NewVideoView(data->outputName.toAscii());
+		VideoView* planeVv = NewVideoViewInternal(data->outputName.toAscii());
 
 		Transform* transform = data->transformPlugin->NewTransform(data->transformName);
 
@@ -412,11 +411,6 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 VideoView* VideoViewList::longest() const
 {
 	return m_LongestVideoView;
-}
-
-void VideoViewList::UpdateMeasureWindows()
-{
-	// win->UpdateMeasureWindow();
 }
 
 void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool seeking )
@@ -497,6 +491,17 @@ void VideoViewList::UpdateRenderLayout()
 
 		m_RenderThread->SetLayout(ids, srcRects, dstRects);
 	}
+}
+
+VideoView* VideoViewList::NewVideoViewSource( const char* path )
+{
+	VideoView* vv = NewVideoViewInternal(path);
+	vv->Init(path);
+	UpdateDuration();
+
+	emit VideoViewListChanged();
+	emit VideoViewSourceListChanged();
+	return vv;
 }
 
 /*

@@ -8,7 +8,7 @@
 #include "Layout.h"
 #include "RenderThread.h"
 #include "VideoViewList.h"
-
+#include "MeasureWindow.h"
 
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
@@ -51,6 +51,8 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	connect(m_VideoViewList, SIGNAL(ResolutionDurationChanged()), this, SLOT(OnAutoResizeWindow()));
 	connect(m_VideoViewList, SIGNAL(VideoViewClosed(VideoView*)), this, SLOT(OnVideoViewClosed(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
+	connect(m_VideoViewList, SIGNAL(VideoViewListChanged()), this, SLOT(OnVideoViewListChanged()));
+	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), this, SLOT(OnVideoViewSourceListChanged()));
 
 	ui.playbackToolBar->insertWidget(ui.action_Seek_Beginning, m_Slider);
 	ui.playbackToolBar->insertSeparator(ui.action_Seek_Beginning);
@@ -155,16 +157,12 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_ActionsButton->setToolTip(QApplication::translate("MainWindow", "Show actions for opened videos (Alt+A)", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setStatusTip(QApplication::translate("MainWindow", "Show actions for opened videos (Alt+A)", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	m_ActionsButton->setMenu(ui.menu_Actions);
 	m_ActionsButton->setPopupMode( QToolButton::InstantPopup);
 
 	m_CompareButton = new QToolButton( ui.mainToolBar );
 	ui.mainToolBar->addWidget(m_CompareButton);	
 	m_CompareButton->setDefaultAction(ui.action_Compare);
 	m_CompareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	
-	QDockWidget* dock = m_VideoViewList->GetMeasureDock();
-	addDockWidget(Qt::LeftDockWidgetArea, dock);
 
 #if SHOW_NEW_FEATURES
 	QIcon iconGraph;
@@ -179,13 +177,14 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	graphButton->setEnabled(false);
 #endif
 	
-	/*const QList<QDockWidget*> dockList = m_VideoViewList->GetDockWidgetList();
-	for (int i=0; i<dockList.size(); ++i) 
-	{
-		QDockWidget* dock = dockList.at(i);
+	QString str("Compare");
+	m_MeasureDockWidget= new QDockWidget(str, this );
+	m_MeasureDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
+	m_MeasureDockWidget->setVisible(false);
 
-		ui.menu_Compare->addAction(dock->toggleViewAction());
-	}*/
+	m_MeasureWindow = new MeasureWindow(m_VideoViewList, m_MeasureDockWidget);
+	m_MeasureDockWidget->setWidget(m_MeasureWindow);
+	addDockWidget(Qt::LeftDockWidgetArea, m_MeasureDockWidget);
 
 	EnableButtons(0);
 }
@@ -250,6 +249,13 @@ void MainWindow::dropEvent( QDropEvent *event )
 
 void MainWindow::openFiles( const QStringList& fileList )
 {
+	// Pause
+	PlaybackControl* control = m_VideoViewList->GetControl();
+	PlaybackControl::Status status;
+	control->GetStatus(&status);
+	control->Play(false);
+
+	// Open files
 	QStringList fileList2;
 	for ( int i=0; i<fileList.size(); i++) // if at least one QUrl is present in list
 	{
@@ -278,12 +284,13 @@ void MainWindow::openFiles( const QStringList& fileList )
 		openFileInternal(fName);
 	}
 
+	// Update source list
 	m_VideoViewList->GetProcessThread()->SetSources(m_VideoViewList->GetSourceIDList());
 	
-	PlaybackControl::Status status;
-	m_VideoViewList->GetControl()->GetStatus(&status);
+	// Trigger new seeking frame
 	m_VideoViewList->GetControl()->Seek(status.lastProcessPTS, status.isPlaying);
 
+	// Start source
 	for (int i=0; i<m_VideoViewList->size(); ++i) 
 	{
 		VideoView* vv = m_VideoViewList->at(i);
@@ -497,12 +504,7 @@ void MainWindow::openFileInternal( QString strPath)
 		return;
 	}
 
-	VideoView* vv = m_VideoViewList->NewVideoView(strPath.toAscii());
-	vv->Init(strPath.toAscii());
-
-	m_VideoViewList->UpdateDuration();
-
-	EnableButtons(m_VideoViewList->GetSourceIDList().size());
+	VideoView* vv = m_VideoViewList->NewVideoViewSource(strPath.toAscii());
 }
 
 void MainWindow::play( bool play )
@@ -798,11 +800,6 @@ void MainWindow::OnTimer()
 	{
 		m_VideoViewList->CheckResolutionChanged();
 		m_VideoViewList->CheckRenderReset();
-		
-		if (m_VideoViewList->size()>1)
-		{
-			m_VideoViewList->UpdateMeasureWindows();
-		}
 	}
 	UpdateActiveVideoView();
 
@@ -898,8 +895,7 @@ void MainWindow::OnTimer()
 	
 	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
 
-	QDockWidget* dock = m_VideoViewList->GetMeasureDock();
-	ui.action_Compare->setChecked(dock->toggleViewAction()->isChecked());
+	ui.action_Compare->setChecked(m_MeasureDockWidget->toggleViewAction()->isChecked());
 }
 
 void MainWindow::stepVideo( int step )
@@ -957,8 +953,7 @@ void MainWindow::EnableButtons( int nrSources )
 
 	if (nrSources<2)
 	{
-		QDockWidget* dock = m_VideoViewList->GetMeasureDock();
-		dock->hide();
+		m_MeasureDockWidget->hide();
 	}
 }
 
@@ -1074,22 +1069,6 @@ void MainWindow::contextMenuEvent( QContextMenuEvent *event )
 
 void MainWindow::OnVideoViewClosed(VideoView* vv)
 {
-	ui.menu_Actions->clear();
-	for (int i=0; i<m_VideoViewList->size(); i++)
-	{
-		VideoView* vv = m_VideoViewList->at(i);
-		QMenu* menu = vv->GetMenu();
-		ui.menu_Actions->addMenu(menu);
-	}
-
-	if (m_VideoViewList->size() == 1)
-	{
-		m_ActionsButton->setMenu(m_VideoViewList->at(0)->GetMenu());
-	}else
-	{
-		m_ActionsButton->setMenu(ui.menu_Actions);
-	}
-
 	m_ActiveVideoView = NULL;
 	emit activeVideoViewChanged(NULL);
 
@@ -1114,8 +1093,6 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 		}
 	}
 
-	EnableButtons(m_VideoViewList->GetSourceIDList().size());
-
 	autoResizeWindow();	
 
 	if (m_VideoViewList->size() == 0)
@@ -1127,16 +1104,6 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 void MainWindow::OnVideoViewCreated( VideoView* vv)
 {	
 	vv->SetZoomLevel(m_ZoomMode);
-
-	ui.menu_Actions->addMenu(vv->GetMenu());
-
-	if (m_VideoViewList->size() == 1)
-	{
-		m_ActionsButton->setMenu(m_VideoViewList->at(0)->GetMenu());
-	}else
-	{
-		m_ActionsButton->setMenu(ui.menu_Actions);
-	}
 }
 
 void MainWindow::on_action_Quality_Measures_triggered()
@@ -1207,9 +1174,7 @@ void MainWindow::OnColorActionTriggered( QAction* a )
 
 void MainWindow::on_action_Compare_triggered()
 {
-	QDockWidget* dock = m_VideoViewList->GetMeasureDock();
-	
-	dock->toggleViewAction()->trigger();
+	m_MeasureDockWidget->toggleViewAction()->trigger();
 }
 
 void MainWindow::on_action_Select_From_triggered()
@@ -1253,5 +1218,29 @@ void MainWindow::updateSelectionSlider()
 		{
 			m_Slider->SetSelectionTo(status.selectionTo/SLIDER_STEP_MS);
 		}
+	}
+}
+
+void MainWindow::OnVideoViewSourceListChanged()
+{
+	EnableButtons(m_VideoViewList->GetSourceIDList().size());
+}
+
+void MainWindow::OnVideoViewListChanged()
+{
+	ui.menu_Actions->clear();
+	for (int i=0; i<m_VideoViewList->size(); i++)
+	{
+		VideoView* vv = m_VideoViewList->at(i);
+		QMenu* menu = vv->GetMenu();
+		ui.menu_Actions->addMenu(menu);
+	}
+
+	if (m_VideoViewList->size() == 1)
+	{
+		m_ActionsButton->setMenu(m_VideoViewList->at(0)->GetMenu());
+	}else
+	{
+		m_ActionsButton->setMenu(ui.menu_Actions);
 	}
 }

@@ -17,6 +17,8 @@ class RenderThread;
 class QClickableSlider;
 struct Graph_Stats;
 struct SourceInfo;
+class MeasureWindow;
+class QDockWidget;
 
 class MainWindow : public QMainWindow, public sigslot::has_slots<>
 {
@@ -49,37 +51,19 @@ protected:
 	void openFileInternal(QString strPath);
 	void updateSelectionSlider();
 private:
-	VideoViewList* m_VideoViewList;
-	
-	Ui::MainWindow ui;
-	QClickableSlider* m_Slider;
-	QLabel* m_TimeLabel1;
-	QLabel* m_TimeLabel2;
-	QLabel* m_RenderSpeedLabel;
-	QLabel* m_ZoomLabel;
-	int m_ZoomMode;
-	unsigned int m_LastSliderValue;
-	bool m_IsPlaying;
-	QTimer* m_UpdateTimer;
-	QTime m_StepTime;
-
-	VideoView* m_ActiveVideoView;
-
 	void UpdateStatusMessage(const QString& msg);
 	void UpdateActiveVideoView();
 	
 	void autoResizeWindow();
 	void SetZoomMode(int mode);
-
-	static int windowCounter;
-	QList<QAction*> m_RendererList;
-	QString m_RenderType;
 public slots:
 	void OnUpdateSlider(unsigned int duration, float fps, unsigned int pts);	
 	void OnAutoResizeWindow();
 	void OnActiveVideoViewChanged(VideoView*);
 	void OnVideoViewClosed(VideoView* );
 	void OnVideoViewCreated(VideoView* );
+	void OnVideoViewListChanged();
+	void OnVideoViewSourceListChanged();
 	
 private slots:
 	void OnTimer();
@@ -120,13 +104,34 @@ private slots:
 	void on_action_Select_To_triggered();
 	void on_action_Clear_Selection_triggered();
 
-
 	void OnColorActionTriggered(QAction* a);
 private:
+	VideoViewList* m_VideoViewList;
+	VideoView* m_ActiveVideoView;
+
+	Ui::MainWindow ui;
+	QClickableSlider* m_Slider;
+	QLabel* m_TimeLabel1;
+	QLabel* m_TimeLabel2;
+	QLabel* m_RenderSpeedLabel;
+	QLabel* m_ZoomLabel;
 	QToolButton* m_ActionsButton;
 	QToolButton* m_CompareButton;
 	QActionGroup* m_ColorGroup;
 	QActionGroup* m_ZoomGroup;
+	MeasureWindow* m_MeasureWindow;
+	QDockWidget* m_MeasureDockWidget;
+	
+	int m_ZoomMode;
+	unsigned int m_LastSliderValue;
+	bool m_IsPlaying;
+	QTimer* m_UpdateTimer;
+	QTime m_StepTime;
+
+
+	static int windowCounter;
+	QList<QAction*> m_RendererList;
+	QString m_RenderType;
 };
 
 #endif // RAWVIDEOTOOLKIT_H

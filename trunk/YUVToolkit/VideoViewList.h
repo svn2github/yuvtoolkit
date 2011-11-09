@@ -11,8 +11,7 @@ class RendererWidget;
 class SourceThread;
 class QMainWindow;
 class QAction;
-class MeasureWindow;
-class QDockWidget;
+
 
 class VideoViewList : public QObject
 {
@@ -20,8 +19,6 @@ class VideoViewList : public QObject
 	RendererWidget* m_RenderWidget;
 	QList<VideoView*> m_VideoList;
 	QMainWindow* m_MainWindow;
-	MeasureWindow* m_MeasureWindow;
-	QDockWidget* m_MeasureDockWidget;
 
 	PlaybackControl m_Control;
 public:
@@ -36,7 +33,6 @@ public:
 	VideoView* find(unsigned int id) const;
 	UintList GetSourceIDList() const;
 
-	VideoView* NewVideoView(const char* title);
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 	ProcessThread* GetProcessThread() {return m_ProcessThread;}
 	PlaybackControl* GetControl() {return &m_Control;}
@@ -45,10 +41,11 @@ public:
 	unsigned int GetDuration() {return m_Duration;}
 	void CheckRenderReset();
 	void CheckResolutionChanged();
-	void UpdateMeasureWindows();
-	QDockWidget* GetMeasureDock() {return m_MeasureDockWidget;}
 	
 	void UpdateRenderLayout();
+	VideoView* NewVideoViewSource(const char* path);
+private:
+	VideoView* NewVideoViewInternal(const char* title);
 public slots:
 	void UpdateDuration();
 	void CloseVideoView(VideoView*);
@@ -60,6 +57,8 @@ signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
+	void VideoViewSourceListChanged();
+	void VideoViewListChanged();
 private:
 	RenderThread* m_RenderThread;
 	ProcessThread* m_ProcessThread;
