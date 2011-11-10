@@ -32,7 +32,7 @@ QTreeView::item::section {
       <number>2</number>
      </property>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label_0">
        <property name="text">
         <string>Original</string>
        </property>
@@ -67,7 +67,7 @@ QTreeView::item::section {
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_1">
        <property name="text">
         <string>Processed</string>
        </property>
@@ -90,7 +90,7 @@ QTreeView::item::section {
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Processed 2</string>
        </property>
@@ -166,7 +166,7 @@ QTreeView::item::section {
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="label_5">
      <property name="text">
       <string>Show Distortion Map</string>
      </property>

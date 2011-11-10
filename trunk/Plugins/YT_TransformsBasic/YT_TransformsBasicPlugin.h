@@ -3,13 +3,6 @@
 
 #include "../YT_Interface.h"
 
-enum TRANSFORM_ID
-{
-	TRANSFORM_SHOW_PLANE,
-	TRANSFORM_PSNR,
-	TRANSFORM_MSE,
-	TRANSFORM_SSIM,
-};
 
 class TransformsBasicPlugin : public QObject, public YTPlugIn
 {
@@ -18,8 +11,8 @@ class TransformsBasicPlugin : public QObject, public YTPlugIn
 public:
 	virtual RESULT Init(Host*);
 
-	virtual Transform* NewTransform(const QString& name);
-	virtual void ReleaseTransform(Transform*);
+	virtual Measure* NewMeasure(const QString& name);
+	virtual void ReleaseMeasure(Measure*);
 };
 
 #endif // TRANSFORMSBASIC_PLUGIN_H

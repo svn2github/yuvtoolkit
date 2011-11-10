@@ -24,7 +24,7 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_Re
 
 VideoViewList::~VideoViewList()
 {
-	delete m_ProcessThread;
+	SAFE_DELETE(m_ProcessThread);
 }
 
 VideoView* VideoViewList::NewVideoViewInternal( const char* title )

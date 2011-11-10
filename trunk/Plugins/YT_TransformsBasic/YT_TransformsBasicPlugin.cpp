@@ -14,25 +14,17 @@ RESULT TransformsBasicPlugin::Init( Host* host)
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, PLUGIN_TRANSFORM, QString("Show Plane"));
-	g_Host->RegisterPlugin(this, PLUGIN_TRANSFORM, QString("Measures"));
+	g_Host->RegisterPlugin(this, PLUGIN_MEASURE, QString("Measures"));
 
 	return OK;
 }
 
-Transform* TransformsBasicPlugin::NewTransform( const QString& name )
+Measure* TransformsBasicPlugin::NewMeasure( const QString& name )
 {
-	if (name == "Show Plane")
-	{
-		return new ShowYUVComponent;
-	}else
-	{
-		return new MeasuresBasic;
-	}
-	
+	return new MeasuresBasic;
 }
 
-void TransformsBasicPlugin::ReleaseTransform( Transform* t)
+void TransformsBasicPlugin::ReleaseMeasure( Measure* t)
 {
 	delete t;
 }

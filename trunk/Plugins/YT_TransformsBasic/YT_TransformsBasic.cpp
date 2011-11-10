@@ -138,7 +138,6 @@ const QList<TransformCapability>& ShowYUVComponent::GetCapabilities()
 		TransformCapability cap;
 		memset(&cap, 0, sizeof(cap));
 
-		cap.transformId = TRANSFORM_SHOW_PLANE;
 		cap.outputName = "Show Plane";
 		
 		cap.inputColors[cap.inputColorsCount++] = I420;

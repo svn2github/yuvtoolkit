@@ -855,7 +855,7 @@ void PlaybackControl::Reset()
 	m_Status.lastDisplayPTS = 0;
 	m_Status.lastProcessPTS = 0;
 	m_Status.seekingPTS = INVALID_PTS;
-	m_Status.plane = PLANE_ALL;
+	m_Status.plane = PLANE_COLOR;
 
 	m_Status.selectionFrom = INVALID_PTS;
 	m_Status.selectionTo = INVALID_PTS;

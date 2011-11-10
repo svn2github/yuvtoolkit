@@ -46,9 +46,9 @@ void ProcessThread::ProcessFrameQueue()
 	PlaybackControl::Status status;
 	m_Control->GetStatus(&status);
 		
-	m_Mutex.lock();
+	m_MutexSource.lock();
 	UintList sourceViewIds = m_SourceViewIds;
-	m_Mutex.unlock();
+	m_MutexSource.unlock();
 
 	bool completed = CleanAndCheckQueue(sourceViewIds);	
 
@@ -261,7 +261,7 @@ FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceView
 
 void ProcessThread::SetSources( UintList sourceViewIDs )
 {
-	QMutexLocker locker(&m_Mutex);
+	QMutexLocker locker(&m_MutexSource);
 	m_SourceViewIds = sourceViewIDs;
 }
 
@@ -314,4 +314,24 @@ unsigned int ProcessThread::GetNextPTS( UintList sourceViewIds, unsigned int cur
 		ptsNext = qMin<unsigned int>(pts, ptsNext);
 	}
 	return ptsNext;
+}
+
+void ProcessThread::SetMeasureRequests(const QList<MeasureRequest>& requests )
+{
+	QMutexLocker locker(&m_MutexMeasure);
+	m_MeasureRequests = requests;
+}
+
+void ProcessThread::GetMeasureResults( QList<MeasureResult>& results )
+{
+	static int counter = 0;
+	QMutexLocker locker(&m_MutexMeasure);
+	for (int i=0; i<results.size(); i++)
+	{
+		MeasureResult& op = results[i];
+		for (int i=0; i<PLANE_COUNT; i++)
+		{
+			op.results[i] = counter++;
+		}
+	}
 }

@@ -46,7 +46,7 @@ enum YUV_PLANE {
 	PLANE_Y = 0,
 	PLANE_U = 1,
 	PLANE_V = 2,
-	PLANE_ALL = 3,
+	PLANE_COLOR = 3,
 	PLANE_COUNT = 4,
 };
 
@@ -320,22 +320,21 @@ public:
 
 struct MeasureCapability
 {
-	unsigned int measureId;
-	QString outputName;
+	QString measureName; // Must be unique
 
 	unsigned int inputColorsCount;
 	COLOR_FORMAT inputColors[8];
-
-	bool supportColor; // Can operate on all planes jointly
-	bool supportPlanes; // Can operate on each plane separately
 	bool supportDistortionMap; // Can generate distortion map
 };
 
 struct MeasureOperation
 {
-	unsigned int MeasureId;
+	QString measureName;
+	
 	double results[PLANE_COUNT];
 	FramePtr distorionMap;
+	bool hasColorResult;
+	bool hasPlaneResult;
 };
 
 

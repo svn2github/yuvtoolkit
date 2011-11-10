@@ -172,7 +172,7 @@ void RenderThread::RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane)
 		Frame* sourceFrame = sourceFrameOrig.data();
 		float scaleX = 1;
 		float scaleY = 1;
-		if (plane != PLANE_ALL)
+		if (plane != PLANE_COLOR)
 		{
 			sourceFrame = &tempFrame;
 

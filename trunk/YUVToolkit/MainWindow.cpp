@@ -53,7 +53,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewListChanged()), this, SLOT(OnVideoViewListChanged()));
 	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), this, SLOT(OnVideoViewSourceListChanged()));
-
+	
 	ui.playbackToolBar->insertWidget(ui.action_Seek_Beginning, m_Slider);
 	ui.playbackToolBar->insertSeparator(ui.action_Seek_Beginning);
 
@@ -185,6 +185,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_MeasureWindow = new MeasureWindow(m_VideoViewList, m_MeasureDockWidget);
 	m_MeasureDockWidget->setWidget(m_MeasureWindow);
 	addDockWidget(Qt::LeftDockWidgetArea, m_MeasureDockWidget);
+	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), m_MeasureWindow, SLOT(OnVideoViewSourceListChanged()));
 
 	EnableButtons(0);
 }
@@ -1146,7 +1147,7 @@ void MainWindow::Init()
 
 void MainWindow::OnColorActionTriggered( QAction* a )
 {
-	YUV_PLANE plane = PLANE_ALL;
+	YUV_PLANE plane = PLANE_COLOR;
 	if (a == ui.action_Y)
 	{
 		plane = PLANE_Y;

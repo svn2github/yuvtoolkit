@@ -18,6 +18,11 @@ public:
 
 	// Manage list of source, transform and measure views
 	void SetSources(UintList sourceViewIds);
+
+	// Manage measure requests
+	void SetMeasureRequests(const QList<MeasureRequest>& requests);
+	// Manage measure results
+	void GetMeasureResults(QList<MeasureResult>& results);
 signals:
 	// Signals that one scene is ready for render
 	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
@@ -40,8 +45,11 @@ private:
 	unsigned int m_LastPTS;
 	
 	// List of source, transform and measure views
-	QMutex m_Mutex;
+	QMutex m_MutexSource;
 	UintList m_SourceViewIds;
+
+	QMutex m_MutexMeasure;
+	QList<MeasureRequest> m_MeasureRequests;
 };
 
 #endif

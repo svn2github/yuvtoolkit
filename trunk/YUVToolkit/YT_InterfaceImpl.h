@@ -227,4 +227,22 @@ private:
 	QMutex m_Mutex;
 };
 
+struct MeasureRequest
+{
+	unsigned int requestId;
+	unsigned int sourceViewId1;
+	unsigned int sourceViewId2;
+	QString measureName;
+	bool showDistortionMap;
+};
+
+struct MeasureResult
+{
+	unsigned int requestId;
+	QString measureName;
+	double results[PLANE_COUNT];
+
+	bool hasColorResult;
+	bool hasPlaneResult;
+};
 #endif // INTERFACE_IMPL_H
