@@ -174,19 +174,23 @@ void RenderThread::RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane)
 		float scaleY = 1;
 		if (plane != PLANE_COLOR)
 		{
-			sourceFrame = &tempFrame;
+			if (sourceFrameOrig->Format()->Color() != Y800)
+			{
+				sourceFrame = &tempFrame;
 
-			FormatPtr format = sourceFrameOrig->Format();
-			sourceFrame->Format()->SetColor(Y800);
-			sourceFrame->Format()->SetWidth(format->PlaneWidth(plane));
-			sourceFrame->Format()->SetHeight(format->PlaneHeight(plane));
-			sourceFrame->Format()->SetStride(0, format->Stride(plane));
-			sourceFrame->Format()->PlaneSize(0);
+				FormatPtr format = sourceFrameOrig->Format();
+				sourceFrame->Format()->SetColor(Y800);
+				sourceFrame->Format()->SetWidth(format->PlaneWidth(plane));
+				sourceFrame->Format()->SetHeight(format->PlaneHeight(plane));
+				sourceFrame->Format()->SetStride(0, format->Stride(plane));
+				sourceFrame->Format()->PlaneSize(0);
 
-			sourceFrame->SetData(0, sourceFrameOrig->Data(plane));
 
-			scaleX = ((float)format->PlaneWidth(plane))/format->Width();
-			scaleY = ((float)format->PlaneHeight(plane))/format->Height();
+				sourceFrame->SetData(0, sourceFrameOrig->Data(plane));
+
+				scaleX = ((float)format->PlaneWidth(plane))/format->Width();
+				scaleY = ((float)format->PlaneHeight(plane))/format->Height();
+			}
 		}
 		
 		int pos = -1;
