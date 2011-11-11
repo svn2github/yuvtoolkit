@@ -17,13 +17,10 @@
 #endif
 
 
-unsigned int VideoView::m_IDCounter = 0;
-
-VideoView::VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control) :
+VideoView::VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control) :
 	parent(_parent), m_Type(PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
-		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread), m_Control(control), m_Menu(NULL)
+		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread), m_Control(control), m_Menu(NULL), m_ViewID(viewId)
 {
-	m_ViewID = m_IDCounter++;
 	m_LastMousePoint.setX(-1);
 	m_LastMousePoint.setY(-1);
 	m_ScaleNum = 0;

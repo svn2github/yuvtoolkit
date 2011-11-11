@@ -69,7 +69,7 @@ QTreeView::item::section {
      <item>
       <widget class="QLabel" name="label_1">
        <property name="text">
-        <string>Processed</string>
+        <string>Processed 1</string>
        </property>
       </widget>
      </item>

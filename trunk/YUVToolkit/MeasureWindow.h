@@ -13,17 +13,16 @@ class VideoView;
 class MeasureResultsModel : public QAbstractTableModel
 {
 	Q_OBJECT;
-	QList<MeasureResult> m_Results;
-	int m_Columns;
+	QList<MeasureItem>& m_Results;
+	QStringList m_MeasureNameRows;
+	QList<unsigned int> m_ViewIdCols;
 public:
-	MeasureResultsModel(QObject *parent, int nrColumns);
+	MeasureResultsModel(QObject *parent, QList<MeasureItem>& );
 	int rowCount(const QModelIndex &parent = QModelIndex()) const ;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 	Qt::ItemFlags flags(const QModelIndex & /*index*/) const;
-
-	inline QList<MeasureResult>& GetResults() {return m_Results;}
 	void ResultsUpdated();
 };
 
@@ -43,19 +42,12 @@ class MeasureWindow : public QWidget
 	Q_OBJECT;
 	VideoViewList* m_VideoViewList;
 
-	VideoView* m_Original;
-	VideoView* m_Processed;
-	QList<Measure*> m_MeasureList;
-	/*
-	QList<Measure::MeasureItem> m_MeasureOutItems;
-	QList<Measure::MeasureItem> m_ViewOutItems;
-
-	QMap<Measure::MeasureItem, FramePtr> m_OutputViewItems;
-	QMap<Measure::MeasureItem, QVariant> m_OutputMeasureItems;*/
-
 	MeasureResultsModel* m_ResultsModel;
 	DistortionMapModel m_DistortionMapModel;
 	QTimer* m_UpdateTimer;	
+
+	UintList m_SourceList;
+	QList<MeasureItem> m_MeasureItemList;
 public:
 	Ui::MeasureWindow ui;
 
@@ -71,8 +63,9 @@ protected:
 	void showEvent(QShowEvent *event);
 	void hideEvent(QHideEvent *event);
 	
-	void ClearTimer();
+	void ClearAll();
 	void UpdateRequest();
+	void UpdateLabels();
 public slots:
 	void OnVideoViewSourceListChanged();
 private slots:

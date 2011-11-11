@@ -12,7 +12,7 @@
 
 VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL),
 	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0),
-	m_EndOfFile(false)
+	m_EndOfFile(false), m_IDCounter(0)
 {
 	m_RenderWidget = rw;
 	m_MainWindow = mainWindow;
@@ -48,7 +48,7 @@ VideoView* VideoViewList::NewVideoViewInternal( const char* title )
 
 	// m_RenderThread->Stop();
 
-	VideoView* vv = new VideoView(m_MainWindow, m_RenderWidget, m_ProcessThread, &m_Control);
+	VideoView* vv = new VideoView(m_MainWindow, m_IDCounter++, m_RenderWidget, m_ProcessThread, &m_Control);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
 
 	m_RenderWidget->layout->AddView(vv);
@@ -502,6 +502,11 @@ VideoView* VideoViewList::NewVideoViewSource( const char* path )
 	emit VideoViewListChanged();
 	emit VideoViewSourceListChanged();
 	return vv;
+}
+
+unsigned int VideoViewList::NewVideoViewId()
+{
+	return m_IDCounter++;
 }
 
 /*

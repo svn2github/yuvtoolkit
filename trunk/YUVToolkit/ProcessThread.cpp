@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "ProcessThread.h"
 
 ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c)
@@ -61,6 +62,8 @@ void ProcessThread::ProcessFrameQueue()
 		{
 			m_LastPTS = status.seekingPTS;
 			m_Control->OnFrameProcessed(status.seekingPTS, status.seekingPTS);
+			
+			ProcessMeasures(scene, status.plane);
 
 			WARNING_LOG("ProcessThread seeking %d done", status.seekingPTS);
 		}else
@@ -153,6 +156,9 @@ void ProcessThread::ProcessFrameQueue()
 		if (scene && scene->size()>0)
 		{
 			m_Control->OnFrameProcessed(ptsNext, INVALID_PTS);
+			
+			ProcessMeasures(scene, status.plane);
+
 			emit sceneReady(scene, ptsNext, false);
 			m_LastPTS = ptsNext;
 
@@ -316,22 +322,97 @@ unsigned int ProcessThread::GetNextPTS( UintList sourceViewIds, unsigned int cur
 	return ptsNext;
 }
 
-void ProcessThread::SetMeasureRequests(const QList<MeasureRequest>& requests )
+void ProcessThread::SetMeasureRequests(const QList<MeasureItem>& requests )
 {
 	QMutexLocker locker(&m_MutexMeasure);
 	m_MeasureRequests = requests;
 }
 
-void ProcessThread::GetMeasureResults( QList<MeasureResult>& results )
+void ProcessThread::GetMeasureResults( QList<MeasureItem>& results )
 {
-	static int counter = 0;
 	QMutexLocker locker(&m_MutexMeasure);
 	for (int i=0; i<results.size(); i++)
 	{
-		MeasureResult& op = results[i];
+		MeasureItem& item = results[i];
+		const MeasureItem& item2 = m_MeasureRequests[i];
+		assert(item.plugin == item2.plugin &&
+			item.measure == item2.measure &&
+			item.viewId == item2.viewId &&
+			item.sourceViewId1 == item2.sourceViewId1 &&
+			item.sourceViewId2 == item2.sourceViewId2 &&
+			item.showDistortionMap == item2.showDistortionMap &&
+			item.op.measureName == item2.op.measureName);
+
 		for (int i=0; i<PLANE_COUNT; i++)
 		{
-			op.results[i] = counter++;
+			item.op.results[i] = item2.op.results[i];
+		}
+		item.op.hasColorResult = item2.op.hasColorResult;
+		item.op.hasPlaneResult = item2.op.hasColorResult;
+	}
+}
+
+void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
+{
+	QMutexLocker locker(&m_MutexMeasure);
+
+	PlugInInfo* plugin = 0;
+	Measure* measure = 0;
+	unsigned int sourceViewId1 = 0;
+	unsigned int sourceViewId2 = 0;
+	QList<MeasureOperation*> operations;
+	if (m_MeasureRequests.size()>0)
+	{
+		for (int i=0; i<m_MeasureRequests.size(); i++)
+		{
+			MeasureItem& item = m_MeasureRequests[i];
+			if (item.plugin != plugin || item.measure != measure || 
+				item.sourceViewId1 != sourceViewId1 || item.sourceViewId2 != sourceViewId2)
+			{
+				if (operations.size()>0)
+				{
+					FramePtr f1 = FindFrame(scene, sourceViewId1);
+					FramePtr f2 = FindFrame(scene, sourceViewId2);
+					if (f1 && f2)
+					{
+						measure->Process(f1, f2, plane, operations);
+					}
+					operations.clear();
+				}
+
+				plugin = item.plugin;
+				measure = item.measure;
+				sourceViewId1 = item.sourceViewId1;
+				sourceViewId2 = item.sourceViewId2;
+			}
+
+			item.op.hasColorResult = false;
+			item.op.hasPlaneResult = false;
+			operations.append(&item.op);
+		}
+
+		if (operations.size()>0)
+		{
+			FramePtr f1 = FindFrame(scene, sourceViewId1);
+			FramePtr f2 = FindFrame(scene, sourceViewId2);
+			if (f1 && f2)
+			{
+				measure->Process(f1, f2, plane, operations);
+			}
+			operations.clear();
 		}
 	}
+}
+
+FramePtr ProcessThread::FindFrame( FrameListPtr lst, unsigned int id)
+{
+	for (int i=0; i<lst->size(); i++)
+	{
+		const FramePtr& ptr = lst->at(i);
+		if (ptr->Info(VIEW_ID) == id)
+		{
+			return ptr;
+		}
+	}
+	return FramePtr();
 }

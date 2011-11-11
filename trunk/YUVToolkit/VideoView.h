@@ -56,7 +56,7 @@ class VideoView : public QObject, public sigslot::has_slots<>
 	QList<QAction*> m_TransformActionList;
 	void UpdateTransformActionList();
 
-	static unsigned int m_IDCounter;
+	
 	unsigned int m_ViewID;
 	FramePtr m_LastFrame;
 
@@ -67,7 +67,7 @@ private:
 	void Init(Measure* measure, VideoQueue* source, VideoQueue* source1); // for measure view
 	void UnInit();
 public:
-	VideoView(QMainWindow* _mainWin, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control);
+	VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control);
 	
 	virtual ~VideoView();
 	QRect srcRect, dstRect;

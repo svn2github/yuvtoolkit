@@ -20,6 +20,7 @@ class VideoViewList : public QObject
 	QList<VideoView*> m_VideoList;
 	QMainWindow* m_MainWindow;
 
+	unsigned int m_IDCounter;
 	PlaybackControl m_Control;
 public:
 	VideoViewList(QMainWindow*, RendererWidget*);
@@ -44,6 +45,7 @@ public:
 	
 	void UpdateRenderLayout();
 	VideoView* NewVideoViewSource(const char* path);
+	unsigned int NewVideoViewId();
 private:
 	VideoView* NewVideoViewInternal(const char* title);
 public slots:

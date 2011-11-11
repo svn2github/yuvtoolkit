@@ -20,9 +20,9 @@ public:
 	void SetSources(UintList sourceViewIds);
 
 	// Manage measure requests
-	void SetMeasureRequests(const QList<MeasureRequest>& requests);
+	void SetMeasureRequests(const QList<MeasureItem>& requests);
 	// Manage measure results
-	void GetMeasureResults(QList<MeasureResult>& results);
+	void GetMeasureResults(QList<MeasureItem>& results);
 signals:
 	// Signals that one scene is ready for render
 	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
@@ -39,6 +39,8 @@ private:
 	unsigned int GetNextPTS(UintList sourceViewIds, unsigned int currentPTS);
 	FrameListPtr FastSeekQueue(unsigned int pts, UintList sourceViewIds, bool& completed);
 	bool CleanAndCheckQueue(UintList& sourceViewIds);
+	void ProcessMeasures(FrameListPtr scene, YUV_PLANE plane);
+	FramePtr FindFrame(FrameListPtr, unsigned int);
 private:
 	QMap<unsigned int, FrameList > m_SourceFrames;
 	PlaybackControl* m_Control;
@@ -49,7 +51,7 @@ private:
 	UintList m_SourceViewIds;
 
 	QMutex m_MutexMeasure;
-	QList<MeasureRequest> m_MeasureRequests;
+	QList<MeasureItem> m_MeasureRequests;
 };
 
 #endif

@@ -321,9 +321,6 @@ public:
 struct MeasureCapability
 {
 	QString measureName; // Must be unique
-
-	unsigned int inputColorsCount;
-	COLOR_FORMAT inputColors[8];
 	bool supportDistortionMap; // Can generate distortion map
 };
 
@@ -344,7 +341,7 @@ public:
 	virtual ~Measure() {}
 
 	virtual const QList<MeasureCapability>& GetCapabilities() = 0;
-	virtual void Process(FramePtr source1, FramePtr source2, YUV_PLANE plane, QList<MeasureOperation>& operations) = 0;
+	virtual void Process(FramePtr source1, FramePtr source2, YUV_PLANE plane, const QList<MeasureOperation*>& operations) = 0;
 };
 
 

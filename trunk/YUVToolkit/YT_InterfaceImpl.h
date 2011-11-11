@@ -227,22 +227,16 @@ private:
 	QMutex m_Mutex;
 };
 
-struct MeasureRequest
+struct MeasureItem
 {
-	unsigned int requestId;
+	PlugInInfo* plugin;
+	Measure* measure;
+	unsigned int viewId;
 	unsigned int sourceViewId1;
 	unsigned int sourceViewId2;
-	QString measureName;
 	bool showDistortionMap;
+
+	MeasureOperation op;
 };
 
-struct MeasureResult
-{
-	unsigned int requestId;
-	QString measureName;
-	double results[PLANE_COUNT];
-
-	bool hasColorResult;
-	bool hasPlaneResult;
-};
 #endif // INTERFACE_IMPL_H

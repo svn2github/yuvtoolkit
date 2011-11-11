@@ -6,27 +6,33 @@
 
 
 
-MeasureResultsModel::MeasureResultsModel( QObject *parent, int nrColumns ) :
-QAbstractTableModel(parent), m_Columns(nrColumns)
+MeasureResultsModel::MeasureResultsModel( QObject *parent, QList<MeasureItem>& results) :
+QAbstractTableModel(parent), m_Results(results)
 {
-	MeasureResult res = {0};
-	res.requestId = 0;
-	res.measureName = "MSE";
-	m_Results.append(res);
+	for (int i=0; i<m_Results.size(); i++)
+	{
+		const MeasureItem& item = m_Results.at(i);
+		if (!m_ViewIdCols.contains(item.viewId))
+		{
+			m_ViewIdCols.append(item.viewId);
+		}
 
-	res.requestId = 0;
-	res.measureName = "PSNR";
-	m_Results.append(res);
+		if (item.viewId == m_ViewIdCols.at(0))
+		{
+			m_MeasureNameRows.append(item.op.measureName);
+		}
+	}
 }
 
 int MeasureResultsModel::rowCount( const QModelIndex &parent /*= QModelIndex()*/ ) const
 {
-	return 8;
+	return m_MeasureNameRows.size()*4;
 }
 
 int MeasureResultsModel::columnCount( const QModelIndex &parent /*= QModelIndex()*/ ) const
 {
-	return m_Columns;
+	
+	return m_ViewIdCols.size();
 }
 
 QVariant MeasureResultsModel::data( const QModelIndex &index, int role /*= Qt::DisplayRole*/ ) const
@@ -36,15 +42,30 @@ QVariant MeasureResultsModel::data( const QModelIndex &index, int role /*= Qt::D
 
 	switch(role){
 	case Qt::DisplayRole:
-		if (row == 0 && col == 1) return QString("<--left");
-		if (row == 1 && col == 1) return QString("right-->");
+		{
+			unsigned int viewId = m_ViewIdCols.at(col);
+			const QString& measureName = m_MeasureNameRows.at(row/4);
 
-		return QString("%1, %2")
-			.arg(m_Results.at(0).results[0])
-			.arg(col +1);
+			for (int i=0; i<m_Results.size(); i++)
+			{
+				const MeasureItem& res = m_Results.at(i);
+				if (res.op.measureName == measureName && res.viewId == viewId)
+				{
+					int plane = row % 4;
+					if ((plane == PLANE_COLOR && res.op.hasColorResult) || res.op.hasPlaneResult)
+					{
+						return QString("%1").arg(res.op.results[plane], 0, 'f', 2);
+					}else
+					{
+						return QString("");
+					}
+				}
+			}
+		}
+
 		break;
 	case Qt::FontRole:
-		if (row == 0 && col == 0) //change font only for cell(0,0)
+		if (row%4 == 3)
 		{
 			QFont boldFont;
 			boldFont.setBold(true);
@@ -52,58 +73,62 @@ QVariant MeasureResultsModel::data( const QModelIndex &index, int role /*= Qt::D
 		}
 		break;
 	case Qt::BackgroundRole:
-		if (row == 1 && col == 1)  //change background only for cell(1,2)
+		if (row%4 == 3)
 		{
-			QBrush redBackground(Qt::lightGray);
-			return redBackground;
+			return QBrush(QColor(224, 192, 192));
 		}
 		break;
-	case Qt::CheckStateRole:
-
-		if (row == 1 && col == 0) //add a checkbox to cell(1,0)
-		{
-			return Qt::Checked;
-		}
 	}
 	return QVariant();
 }
 
 QVariant MeasureResultsModel::headerData( int section, Qt::Orientation orientation, int role ) const
 {
-	if (role == Qt::DisplayRole)
-	{
-		if (orientation == Qt::Horizontal) {
-			switch (section)
-			{
-			case 0:
-				return QString("first");
-			case 1:
-				return QString("second");
-			case 2:
-				return QString("third");
-			}
-		}else {
-			switch (section)
-			{
-			case 0:
-				return QString("PSNR-Y");
-			case 1:
-				return QString("PSNR-U");
-			case 2:
-				return QString("PSNR-V");
-			case 3:
-				return QString("PSNR");
-			case 4:
-				return QString("MSE-Y");
-			case 5:
-				return QString("MSE-U");
-			case 6:
-				return QString("MSE-V");
-			case 7:
-				return QString("MSE");
+	switch(role){
+	case Qt::DisplayRole:
+		{
+			if (orientation == Qt::Horizontal) {
+				switch (section)
+				{
+				case 0:
+					return QString("1");
+				case 1:
+					return QString("2");
+				case 2:
+					return QString("3");
+				}
+			}else {
+				QString header = m_MeasureNameRows.at(section/4);
+				int plane = section%4;
+				switch (plane)
+				{
+				case 0:
+					header += "(Y)";
+					break;
+				case 1:
+					header += "(U)";
+					break;
+				case 2:
+					header += "(V)";
+					break;
+				}
+				return header;
 			}
 		}
+		break;
+	case Qt::FontRole:
+		if (orientation == Qt::Vertical) 
+		{
+			if (section%4 == 3)
+			{
+				QFont boldFont;
+				boldFont.setBold(true);
+				return boldFont;
+			}
+		}
+		break;
 	}
+
 	return QVariant();
 
 }
@@ -111,7 +136,6 @@ QVariant MeasureResultsModel::headerData( int section, Qt::Orientation orientati
 Qt::ItemFlags MeasureResultsModel::flags( const QModelIndex & /*index*/ ) const
 {
 	return Qt::ItemIsSelectable |  Qt::ItemIsEnabled ;
-
 }
 
 void MeasureResultsModel::ResultsUpdated()
@@ -122,7 +146,6 @@ void MeasureResultsModel::ResultsUpdated()
 DistortionMapModel::DistortionMapModel( QObject *parent ) :
 QAbstractTableModel(parent)
 {
-
 }
 
 int DistortionMapModel::rowCount( const QModelIndex &parent /*= QModelIndex()*/ ) const
@@ -175,21 +198,24 @@ MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags 
 
 MeasureWindow::~MeasureWindow()
 {
-	ClearTimer();
-	SAFE_DELETE(m_ResultsModel);
 }
 
 void MeasureWindow::showEvent( QShowEvent *event )
 {
 	UpdateRequest();
+
+	PlaybackControl* c = m_VideoViewList->GetControl();
+	PlaybackControl::Status status;
+	c->GetStatus(&status);
+	if (!status.isPlaying)
+	{
+		c->Seek(status.lastProcessPTS, false);
+	}
 }
 
 void MeasureWindow::hideEvent( QHideEvent *event )
 {
-	ClearTimer();
-
-	QList<MeasureRequest> list;
-	m_VideoViewList->GetProcessThread()->SetMeasureRequests(list);
+	ClearAll();
 }
 
 
@@ -280,16 +306,11 @@ QSize MeasureWindow::sizeHint() const
 	QTableView* view = ui.table_Measure_Results;
 	QAbstractItemModel* m = view->model();
 
-	int colCount = m->columnCount();
-	int w = 0;
-	for(int i=0; i<colCount; ++i) {
-		w += view->columnWidth(i);
-	}
-	w += view->verticalHeader()->width();
-
-	w += qMax<int>(width()-view->width(), 0);
-	w += 10;
-	return QSize(w, 250);
+	QPainter painter;
+	QFontMetrics fontMetrics = painter.fontMetrics();
+	int columnWidth = fontMetrics.width("WWW.WW");
+	
+	return QSize(columnWidth*3+ui.verticalLayout->spacing()*3, 250);
 }
 
 void MeasureWindow::on_button_Options_clicked()
@@ -297,56 +318,117 @@ void MeasureWindow::on_button_Options_clicked()
 	
 }
 
-void MeasureWindow::ClearTimer()
+void MeasureWindow::OnTimer()
+{
+	if (m_ResultsModel)
+	{
+		m_VideoViewList->GetProcessThread()->GetMeasureResults(m_MeasureItemList);
+		m_ResultsModel->ResultsUpdated();
+		ui.table_Measure_Results->resizeColumnsToContents();
+	}
+}
+
+void MeasureWindow::UpdateRequest()
+{
+	ClearAll();
+
+	unsigned int sourceView1 = m_SourceList.at(0);
+
+	for (int j=1; j<m_SourceList.size(); j++)
+	{
+		unsigned int sourceView2 = m_SourceList.at(j);
+		unsigned int viewId = m_VideoViewList->NewVideoViewId();
+
+		const QList<PlugInInfo*>& plugins = GetHostImpl()->GetMeasurePluginList();
+		for (int i=0; i<plugins.size(); i++)
+		{
+			PlugInInfo* info = plugins.at(i);
+
+			MeasureItem req = {0};
+			
+			req.plugin = info;
+			req.measure = info->plugin->NewMeasure(info->string);
+
+			const QList<MeasureCapability>& caps = req.measure->GetCapabilities();
+			for (int j=0; j<caps.size(); j++)
+			{
+				const MeasureCapability& c = caps.at(j);
+				req.op.measureName = c.measureName;
+
+				req.sourceViewId1 = sourceView1;
+				req.sourceViewId2 = sourceView2;
+				req.showDistortionMap = false;
+				req.viewId = viewId;
+
+				m_MeasureItemList.append(req);
+			}
+		}
+	}
+
+	m_ResultsModel = new MeasureResultsModel(this, m_MeasureItemList);
+	m_VideoViewList->GetProcessThread()->SetMeasureRequests(m_MeasureItemList);
+	ui.table_Measure_Results->setModel(m_ResultsModel);
+
+	m_UpdateTimer = new QTimer(this);
+	m_UpdateTimer->setInterval(200);
+	connect(m_UpdateTimer, SIGNAL(timeout()), this, SLOT(OnTimer()));
+	m_UpdateTimer->start();
+
+}
+
+void MeasureWindow::OnVideoViewSourceListChanged()
+{
+	m_SourceList = m_VideoViewList->GetSourceIDList();
+	while (m_SourceList.size()>3)
+	{
+		m_SourceList.removeLast();
+	}
+	
+	UpdateLabels();
+	if (isVisible())
+	{
+		UpdateRequest();
+	}
+}
+
+void MeasureWindow::ClearAll()
 {
 	if (m_UpdateTimer)
 	{
 		m_UpdateTimer ->stop();
 		SAFE_DELETE(m_UpdateTimer);
 	}
-}
 
-void MeasureWindow::OnTimer()
-{
-	if (m_ResultsModel)
+	// Clear request list from process threads
+	m_VideoViewList->GetProcessThread()->SetMeasureRequests(QList<MeasureItem>());
+	ui.table_Measure_Results->setModel(NULL);
+
+	QSet<Measure*> measureListDeleted;
+	for (int i=0; i<m_MeasureItemList.size(); i++)
 	{
-		m_VideoViewList->GetProcessThread()->GetMeasureResults(m_ResultsModel->GetResults());
-		m_ResultsModel->ResultsUpdated();
+		const MeasureItem& req = m_MeasureItemList.at(i);
+		if (!measureListDeleted.contains(req.measure))
+		{
+			measureListDeleted.insert(req.measure);
+
+			req.plugin->plugin->ReleaseMeasure(req.measure);
+		}
 	}
+
+	SAFE_DELETE(m_ResultsModel);
+	m_MeasureItemList.clear();
 }
 
-void MeasureWindow::UpdateRequest()
+void MeasureWindow::UpdateLabels()
 {
-	QList<MeasureRequest> list;
-	MeasureRequest req = {0};
-	req.measureName = "MSE";
-	req.requestId = 0;
-	req.showDistortionMap = false;
-	req.sourceViewId1 = 0;
-	req.sourceViewId2 = 1;
-	list.append(req);
-	m_VideoViewList->GetProcessThread()->SetMeasureRequests(list);
-
-	ClearTimer();
-
-
-	m_UpdateTimer = new QTimer(this);
-	m_UpdateTimer->setInterval(200);
-	connect(m_UpdateTimer, SIGNAL(timeout()), this, SLOT(OnTimer()));
-	m_UpdateTimer->start();
-}
-
-void MeasureWindow::OnVideoViewSourceListChanged()
-{
-	UintList sourceList = m_VideoViewList->GetSourceIDList();
 	TextLabel* labels[] = {ui.label_Original, ui.label_Processed, ui.label_Processed_2};
 	QLabel* labels2[] = {ui.label_0, ui.label_1, ui.label_2};
 
 	for (int i=0; i<sizeof(labels)/sizeof(labels[0]); i++)
 	{
-		if (sourceList.size()>i)
+		if (m_SourceList.size()>i)
 		{
-			VideoView* vv = m_VideoViewList->find(sourceList.at(i));
+			VideoView* vv = m_VideoViewList->find(m_SourceList.at(i));
 			labels[i]->setText(vv->GetTitle());
 			labels[i]->setToolTip(vv->GetTitle());
 			labels[i]->show();
@@ -359,10 +441,4 @@ void MeasureWindow::OnVideoViewSourceListChanged()
 			labels2[i]->hide();
 		}
 	}
-
-	SAFE_DELETE(m_ResultsModel);
-	m_ResultsModel = new MeasureResultsModel(this, ((sourceList.size()>2)?2:1));
-
-	ui.table_Measure_Results->setModel(m_ResultsModel);
-	ui.table_Measure_Results->resizeColumnsToContents();
 }
