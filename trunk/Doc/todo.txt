@@ -1,5 +1,7 @@
 Bugs
 ===================
+playback speed is wrong when screen update is 50Hz
+after seeking to last frame, play button doesn't work
 Double clicking YUV file in OsX doesnt start playback
 When changing FPS, only one clip is played at the new FPS in case of multiple clips
 Crash when wrong stride is used

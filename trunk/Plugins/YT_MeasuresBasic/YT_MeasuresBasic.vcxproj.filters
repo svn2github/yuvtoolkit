@@ -15,12 +15,12 @@
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Release">
-      <UniqueIdentifier>{ccef90f6-f668-427e-a2b5-d449917494a8}</UniqueIdentifier>
+      <UniqueIdentifier>{d2d5514f-1e03-4cc5-9437-816faeacfeaf}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Debug">
-      <UniqueIdentifier>{e438a5ad-a317-48ea-827b-66b6b4580583}</UniqueIdentifier>
+      <UniqueIdentifier>{dc7ef5e7-ed1c-43ea-86c8-612df1de6449}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
@@ -29,52 +29,32 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Generated Files\Template">
-      <UniqueIdentifier>{39d2b1c9-97ed-496b-821f-d0ac89f4c617}</UniqueIdentifier>
-      <Extensions>cpp;moc</Extensions>
-      <SourceControlFiles>False</SourceControlFiles>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="YT_TransformsBasic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="YT_TransformsBasicPlugin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_YT_TransformsBasic.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_YT_TransformsBasicPlugin.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_YT_TransformsBasic.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_YT_TransformsBasicPlugin.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_YT_MeasuresBasic.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_YT_MeasuresBasic.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Template\moc_YT_MeasuresBasic.cpp">
-      <Filter>Generated Files\Template</Filter>
-    </ClCompile>
     <ClCompile Include="YT_MeasuresBasic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="YT_MeasuresBasicPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="generatedfiles\release\moc_YT_MeasuresBasic.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="generatedfiles\release\moc_YT_MeasuresBasicPlugin.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="generatedfiles\debug\moc_YT_MeasuresBasic.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="generatedfiles\debug\moc_YT_MeasuresBasicPlugin.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="YT_TransformsBasic.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="YT_TransformsBasicPlugin.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="YT_MeasuresBasic.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="YT_MeasuresBasicPlugin.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

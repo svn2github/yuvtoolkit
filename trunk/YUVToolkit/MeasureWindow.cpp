@@ -203,14 +203,6 @@ MeasureWindow::~MeasureWindow()
 void MeasureWindow::showEvent( QShowEvent *event )
 {
 	UpdateRequest();
-
-	PlaybackControl* c = m_VideoViewList->GetControl();
-	PlaybackControl::Status status;
-	c->GetStatus(&status);
-	if (!status.isPlaying)
-	{
-		c->Seek(status.lastProcessPTS, false);
-	}
 }
 
 void MeasureWindow::hideEvent( QHideEvent *event )
@@ -373,6 +365,14 @@ void MeasureWindow::UpdateRequest()
 	m_UpdateTimer->setInterval(200);
 	connect(m_UpdateTimer, SIGNAL(timeout()), this, SLOT(OnTimer()));
 	m_UpdateTimer->start();
+
+	PlaybackControl* c = m_VideoViewList->GetControl();
+	PlaybackControl::Status status;
+	c->GetStatus(&status);
+	if (!status.isPlaying)
+	{
+		c->Seek(status.lastProcessPTS, false);
+	}
 
 }
 

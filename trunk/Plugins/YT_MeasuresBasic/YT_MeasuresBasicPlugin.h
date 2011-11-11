@@ -1,10 +1,9 @@
-#ifndef TRANSFORMSBASIC_PLUGIN_H
-#define TRANSFORMSBASIC_PLUGIN_H
+#ifndef MEASURESBASICPLUGIN_H
+#define MEASURESBASICPLUGIN_H
 
 #include "../YT_Interface.h"
 
-
-class TransformsBasicPlugin : public QObject, public YTPlugIn
+class MeasuresBasicPlugin : public QObject, public YTPlugIn
 {
 	Q_OBJECT;
 	Q_INTERFACES(YTPlugIn);
@@ -15,4 +14,4 @@ public:
 	virtual void ReleaseMeasure(Measure*);
 };
 
-#endif // TRANSFORMSBASIC_PLUGIN_H
+#endif // MEASURESBASICPLUGIN_H
