@@ -17,12 +17,27 @@ extern "C" {
 
 #include "FFMpeg_Formats.h"
 
+COLOR_FORMAT GetFlippedColor(COLOR_FORMAT c)
+{
+	switch (c)
+	{
+	case YV12:
+		return I420;
+	case YV16:
+		return I422;
+	case YV24:
+		return I444;
+	}
+	return I420;
+}
 void PrepareCC(COLOR_FORMAT& color, unsigned char* (&data)[4])
 {
 	switch (color)
 	{
 	case YV12:
-		color = I420;
+	case YV16:
+	case YV24:
+		color = GetFlippedColor(color);
 		// SWAP
 		data[3] = data[1];
 		data[1] = data[2];
@@ -83,4 +98,71 @@ void ColorConversion(const Frame& in, Frame& out)
 			}
 		}
 	}
+
+	out.SetPTS(in.PTS());
+	out.SetFrameNumber(in.FrameNumber());
+	for (int i=0; i<LAST_INFO_KEY; i++)
+	{
+		if (in.HasInfo((INFO_KEY)i))
+		{
+			out.SetInfo((INFO_KEY)i, in.Info((INFO_KEY)i));
+		}
+	}
+}
+
+bool IsNativeFormat( unsigned int fourcc )
+{
+	switch (fourcc)
+	{
+	case Y800:
+	case I420:
+	case I422:
+	case I444:
+		return true;
+	}
+	return false;
+}
+
+bool IsFormatSupported( unsigned int fourcc )
+{
+	switch (fourcc)
+	{
+	case Y800:
+	case I420:
+	case I422:
+	case I444:
+	case IYUV:
+	case YV12:
+	case YV16:
+	case YV24:
+	case YUY2:
+	case UYVY:
+	case NV12:
+	case RGB24:
+	case RGBX32:
+	case XRGB32:
+		return true;
+	}
+	return false;
+}
+
+COLOR_FORMAT GetNativeFormat( unsigned int fourcc )
+{
+	switch (fourcc)
+	{
+	case YV16:
+	case YUY2:
+	case UYVY:
+		return I422;
+	case YV12:
+	case NV12:
+	case IYUV:
+		return I420;
+	case YV24:
+	case RGB24:
+	case RGBX32:
+	case XRGB32:
+		return I444;
+	}
+	return I420;
 }

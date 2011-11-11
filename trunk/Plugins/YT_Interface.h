@@ -18,19 +18,23 @@ enum RESULT {
 };
 
 enum COLOR_FORMAT {
-	NODATA = 0xffffffff,
-	GRAYSCALE8 = 8,
-	RGB24  = 24,
-	RGBX32 = 32,
-	XRGB32 = 321,
-	YUV444P = 241,  // Planar 444
-	YUV422P = 16,   // Planar 422
-	I420   = 0x30323449,
-	IYUV   = 0x56555949,
-	YV12   = 0x32315659,
+	NODATA = 0xffffffff,	
+	// Natively supported
+	Y800   = 0x30303859,   // 8 bit single plane
+	I420   = 0x30323449,   // Planar 420
+	I422   = 0x32323449,   // Planar 422
+	I444   = 0x34343449,   // Planar 444
+	IYUV   = 0x56555949,   // Same as I420
+	YV12   = 0x32315659,   // Planar 420, U,V flipped
+	YV16   = 0x36315659,   // Planar 422, U,V flipped	
+	YV24   = 0x34325659,   // Planar 444, U,V flipped
+	// Conversion needed
 	YUY2   = 0x32595559,
 	UYVY   = 0x59565955,
 	NV12   = 0x3231564E,
+	RGB24  = 24,
+	RGBX32 = 32,
+	XRGB32 = 321,
 };
 
 enum INFO_KEY {
@@ -42,6 +46,7 @@ enum INFO_KEY {
 	DST_RECT,         // QRect, destination rect for rendering
 	RENDER_SRC_SCALE_X, // float, scale used inside renderer
 	RENDER_SRC_SCALE_Y, // float, scale used inside renderer
+	LAST_INFO_KEY,
 };
 
 enum YUV_PLANE {

@@ -39,6 +39,7 @@ private slots:
 
 private:
 	void run();
+	void EnsureFrameFormat(FramePtr frame, FormatPtr format);
 	
 private:
 	int m_ViewID;
@@ -47,6 +48,8 @@ private:
 	Source* m_Source;
 	bool m_EndOfFile;
 	
+	FramePtr m_FrameOrig;
+	FormatPtr m_FormatNew;
 	FramePool* m_FramePool;
 	PlaybackControl* m_Control;
 	PlaybackControl::Status m_Status;

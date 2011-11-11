@@ -36,12 +36,16 @@ void FormatImpl::SetColor( COLOR_FORMAT value )
 	switch(color)
 	{
 	case I420:
+	case I422:
+	case I444:
 	case IYUV:
 		strcpy(name[0], "Y");
 		strcpy(name[1], "U");
 		strcpy(name[2], "V");
 		break;
 	case YV12:
+	case YV16:
+	case YV24:
 		strcpy(name[0], "Y");
 		strcpy(name[1], "V");
 		strcpy(name[2], "U");
@@ -51,9 +55,15 @@ void FormatImpl::SetColor( COLOR_FORMAT value )
 		strcpy(name[1], "UV");
 		break;
 	case YUY2:
+		break;
 	case UYVY:
+		strcpy(name[0], "Y");
+		break;
 	case NODATA:
-	case GRAYSCALE8:
+		break;
+	case Y800:
+		strcpy(name[0], "Y");
+		break;
 	case RGB24:
 	case RGBX32:
 	case XRGB32:
@@ -118,6 +128,14 @@ size_t FormatImpl::PlaneSize( int plane )
 			stride[0] = stride[1] = stride[2] = stride[3] = 0;
 			switch(color)
 			{
+			case I444:
+			case I422:
+			case YV16:
+			case YV24:
+				stride[0] = width;
+				stride[1] = width;
+				stride[2] = width;
+				break;
 			case I420:
 			case IYUV:
 			case YV12:
@@ -142,7 +160,7 @@ size_t FormatImpl::PlaneSize( int plane )
 			case RGBX32:
 				stride[0] = width*4;
 				break;
-			case GRAYSCALE8:
+			case Y800:
 				stride[0] = width;
 				break;
 			case NODATA:
@@ -153,6 +171,13 @@ size_t FormatImpl::PlaneSize( int plane )
 		int vstride[4] = {height, 0, 0, 0};
 		switch(color)
 		{
+		case I444:
+		case YV24:
+			vstride[1] = height;
+			vstride[2] = height;
+			break;
+		case YV16:
+		case I422:		
 		case I420:
 		case IYUV:
 		case YV12:
@@ -161,7 +186,7 @@ size_t FormatImpl::PlaneSize( int plane )
 			vstride[2] = height/2;
 			break;
 		case NODATA:
-		case GRAYSCALE8:
+		case Y800:
 		case RGB24:
 		case RGBX32:
 		case XRGB32:
@@ -230,11 +255,16 @@ bool FormatImpl::IsPlanar( int plane )
 {
 	switch(color)
 	{
+	case I444:
+	case I422:
+	case YV16:
+	case YV24:
 	case I420:
 	case IYUV:
 	case YV12:
 		return plane<=2;
 	case NV12:
+	case Y800:
 		return plane<=0;
 	case YUY2:
 	case UYVY:
@@ -261,6 +291,11 @@ int FormatImpl::PlaneWidth( int plane )
 
 	switch(color)
 	{
+	case I444:
+	case I422:
+	case YV16:
+	case YV24:
+		return width;
 	case I420:
 	case IYUV:
 	case YV12:
@@ -285,6 +320,11 @@ int FormatImpl::PlaneHeight( int plane )
 
 	switch(color)
 	{
+	case I444:
+	case YV24:
+		return height;
+	case I422:
+	case YV16:
 	case I420:
 	case IYUV:
 	case YV12:

@@ -177,7 +177,7 @@ void RenderThread::RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane)
 			sourceFrame = &tempFrame;
 
 			FormatPtr format = sourceFrameOrig->Format();
-			sourceFrame->Format()->SetColor(GRAYSCALE8);
+			sourceFrame->Format()->SetColor(Y800);
 			sourceFrame->Format()->SetWidth(format->PlaneWidth(plane));
 			sourceFrame->Format()->SetHeight(format->PlaneHeight(plane));
 			sourceFrame->Format()->SetStride(0, format->Stride(plane));

@@ -103,13 +103,17 @@ RESULT YTS_Raw::Init( const QString& path)
 			m_Format->SetColor(RGB24);
 		}else if (fourcc == "GRAY8")
 		{
-			m_Format->SetColor(GRAYSCALE8);
+			m_Format->SetColor(Y800);
 		}else
 		{
 			COLOR_FORMAT cc = (COLOR_FORMAT) FOURCC(fourcc.at(0).toAscii(), 
 				fourcc.at(1).toAscii(), 
 				fourcc.at(2).toAscii(), 
 				fourcc.at(3).toAscii());
+			if (cc == IYUV)
+			{
+				cc = I420;
+			}
 
 			m_Format->SetColor(cc);
 		}

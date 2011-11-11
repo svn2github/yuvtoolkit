@@ -20,6 +20,8 @@ SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) : m_Path(p
 	m_Source->Init(m_Path);
 
 	m_FramePool = GetHostImpl()->NewFramePool(BUFFER_COUNT);
+	m_FrameOrig = GetHostImpl()->NewFrame();
+	m_FormatNew = GetHostImpl()->NewFormat();
 }
 
 SourceThread::~SourceThread(void)
@@ -95,22 +97,39 @@ void SourceThread::ReadFrames()
 		SourceInfo info;
 		m_Source->GetInfo(info);
 
-		FramePtr frame = m_FramePool->Get();
-
-		if (*frame->Format() != *info.format)
+		FramePtr frame;
+		FramePtr frameOrig;
+		bool needConversion = true;
+		COLOR_FORMAT c = info.format->Color();
+		if (IsNativeFormat(c))
 		{
-			frame->Reset();
-		}
-
-		if (frame->Data(0) == 0)
+			frame = m_FramePool->Get();
+			EnsureFrameFormat(frame, info.format);
+		}else
 		{
-			// Allocate
-			frame->SetFormat(info.format);
-			frame->Allocate();
+			frame = m_FramePool->Get();
+			frameOrig = m_FrameOrig;
+			
+			m_FormatNew->SetColor(GetNativeFormat(c));
+			m_FormatNew->SetWidth(info.format->Width());
+			m_FormatNew->SetHeight(info.format->Height());
+			m_FormatNew->PlaneSize(0);
+
+			EnsureFrameFormat(frame, m_FormatNew);
+			EnsureFrameFormat(frameOrig, info.format);
 		}
 		
 		// Get next frame or seek 
-		RESULT res = m_Source->GetFrame(frame, m_Status.seekingPTS);
+		RESULT res = OK;
+		if (frameOrig)
+		{
+			res = m_Source->GetFrame(frameOrig, m_Status.seekingPTS);
+			ColorConversion(*frameOrig, *frame);
+		}else
+		{
+			res = m_Source->GetFrame(frame, m_Status.seekingPTS);
+		}
+		
 
 		if (res == OK)
 		{
@@ -133,4 +152,19 @@ void SourceThread::ReadFrames()
 			m_EndOfFile = true;
 		}
 	}	
+}
+
+void SourceThread::EnsureFrameFormat( FramePtr frame, FormatPtr format )
+{
+	if (*frame->Format() != *format)
+	{
+		frame->Reset();
+	}
+
+	if (frame->Data(0) == 0)
+	{
+		// Allocate
+		frame->SetFormat(format);
+		frame->Allocate();
+	}
 }
