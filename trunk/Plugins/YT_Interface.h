@@ -23,6 +23,8 @@ enum COLOR_FORMAT {
 	RGB24  = 24,
 	RGBX32 = 32,
 	XRGB32 = 321,
+	YUV444P = 241,  // Planar 444
+	YUV422P = 16,   // Planar 422
 	I420   = 0x30323449,
 	IYUV   = 0x56555949,
 	YV12   = 0x32315659,

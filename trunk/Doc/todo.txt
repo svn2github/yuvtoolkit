@@ -13,6 +13,7 @@ another mac feedback: doesn't run on 32-bit system
 
 0.0.2 
 ===================
+Convert internal format to be I420, YUV444 or YUV420
 Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
