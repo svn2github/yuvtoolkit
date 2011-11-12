@@ -41,10 +41,12 @@ private:
 	bool CleanAndCheckQueue(UintList& sourceViewIds);
 	void ProcessMeasures(FrameListPtr scene, YUV_PLANE plane);
 	FramePtr FindFrame(FrameListPtr, unsigned int);
+	bool IsLastScene(FrameListPtr scene);
 private:
 	QMap<unsigned int, FrameList > m_SourceFrames;
 	PlaybackControl* m_Control;
 	unsigned int m_LastPTS;
+	bool m_IsLastFrame;
 	
 	// List of source, transform and measure views
 	QMutex m_MutexSource;

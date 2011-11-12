@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "ProcessThread.h"
 
-ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c)
+ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c), m_IsLastFrame(false)
 {
 	moveToThread(this);
 }
@@ -39,6 +39,7 @@ void ProcessThread::Stop()
 void ProcessThread::Start()
 {
 	m_LastPTS = INVALID_PTS;
+	m_IsLastFrame = false;
 	start();
 }
 
@@ -65,12 +66,13 @@ void ProcessThread::ProcessFrameQueue()
 			
 			ProcessMeasures(scene, status.plane);
 
+			m_IsLastFrame = IsLastScene(scene);
 			WARNING_LOG("ProcessThread seeking %d done", status.seekingPTS);
 		}else
 		{
 			WARNING_LOG("ProcessThread seeking %d ... %d found", status.seekingPTS, scene->size());
 		}
-
+				
 		emit sceneReady(scene, status.seekingPTS, true);
 
 		return;
@@ -101,6 +103,16 @@ void ProcessThread::ProcessFrameQueue()
 			ptsNext = GetNextPTS(sourceViewIds, m_LastPTS);
 			if (ptsNext == INVALID_PTS)
 			{
+				if (m_IsLastFrame)
+				{
+					if (status.selectionFrom != INVALID_PTS)
+					{
+						m_Control->Seek(status.selectionFrom);
+					}else
+					{
+						m_Control->Seek(0);
+					}
+				}
 				return;
 			}
 			if (ptsNext-m_LastPTS<15)
@@ -109,7 +121,6 @@ void ProcessThread::ProcessFrameQueue()
 			}
 		}
 
-		bool lastFrame = true;
 		FrameListPtr scene; 
 		QMapIterator<unsigned int, FrameList > i(m_SourceFrames);
 		while (i.hasNext()) 
@@ -136,11 +147,6 @@ void ProcessThread::ProcessFrameQueue()
 
 			if (frameToRender)
 			{
-				if (!frameToRender->Info(IS_LAST_FRAME).toBool())
-				{
-					lastFrame = false;
-				}
-
 				if (!scene)
 				{
 					scene = GetHostImpl()->GetFrameList();
@@ -161,18 +167,16 @@ void ProcessThread::ProcessFrameQueue()
 
 			emit sceneReady(scene, ptsNext, false);
 			m_LastPTS = ptsNext;
+			m_IsLastFrame = IsLastScene(scene);
 
 			if (status.isPlaying)
 			{
 				if (status.selectionFrom != INVALID_PTS)
 				{
-					if (lastFrame || ptsNext>=status.selectionTo)
+					if (ptsNext>=status.selectionTo)
 					{
 						m_Control->Seek(status.selectionFrom);
 					}
-				}else if (lastFrame)
-				{
-					m_Control->Seek(0);
 				}
 			}
 		}else
@@ -415,4 +419,18 @@ FramePtr ProcessThread::FindFrame( FrameListPtr lst, unsigned int id)
 		}
 	}
 	return FramePtr();
+}
+
+bool ProcessThread::IsLastScene( FrameListPtr scene )
+{
+	for (int i=0; i<scene->size(); i++)
+	{
+		FramePtr frame = scene->at(i);
+		if (!frame->Info(IS_LAST_FRAME).toBool())
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
