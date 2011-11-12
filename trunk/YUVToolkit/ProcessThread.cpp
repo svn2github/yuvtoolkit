@@ -350,9 +350,8 @@ void ProcessThread::GetMeasureResults( QList<MeasureItem>& results )
 		for (int i=0; i<PLANE_COUNT; i++)
 		{
 			item.op.results[i] = item2.op.results[i];
+			item.op.hasResults[i] = item2.op.hasResults[i];
 		}
-		item.op.hasColorResult = item2.op.hasColorResult;
-		item.op.hasPlaneResult = item2.op.hasColorResult;
 	}
 }
 
@@ -390,8 +389,12 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 				sourceViewId2 = item.sourceViewId2;
 			}
 
-			item.op.hasColorResult = false;
-			item.op.hasPlaneResult = false;
+			item.op.hasResults[PLANE_Y] = 
+				item.op.hasResults[PLANE_U] = 
+				item.op.hasResults[PLANE_V] = 
+				item.op.hasResults[PLANE_COLOR] = 
+				false;
+
 			operations.append(&item.op);
 		}
 

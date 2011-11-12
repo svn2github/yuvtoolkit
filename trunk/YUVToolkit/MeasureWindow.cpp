@@ -52,7 +52,7 @@ QVariant MeasureResultsModel::data( const QModelIndex &index, int role /*= Qt::D
 				if (res.op.measureName == measureName && res.viewId == viewId)
 				{
 					int plane = row % 4;
-					if ((plane == PLANE_COLOR && res.op.hasColorResult) || res.op.hasPlaneResult)
+					if (res.op.hasResults[plane])
 					{
 						return QString("%1").arg(res.op.results[plane], 0, 'f', 2);
 					}else
@@ -133,9 +133,26 @@ QVariant MeasureResultsModel::headerData( int section, Qt::Orientation orientati
 
 }
 
-Qt::ItemFlags MeasureResultsModel::flags( const QModelIndex & /*index*/ ) const
+Qt::ItemFlags MeasureResultsModel::flags( const QModelIndex & index ) const
 {
-	return Qt::ItemIsSelectable |  Qt::ItemIsEnabled ;
+	int row = index.row();
+	int col = index.column();
+	unsigned int viewId = m_ViewIdCols.at(col);
+	const QString& measureName = m_MeasureNameRows.at(row/4);
+
+	for (int i=0; i<m_Results.size(); i++)
+	{
+		const MeasureItem& res = m_Results.at(i);
+		if (res.op.measureName == measureName && res.viewId == viewId)
+		{
+			int plane = row % 4;
+			if (res.op.hasResults[plane])
+			{
+				return Qt::ItemIsEnabled;
+			}
+		}
+	}
+	return 0;
 }
 
 void MeasureResultsModel::ResultsUpdated()
@@ -360,6 +377,7 @@ void MeasureWindow::UpdateRequest()
 	m_ResultsModel = new MeasureResultsModel(this, m_MeasureItemList);
 	m_VideoViewList->GetProcessThread()->SetMeasureRequests(m_MeasureItemList);
 	ui.table_Measure_Results->setModel(m_ResultsModel);
+	// ui.table_Measure_Results->setShowGrid(false);
 
 	m_UpdateTimer = new QTimer(this);
 	m_UpdateTimer->setInterval(200);

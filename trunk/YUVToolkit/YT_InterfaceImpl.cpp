@@ -291,6 +291,14 @@ int FormatImpl::PlaneWidth( int plane )
 
 	switch(color)
 	{
+	case Y800:
+		if (plane == 0)
+		{
+			return width;
+		}else
+		{
+			return 0;
+		}
 	case I444:
 	case I422:
 	case YV16:
@@ -320,6 +328,14 @@ int FormatImpl::PlaneHeight( int plane )
 
 	switch(color)
 	{
+	case Y800:
+		if (plane == 0)
+		{
+			return height;
+		}else
+		{
+			return 0;
+		}
 	case I444:
 	case YV24:
 		return height;

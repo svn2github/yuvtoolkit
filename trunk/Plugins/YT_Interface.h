@@ -335,10 +335,9 @@ struct MeasureOperation
 {
 	QString measureName;
 	
+	bool hasResults[PLANE_COUNT];
 	double results[PLANE_COUNT];
 	FramePtr distorionMap;
-	bool hasColorResult;
-	bool hasPlaneResult;
 };
 
 

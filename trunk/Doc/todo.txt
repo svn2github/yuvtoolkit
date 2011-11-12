@@ -3,8 +3,6 @@ Bugs
 playback speed is wrong when screen update is 50Hz
 Double clicking YUV file in OsX doesnt start playback
 Crash when wrong stride is used
-Flickers when continuously seeking in one direction
-another mac feedback: doesn't run on 32-bit system
 
 
 0.0.2 
