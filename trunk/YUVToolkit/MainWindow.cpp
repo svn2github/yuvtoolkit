@@ -250,12 +250,6 @@ void MainWindow::dropEvent( QDropEvent *event )
 
 void MainWindow::openFiles( const QStringList& fileList )
 {
-	// Pause
-	PlaybackControl* control = m_VideoViewList->GetControl();
-	PlaybackControl::Status status;
-	control->GetStatus(&status);
-	control->Play(false);
-
 	// Open files
 	QStringList fileList2;
 	for ( int i=0; i<fileList.size(); i++) // if at least one QUrl is present in list
@@ -278,6 +272,12 @@ void MainWindow::openFiles( const QStringList& fileList )
 	{
 		return;
 	}
+
+	// Pause
+	PlaybackControl* control = m_VideoViewList->GetControl();
+	PlaybackControl::Status status;
+	control->GetStatus(&status);
+	control->Play(false);
 
 	for ( int i=0; i<fileList2.size(); i++) // if at least one QUrl is present in list
 	{
