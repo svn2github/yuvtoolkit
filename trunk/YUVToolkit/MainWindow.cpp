@@ -491,7 +491,7 @@ void MainWindow::openFileInternal( QString strPath)
 		SourceThread* st = m_VideoViewList->at(i)->GetSourceThread();
 		if (st)
 		{
-			if (QString::compare(st->GetSourcePath(), strPath, Qt::CaseInsensitive) == 0)
+			if (QFileInfo(st->GetSourcePath()) == QFileInfo(strPath))
 			{
 				return;
 			}

@@ -2,10 +2,7 @@ Bugs
 ===================
 playback speed is wrong when screen update is 50Hz
 Double clicking YUV file in OsX doesnt start playback
-When changing FPS, only one clip is played at the new FPS in case of multiple clips
 Crash when wrong stride is used
-Drag-drop two files when one file is already playing
-Double click one file and then you can drag same file back to player window
 Flickers when continuously seeking in one direction
 another mac feedback: doesn't run on 32-bit system
 
