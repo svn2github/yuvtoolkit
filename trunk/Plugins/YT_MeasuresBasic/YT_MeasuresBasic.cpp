@@ -10,50 +10,69 @@ MeasuresBasic::~MeasuresBasic()
 {
 }
 
-double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, FramePtr output, int plane )
+double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, QVector<double>* mseMap)
 {
-	if (output)
-	{
-		output->Reset();
-		output->Format()->SetColor(I420);
-		output->Format()->SetStride(0, 0);
-		output->Format()->SetWidth(input1->Format()->PlaneWidth(plane));
-		output->Format()->SetHeight(input1->Format()->PlaneHeight(plane));
-		output->Format()->PlaneSize(0); // Update internal	
-		output->Allocate();
-	}
+	int width = input1->Format()->PlaneWidth(plane);
+	int height = input1->Format()->PlaneHeight(plane);
 
-	double mse = 0;
-	int frameSize = input1->Format()->PlaneSize(plane);	
-	unsigned char* p1 = input1->Data(plane);
-	unsigned char* p2 = input2->Data(plane);
-	for (int i=0; i<frameSize; i++, p1++, p2++)
+	if (mseMap)
 	{
-		int diff = ((int)(*p1))-((int)(*p2));
-		mse += diff*diff;
-
-		if (output)
+		if (mseMap->size() < width*height)
 		{
-			output->Data(0)[i] = (unsigned char)qMin<double>(mse, 255);
+			mseMap->resize(width*height);
 		}
 	}
-	mse /= frameSize;
+
+	unsigned char* p1 = input1->Data(plane);
+	unsigned char* p2 = input2->Data(plane);
+	int stride1 = input1->Format()->Stride(plane);
+	int stride2 = input2->Format()->Stride(plane);
+
+	double mse = 0;
+	int mseI = 0;
+	for (int i=0; i<height; i++)
+	{
+		for (int j=0; j<width; j++)
+		{
+			int diff = ((int)p1[j])-((int)p2[j]);
+			diff = diff*diff;
+			mse += diff;
+
+			if (mseMap)
+			{
+				(*mseMap)[mseI++] = (double)diff;
+			}
+		}
+		p1 += stride1;
+		p2 += stride2;
+	}
+	mse /= width;
+	mse /= height;
 
 	return mse;
 }
 
-const QList<MeasureCapability>& MeasuresBasic::GetCapabilities()
+const MeasureCapabilities& MeasuresBasic::GetCapabilities()
 {
-	if (m_Capabilities.isEmpty())
+	if (m_Capabilities.measures.size() == 0)
 	{
-		MeasureCapability cap = {0};
-		cap.supportDistortionMap = true;
+		m_Capabilities.hasColorDistortionMap = false;
+		m_Capabilities.hasPlaneDistortionMap = true;
 
-		cap.measureName = "MSE";
-		m_Capabilities.append(cap);
+		MeasureInfo info = {0};
+		info.name = "MSE";
+		info.unit = "";
+		info.lowerRange = 1;
+		info.upperRange = 100;
+		info.biggerValueIsBetter = false;
+		m_Capabilities.measures.append(info);
 
-		cap.measureName = "PSNR";
-		m_Capabilities.append(cap);
+		info.name = "PSNR";
+		info.unit = "dB";
+		info.lowerRange = 28;
+		info.upperRange = 50;
+		info.biggerValueIsBetter = true;
+		m_Capabilities.measures.append(info);
 	}
 
 	return m_Capabilities;
@@ -82,13 +101,23 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 		}
 	}
 
-	MeasureOperation* opMse = operations[idxMse];
-	MeasureOperation* opPsnr = operations[idxPsnr];
-
-	opMse->results[PLANE_Y] = opMse->results[PLANE_U] = 
-		opMse->results[PLANE_V] = opMse->results[PLANE_COLOR] = 0;
-	opPsnr->results[PLANE_Y] = opPsnr->results[PLANE_U] = 
-		opPsnr->results[PLANE_V] = opPsnr->results[PLANE_COLOR] = 0;
+	MeasureOperation* opMse = (idxMse>=0)?operations[idxMse]:0;
+	MeasureOperation* opPsnr = (idxPsnr>=0)?operations[idxPsnr]:0;
+	QVector<double>* mseMap = NULL;
+	int distMapWidth = 0;
+	int distMapHeight = 0;
+	
+	if (opMse)
+	{
+		opMse->results[PLANE_Y] = opMse->results[PLANE_U] = 
+			opMse->results[PLANE_V] = opMse->results[PLANE_COLOR] = 0;
+	}
+	
+	if (opPsnr)
+	{
+		opPsnr->results[PLANE_Y] = opPsnr->results[PLANE_U] = 
+			opPsnr->results[PLANE_V] = opPsnr->results[PLANE_COLOR] = 0;
+	}
 
 	int weightSum = 0;
 	for (int i=0; i<PLANE_COUNT; i++)
@@ -105,7 +134,28 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 				int weightPlane = source1->Format()->Width()*source1->Format()->Height()*4/width1/height1;
 				weightSum += weightPlane;
 
-				double mse = ComputeMSE(source1, source2, FramePtr(), i);
+				double mse = 0;
+				if (i == plane)
+				{
+					if (opMse)
+					{
+						mseMap = opMse->distortionMap;
+					}else if (opPsnr)
+					{
+						mseMap = opPsnr->distortionMap;
+					}
+					
+					if (mseMap)
+					{
+						distMapWidth = width1;
+						distMapHeight = height1;
+					}
+
+					mse = ComputeMSE(source1, source2, i, mseMap);
+				}else
+				{
+					mse = ComputeMSE(source1, source2, i, NULL);
+				}
 
 				opMse->hasResults[i] = true;
 				opMse->results[i] = mse;
@@ -122,6 +172,45 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 			double mse_min = qMax(opMse->results[i], 0.001);
 			opPsnr->results[i] = 20.0*log10(255.0) - 10.0*log10(mse_min);
 			opPsnr->hasResults[i] = true;
+		}
+	}
+
+	if (mseMap)
+	{
+		int mapSize = distMapWidth*distMapHeight;
+		if (opPsnr)
+		{
+			if (opMse)
+			{
+				// generate PSNR map from MSE map
+				if (opPsnr->distortionMap->size()<mapSize)
+				{
+					opPsnr->distortionMap->resize(mapSize);
+				}
+
+				double c = 20.0*log10(255.0);
+				for (int i=0; i<mapSize; i++)
+				{
+					(*opPsnr->distortionMap)[i] = c - 10.0*log10((*opMse->distortionMap)[i]);
+				}
+			}else
+			{
+				// generate PSNR map in-place
+				double c = 20.0*log10(255.0);
+				for (int i=0; i<mapSize; i++)
+				{
+					(*opPsnr->distortionMap)[i] = c - 10.0*log10((*opPsnr->distortionMap)[i]);
+				}
+			}
+
+			opPsnr->distortionMapWidth = distMapWidth;
+			opPsnr->distortionMapHeight = distMapHeight;
+		}
+
+		if (opMse)
+		{
+			opMse->distortionMapWidth = distMapWidth;
+			opMse->distortionMapHeight = distMapHeight;
 		}
 	}
 }

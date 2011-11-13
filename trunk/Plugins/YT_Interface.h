@@ -325,10 +325,21 @@ public:
 	virtual RESULT Process(const FramePtr input, QMap<QString, FramePtr>& outputs, QMap<QString, QVariant>& stats) {return OK;}
 };
 
-struct MeasureCapability
+struct MeasureInfo
 {
-	QString measureName; // Must be unique
-	bool supportDistortionMap; // Can generate distortion map
+	QString name;
+	QString unit;
+	double upperRange;
+	double lowerRange;
+	bool biggerValueIsBetter;
+};
+
+struct MeasureCapabilities
+{
+	QList<MeasureInfo> measures;
+
+	bool hasPlaneDistortionMap; // Can generate distortion map for Y, U, or V plane
+	bool hasColorDistortionMap; // Can generate distortion map for Y, U, or V planes combined
 };
 
 struct MeasureOperation
@@ -337,7 +348,10 @@ struct MeasureOperation
 	
 	bool hasResults[PLANE_COUNT];
 	double results[PLANE_COUNT];
-	FramePtr distorionMap;
+	
+	QVector<double>* distortionMap;
+	int distortionMapWidth;
+	int distortionMapHeight;
 };
 
 
@@ -346,7 +360,7 @@ class Measure
 public:
 	virtual ~Measure() {}
 
-	virtual const QList<MeasureCapability>& GetCapabilities() = 0;
+	virtual const MeasureCapabilities& GetCapabilities() = 0;
 	virtual void Process(FramePtr source1, FramePtr source2, YUV_PLANE plane, const QList<MeasureOperation*>& operations) = 0;
 };
 

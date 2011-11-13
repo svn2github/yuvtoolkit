@@ -395,6 +395,10 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 				item.op.hasResults[PLANE_COLOR] = 
 				false;
 
+			if (item.showDistortionMap)
+			{
+				// item.op.distortionMap = new QVector<double>();
+			}
 			operations.append(&item.op);
 		}
 

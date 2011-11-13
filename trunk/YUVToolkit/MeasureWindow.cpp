@@ -358,15 +358,14 @@ void MeasureWindow::UpdateRequest()
 			req.plugin = info;
 			req.measure = info->plugin->NewMeasure(info->string);
 
-			const QList<MeasureCapability>& caps = req.measure->GetCapabilities();
-			for (int j=0; j<caps.size(); j++)
+			const MeasureCapabilities& caps = req.measure->GetCapabilities();
+			for (int j=0; j<caps.measures.size(); j++)
 			{
-				const MeasureCapability& c = caps.at(j);
-				req.op.measureName = c.measureName;
-
+				req.op.measureName = caps.measures.at(j).name;
+				
 				req.sourceViewId1 = sourceView1;
 				req.sourceViewId2 = sourceView2;
-				req.showDistortionMap = false;
+				req.showDistortionMap = true;
 				req.viewId = viewId;
 
 				m_MeasureItemList.append(req);
