@@ -14,13 +14,33 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>22</width>
+     <height>22</height>
+    </size>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="action_Compare_0"/>
+   <addaction name="action_Compare_1"/>
+   <addaction name="action_Compare_2"/>
+   <addaction name="separator"/>
    <addaction name="action_Error_Map"/>
+   <addaction name="action_More_Actions"/>
   </widget>
   <action name="action_Error_Map">
    <property name="icon">
@@ -32,6 +52,48 @@
    </property>
    <property name="toolTip">
     <string>Error Map</string>
+   </property>
+  </action>
+  <action name="action_Compare_0">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-0.png</normaloff>:/RawVideoToolkit/Resources/compare-0.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Original Video</string>
+   </property>
+  </action>
+  <action name="action_Compare_1">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-1.png</normaloff>:/RawVideoToolkit/Resources/compare-1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Processed Video 1</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Processed Video 1</string>
+   </property>
+  </action>
+  <action name="action_Compare_2">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-2.png</normaloff>:/RawVideoToolkit/Resources/compare-2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Processed Video 2</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Processed Video 2</string>
+   </property>
+  </action>
+  <action name="action_More_Actions">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/list-add.png</normaloff>:/RawVideoToolkit/Resources/list-add.png</iconset>
+   </property>
+   <property name="text">
+    <string>More Actions</string>
    </property>
   </action>
  </widget>
