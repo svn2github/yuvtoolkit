@@ -35,12 +35,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="action_More_Actions"/>
+   <addaction name="action_Error_Map"/>
+   <addaction name="separator"/>
    <addaction name="action_Compare_0"/>
    <addaction name="action_Compare_1"/>
    <addaction name="action_Compare_2"/>
-   <addaction name="separator"/>
-   <addaction name="action_Error_Map"/>
-   <addaction name="action_More_Actions"/>
   </widget>
   <action name="action_Error_Map">
    <property name="icon">
