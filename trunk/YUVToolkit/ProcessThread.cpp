@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "ProcessThread.h"
 
-ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c), m_IsLastFrame(false)
+ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c), m_IsLastFrame(false), m_DistMapFramePool(NULL)
 {
 	moveToThread(this);
 }
@@ -18,6 +18,8 @@ void ProcessThread::run()
 	qRegisterMetaType<RectList>("RectList");
 	qRegisterMetaType<FrameListPtr>("FrameListPtr");
 
+	m_DistMapFramePool = GetHostImpl()->NewFramePool(8);
+
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(ProcessFrameQueue()), Qt::DirectConnection);
 	timer->start(15);
@@ -26,6 +28,9 @@ void ProcessThread::run()
 
 	timer->stop();
 	SAFE_DELETE(timer);
+
+	GetHostImpl()->ReleaseFramePool(m_DistMapFramePool);
+	m_DistMapFramePool = NULL;
 }
 
 void ProcessThread::Stop()

@@ -160,57 +160,54 @@ void MeasureResultsModel::ResultsUpdated()
 	emit dataChanged(index(0,0), index(8, 1));
 }
 
-DistortionMapModel::DistortionMapModel( QObject *parent ) :
-QAbstractTableModel(parent)
+/*DistortionMapModel::DistortionMapModel( QObject *parent, QList<MeasureItem>& res) :
+	QAbstractTableModel(parent), m_Results(res)
 {
+	QStringList measures;
+	for (int i=0; i<m_Results.size(); i++)
+	{
+		const MeasureItem& item = m_Results.at(i);
+		if (!measures.contains(item.op.measureName))
+		{
+			m_Index.append(i);
+			measures.append(item.op.measureName);
+		}
+	}
 }
+*/
 
-int DistortionMapModel::rowCount( const QModelIndex &parent /*= QModelIndex()*/ ) const
-{
-	return 2;
-}
-
-int DistortionMapModel::columnCount( const QModelIndex &parent /*= QModelIndex()*/ ) const
-{
-	return 1;
-}
-
-QVariant DistortionMapModel::data( const QModelIndex &index, int role /*= Qt::DisplayRole*/ ) const
+/*
+QVariant DistortionMapModel::data( const QModelIndex &index, int role ) const
 {
 	int row = index.row();
 	int col = index.column();
+	const MeasureItem& item = m_Results.at(m_Index.at(row));
 
 	switch(role){
 	case Qt::DisplayRole:
-		switch (index.row())
-		{
-		case 0:
-			return QString("PSNR map");
-		case 1:
-			return QString("MSE map");
-		}
+		return item.op.measureName;
 		break;
 	case Qt::CheckStateRole:
-		return Qt::Checked;
+		if (item.showDistortionMap)
+		{
+			return Qt::Checked;
+		}else
+		{
+			return Qt::Unchecked;
+		}
 	}
 	return QVariant();
 }
-
-Qt::ItemFlags DistortionMapModel::flags( const QModelIndex & /*index*/ ) const
-{
-	return Qt::ItemIsSelectable |  Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
-}
-
+*/
 
 MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags flags) : 
-	QWidget(parent, flags), m_VideoViewList(vvList), m_ResultsModel(NULL), m_DistortionMapModel(this), m_UpdateTimer(NULL)
+	QMainWindow(parent, flags), m_VideoViewList(vvList), m_ResultsModel(NULL), m_UpdateTimer(NULL),
+		m_ResultsTable(new QTableView(this))
 {
 	ui.setupUi(this);
-	// connect(ui.originalList, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboIndexChanged(int)));
-	// connect(ui.processedList, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboIndexChanged(int)));
 
-	ui.table_Distortion_Map->setModel(&m_DistortionMapModel);
-	ui.table_Distortion_Map->setColumnWidth(0, 1000);
+	setWindowFlags(Qt::Widget); 
+	setCentralWidget(m_ResultsTable);
 }
 
 MeasureWindow::~MeasureWindow()
@@ -312,14 +309,14 @@ void MeasureWindow::UpdateMeasureWindow()
 
 QSize MeasureWindow::sizeHint() const
 {
-	QTableView* view = ui.table_Measure_Results;
+	QTableView* view = m_ResultsTable;
 	QAbstractItemModel* m = view->model();
 
 	QPainter painter;
 	QFontMetrics fontMetrics = painter.fontMetrics();
 	int columnWidth = fontMetrics.width("WWW.WW");
 	
-	return QSize(columnWidth*3+ui.verticalLayout->spacing()*3, 250);
+	return QSize(columnWidth*3, 250);
 }
 
 void MeasureWindow::on_button_Options_clicked()
@@ -333,7 +330,7 @@ void MeasureWindow::OnTimer()
 	{
 		m_VideoViewList->GetProcessThread()->GetMeasureResults(m_MeasureItemList);
 		m_ResultsModel->ResultsUpdated();
-		ui.table_Measure_Results->resizeColumnsToContents();
+		m_ResultsTable->resizeColumnsToContents();
 	}
 }
 
@@ -341,8 +338,10 @@ void MeasureWindow::UpdateRequest()
 {
 	ClearAll();
 
-	unsigned int sourceView1 = m_SourceList.at(0);
+	QSettings settings;
+	QStringList distMap = settings.value("measure/distmap", QStringList("MSE")).toStringList();
 
+	unsigned int sourceView1 = m_SourceList.at(0);
 	for (int j=1; j<m_SourceList.size(); j++)
 	{
 		unsigned int sourceView2 = m_SourceList.at(j);
@@ -361,11 +360,12 @@ void MeasureWindow::UpdateRequest()
 			const MeasureCapabilities& caps = req.measure->GetCapabilities();
 			for (int j=0; j<caps.measures.size(); j++)
 			{
-				req.op.measureName = caps.measures.at(j).name;
+				QString m = caps.measures.at(j).name;
+				req.op.measureName = m;
 				
 				req.sourceViewId1 = sourceView1;
 				req.sourceViewId2 = sourceView2;
-				req.showDistortionMap = true;
+				req.showDistortionMap = distMap.contains(m);
 				req.viewId = viewId;
 
 				m_MeasureItemList.append(req);
@@ -375,8 +375,8 @@ void MeasureWindow::UpdateRequest()
 
 	m_ResultsModel = new MeasureResultsModel(this, m_MeasureItemList);
 	m_VideoViewList->GetProcessThread()->SetMeasureRequests(m_MeasureItemList);
-	ui.table_Measure_Results->setModel(m_ResultsModel);
-	// ui.table_Measure_Results->setShowGrid(false);
+	m_ResultsTable->setModel(m_ResultsModel);
+	// m_ResultsTable->setShowGrid(false);
 
 	m_UpdateTimer = new QTimer(this);
 	m_UpdateTimer->setInterval(200);
@@ -418,8 +418,8 @@ void MeasureWindow::ClearAll()
 
 	// Clear request list from process threads
 	m_VideoViewList->GetProcessThread()->SetMeasureRequests(QList<MeasureItem>());
-	ui.table_Measure_Results->setModel(NULL);
-
+	m_ResultsTable->setModel(NULL);
+	
 	QSet<Measure*> measureListDeleted;
 	for (int i=0; i<m_MeasureItemList.size(); i++)
 	{
@@ -438,9 +438,8 @@ void MeasureWindow::ClearAll()
 
 void MeasureWindow::UpdateLabels()
 {
-	TextLabel* labels[] = {ui.label_Original, ui.label_Processed, ui.label_Processed_2};
-	QLabel* labels2[] = {ui.label_0, ui.label_1, ui.label_2};
-
+	/*TextLabel* labels[] = {ui.label_Original, ui.label_Processed, ui.label_Processed_2};
+	
 	for (int i=0; i<sizeof(labels)/sizeof(labels[0]); i++)
 	{
 		if (m_SourceList.size()>i)
@@ -448,14 +447,21 @@ void MeasureWindow::UpdateLabels()
 			VideoView* vv = m_VideoViewList->find(m_SourceList.at(i));
 			labels[i]->setText(vv->GetTitle());
 			labels[i]->setToolTip(vv->GetTitle());
-			labels[i]->show();
-			labels2[i]->show();
 		}else
 		{
 			labels[i]->setText("");
 			labels[i]->setToolTip("");
-			labels[i]->hide();
-			labels2[i]->hide();
 		}
 	}
+
+	for (int i=0; i<sizeof(labels)/sizeof(labels[0]); i++)
+	{
+		if (m_SourceList.size()>2)
+		{
+			labels[i]->show();
+		}else
+		{
+			labels[i]->hide();
+		}
+	}*/
 }

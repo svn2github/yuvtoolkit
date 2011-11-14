@@ -47,6 +47,9 @@ private:
 	PlaybackControl* m_Control;
 	unsigned int m_LastPTS;
 	bool m_IsLastFrame;
+
+	QMap<unsigned int, DistMapPtr> m_DistMaps;
+	FramePool* m_DistMapFramePool;
 	
 	// List of source, transform and measure views
 	QMutex m_MutexSource;

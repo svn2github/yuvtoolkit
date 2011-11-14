@@ -342,6 +342,9 @@ struct MeasureCapabilities
 	bool hasColorDistortionMap; // Can generate distortion map for Y, U, or V planes combined
 };
 
+typedef QVector<double> DistMap;
+typedef QSharedPointer<DistMap> DistMapPtr;
+
 struct MeasureOperation
 {
 	QString measureName;
@@ -349,9 +352,9 @@ struct MeasureOperation
 	bool hasResults[PLANE_COUNT];
 	double results[PLANE_COUNT];
 	
-	QVector<double>* distortionMap;
-	int distortionMapWidth;
-	int distortionMapHeight;
+	DistMapPtr distMap;
+	int distMapWidth;
+	int distMapHeight;
 };
 
 

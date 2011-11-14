@@ -10,7 +10,7 @@ MeasuresBasic::~MeasuresBasic()
 {
 }
 
-double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, QVector<double>* mseMap)
+double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, DistMapPtr mseMap)
 {
 	int width = input1->Format()->PlaneWidth(plane);
 	int height = input1->Format()->PlaneHeight(plane);
@@ -103,7 +103,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 
 	MeasureOperation* opMse = (idxMse>=0)?operations[idxMse]:0;
 	MeasureOperation* opPsnr = (idxPsnr>=0)?operations[idxPsnr]:0;
-	QVector<double>* mseMap = NULL;
+	DistMapPtr mseMap;
 	int distMapWidth = 0;
 	int distMapHeight = 0;
 	
@@ -139,10 +139,10 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 				{
 					if (opMse)
 					{
-						mseMap = opMse->distortionMap;
+						mseMap = opMse->distMap;
 					}else if (opPsnr)
 					{
-						mseMap = opPsnr->distortionMap;
+						mseMap = opPsnr->distMap;
 					}
 					
 					if (mseMap)
@@ -154,7 +154,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 					mse = ComputeMSE(source1, source2, i, mseMap);
 				}else
 				{
-					mse = ComputeMSE(source1, source2, i, NULL);
+					mse = ComputeMSE(source1, source2, i, DistMapPtr());
 				}
 
 				opMse->hasResults[i] = true;
@@ -183,15 +183,15 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 			if (opMse)
 			{
 				// generate PSNR map from MSE map
-				if (opPsnr->distortionMap->size()<mapSize)
+				if (opPsnr->distMap->size()<mapSize)
 				{
-					opPsnr->distortionMap->resize(mapSize);
+					opPsnr->distMap->resize(mapSize);
 				}
 
 				double c = 20.0*log10(255.0);
 				for (int i=0; i<mapSize; i++)
 				{
-					(*opPsnr->distortionMap)[i] = c - 10.0*log10((*opMse->distortionMap)[i]);
+					(*opPsnr->distMap)[i] = c - 10.0*log10((*opMse->distMap)[i]);
 				}
 			}else
 			{
@@ -199,18 +199,18 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 				double c = 20.0*log10(255.0);
 				for (int i=0; i<mapSize; i++)
 				{
-					(*opPsnr->distortionMap)[i] = c - 10.0*log10((*opPsnr->distortionMap)[i]);
+					(*opPsnr->distMap)[i] = c - 10.0*log10((*opPsnr->distMap)[i]);
 				}
 			}
 
-			opPsnr->distortionMapWidth = distMapWidth;
-			opPsnr->distortionMapHeight = distMapHeight;
+			opPsnr->distMapWidth = distMapWidth;
+			opPsnr->distMapHeight = distMapHeight;
 		}
 
 		if (opMse)
 		{
-			opMse->distortionMapWidth = distMapWidth;
-			opMse->distortionMapHeight = distMapHeight;
+			opMse->distMapWidth = distMapWidth;
+			opMse->distMapHeight = distMapHeight;
 		}
 	}
 }
