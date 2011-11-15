@@ -4,7 +4,6 @@
 #include "YT_InterfaceImpl.h"
 #include <QtGui>
 #include <QtCore>
-#include "ui_MeasureWindow.h"
 class VideoViewList;
 class VideoView;
 
@@ -31,6 +30,8 @@ class MeasureWindow : public QMainWindow
 	Q_OBJECT;
 	VideoViewList* m_VideoViewList;
 
+
+	QToolBar* m_ToolBar;
 	QTableView* m_ResultsTable;
 	MeasureResultsModel* m_ResultsModel;
 	QTimer* m_UpdateTimer;	
@@ -38,11 +39,10 @@ class MeasureWindow : public QMainWindow
 	UintList m_SourceList;
 	QList<MeasureItem> m_MeasureItemList;
 public:
-	Ui::MeasureWindow ui;
-
 	MeasureWindow(VideoViewList* vvList, QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MeasureWindow();
 
+	QToolBar* GetToolBar() {return m_ToolBar;}
 	void UpdateMeasure();
 
 	void UpdateMeasureWindow();

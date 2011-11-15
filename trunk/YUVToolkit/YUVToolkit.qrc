@@ -64,5 +64,6 @@
         <file>Resources/compare-0.png</file>
         <file>Resources/compare-1.png</file>
         <file>Resources/compare-2.png</file>
+        <file>Resources/distortion-map.png</file>
     </qresource>
 </RCC>

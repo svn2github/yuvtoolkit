@@ -165,9 +165,6 @@
     <ClInclude Include="generatedfiles\ui_MainWindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="generatedfiles\ui_MeasureWindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="YUVToolkit.ico" />
@@ -204,9 +201,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="MainWindow.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="MeasureWindow.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="YUVToolkit.qrc">

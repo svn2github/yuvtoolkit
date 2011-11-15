@@ -202,9 +202,14 @@ QVariant DistortionMapModel::data( const QModelIndex &index, int role ) const
 
 MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags flags) : 
 	QMainWindow(parent, flags), m_VideoViewList(vvList), m_ResultsModel(NULL), m_UpdateTimer(NULL),
-		m_ResultsTable(new QTableView(this))
+		m_ResultsTable(new QTableView(this)), m_ToolBar(new QToolBar(this))
 {
-	ui.setupUi(this);
+	m_ToolBar->setMovable(false);
+	m_ToolBar->setAllowedAreas(Qt::TopToolBarArea);
+	m_ToolBar->setIconSize(QSize(22, 22));
+	m_ToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	m_ToolBar->setFloatable(false);
+	addToolBar(Qt::TopToolBarArea, m_ToolBar);
 
 	setWindowFlags(Qt::Widget); 
 	setCentralWidget(m_ResultsTable);

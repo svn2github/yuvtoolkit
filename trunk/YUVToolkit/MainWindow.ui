@@ -840,6 +840,84 @@ background-color: rgb(0, 0, 0);
     <string>Esc</string>
    </property>
   </action>
+  <action name="action_Enable_Measures">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/list-add.png</normaloff>:/RawVideoToolkit/Resources/list-add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enable/Disable Distortion Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/Disable Distortion Measures</string>
+   </property>
+   <property name="statusTip">
+    <string>Enable/Disable Distortion Measures</string>
+   </property>
+  </action>
+  <action name="action_Distortion_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/distortion-map.png</normaloff>:/RawVideoToolkit/Resources/distortion-map.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Distortion Map</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Distortion Map</string>
+   </property>
+   <property name="statusTip">
+    <string>Show Distortion Map</string>
+   </property>
+  </action>
+  <action name="action_Select_Original">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-0.png</normaloff>:/RawVideoToolkit/Resources/compare-0.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Original Video</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Original Video</string>
+   </property>
+   <property name="statusTip">
+    <string>Select Original Video</string>
+   </property>
+  </action>
+  <action name="action_Select_Processed_1">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-1.png</normaloff>:/RawVideoToolkit/Resources/compare-1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Processed Video 1</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Processed Video 1</string>
+   </property>
+   <property name="statusTip">
+    <string>Select Processed Video 1</string>
+   </property>
+  </action>
+  <action name="action_Select_Processed_2">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-2.png</normaloff>:/RawVideoToolkit/Resources/compare-2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Processed Video 2</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Processed Video 2</string>
+   </property>
+   <property name="statusTip">
+    <string>Select Processed Video 2</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

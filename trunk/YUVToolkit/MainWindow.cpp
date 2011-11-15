@@ -187,6 +187,13 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	addDockWidget(Qt::LeftDockWidgetArea, m_MeasureDockWidget);
 	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), m_MeasureWindow, SLOT(OnVideoViewSourceListChanged()));
 
+	m_MeasureWindow->GetToolBar()->addAction(ui.action_Enable_Measures);
+	m_MeasureWindow->GetToolBar()->addAction(ui.action_Distortion_Map);
+	m_MeasureWindow->GetToolBar()->addSeparator();
+	m_MeasureWindow->GetToolBar()->addAction(ui.action_Select_Original);
+	m_MeasureWindow->GetToolBar()->addAction(ui.action_Select_Processed_1);
+	m_MeasureWindow->GetToolBar()->addAction(ui.action_Select_Processed_2);
+
 	EnableButtons(0);
 }
 
@@ -943,6 +950,7 @@ void MainWindow::EnableButtons( int nrSources )
 	
 	m_ActionsButton->setEnabled(nrSources!=0);
 	ui.action_Compare->setEnabled(nrSources>1);
+	ui.action_Select_Processed_2->setEnabled(nrSources>2);
 
 	m_ZoomGroup->setEnabled(nrSources!=0);
 	m_ColorGroup->setEnabled(nrSources!=0);
