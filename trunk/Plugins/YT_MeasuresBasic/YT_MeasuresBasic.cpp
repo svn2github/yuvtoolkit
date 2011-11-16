@@ -63,13 +63,13 @@ const MeasureCapabilities& MeasuresBasic::GetCapabilities()
 		info.name = "MSE";
 		info.unit = "";
 		info.lowerRange = 1;
-		info.upperRange = 100;
+		info.upperRange = 400;
 		info.biggerValueIsBetter = false;
 		m_Capabilities.measures.append(info);
 
 		info.name = "PSNR";
 		info.unit = "dB";
-		info.lowerRange = 28;
+		info.lowerRange = 22;
 		info.upperRange = 50;
 		info.biggerValueIsBetter = true;
 		m_Capabilities.measures.append(info);
