@@ -59,6 +59,8 @@ protected:
 	bool m_NeedReset;
 
 	int counter;
+	int m_ResetLastCheckedWidth;
+	int m_ResetLastCheckedHeight;
 };
 
 #endif // YTR_D3D_H

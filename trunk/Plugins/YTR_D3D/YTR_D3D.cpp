@@ -36,7 +36,7 @@ void YTR_D3DPlugin::ReleaseRenderer( Renderer* parent )
 
 
 YTR_D3D::YTR_D3D(Host* host, QWidget* widget, const QString& name) 
-: m_Host(host), D3DWidget(widget), m_NeedReset(false)
+	: m_Host(host), D3DWidget(widget), m_NeedReset(false), m_ResetLastCheckedWidth(0), m_ResetLastCheckedHeight(0)
 {
 	QTimer *timer = new QTimer(widget);
 	connect(timer, SIGNAL(timeout()), this, SLOT(OnResizeTimer()));
@@ -52,13 +52,21 @@ YTR_D3D::~YTR_D3D()
 
 void YTR_D3D::OnResizeTimer()
 {
-	if (width()>640 || height()>480)
+	int w = width();
+	int h = height();
+	if (w>640 || h>480)
 	{
-		if (width()!=bufferWidth || height()!=bufferHeight)
+		if (w!=bufferWidth || w!=bufferHeight)
 		{
-			m_NeedReset = true;
+			if (w == m_ResetLastCheckedWidth && h == m_ResetLastCheckedHeight)
+			{
+				m_NeedReset = true;
+			}
 		}
 	}
+
+	m_ResetLastCheckedWidth = w;
+	m_ResetLastCheckedHeight = h;
 }
 
 #define RECT_IS_EMPTY(rc) (rc->left==0 && rc->right==0 && rc->top==0 && rc->bottom==0)
