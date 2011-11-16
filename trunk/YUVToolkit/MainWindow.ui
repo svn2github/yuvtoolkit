@@ -176,6 +176,7 @@ background-color: rgb(0, 0, 0);
     <addaction name="action_Compare"/>
     <addaction name="separator"/>
     <addaction name="menu_Logging"/>
+    <addaction name="action_Options"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
@@ -916,6 +917,11 @@ background-color: rgb(0, 0, 0);
    </property>
    <property name="statusTip">
     <string>Select Processed Video 2</string>
+   </property>
+  </action>
+  <action name="action_Options">
+   <property name="text">
+    <string>&amp;Options</string>
    </property>
   </action>
  </widget>

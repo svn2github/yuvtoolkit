@@ -103,6 +103,8 @@ private slots:
 	void on_action_Select_From_triggered();
 	void on_action_Select_To_triggered();
 	void on_action_Clear_Selection_triggered();
+	
+	void on_action_Options_triggered();
 
 	void OnColorActionTriggered(QAction* a);
 private:

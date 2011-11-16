@@ -344,7 +344,9 @@ void MeasureWindow::UpdateRequest()
 	ClearAll();
 
 	QSettings settings;
-	QStringList distMap = settings.value("measure/distmap", QStringList("MSE")).toStringList();
+	QStringList enabledDistMaps("MSE");
+	enabledDistMaps.append("PSNR");
+	QStringList distMap = settings.value("measure/distmap", enabledDistMaps).toStringList();
 
 	unsigned int sourceView1 = m_SourceList.at(0);
 	for (int j=1; j<m_SourceList.size(); j++)

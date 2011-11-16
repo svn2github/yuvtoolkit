@@ -157,12 +157,27 @@
     <ClCompile Include="SourceThread.cpp">
       <Filter>Threads</Filter>
     </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Options.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Options.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_Options.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorConversion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="generatedfiles\ui_MainWindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_Options.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -214,6 +229,12 @@
     </CustomBuild>
     <CustomBuild Include="SourceThread.h">
       <Filter>Threads</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Options.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Options.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

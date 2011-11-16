@@ -9,6 +9,7 @@
 #include "RenderThread.h"
 #include "VideoViewList.h"
 #include "MeasureWindow.h"
+#include "Options.h"
 
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
@@ -1253,4 +1254,10 @@ void MainWindow::OnVideoViewListChanged()
 	{
 		m_ActionsButton->setMenu(ui.menu_Actions);
 	}
+}
+
+void MainWindow::on_action_Options_triggered()
+{
+	Options* o = new Options(this);
+	o->exec();
 }
