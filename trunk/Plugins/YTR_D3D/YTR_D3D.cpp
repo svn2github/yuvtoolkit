@@ -180,7 +180,7 @@ RESULT YTR_D3D::Allocate( FramePtr& frame, FormatPtr sourceFormat )
 	frame->SetFormat(sourceFormat);
 
 	frame->SetExternData((void*) surface);
-	// support only rgb24
+	// support only rgb32
 	frame->Format()->SetStride(0, d3d_lr.Pitch);
 	frame->Format()->SetStride(1,0);
 	frame->Format()->SetStride(2,0);

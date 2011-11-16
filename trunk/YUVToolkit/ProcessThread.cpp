@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "ProcessThread.h"
+#include "color_map.h"
 
 ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c), m_IsLastFrame(false), m_DistMapFramePool(NULL)
 {
@@ -476,13 +477,20 @@ void ProcessThread::ProcessOperations(FrameListPtr scene, YUV_PLANE plane,
 						frame->Format()->SetColor(XRGB32);
 						frame->Format()->SetWidth(op->distMapWidth);
 						frame->Format()->SetHeight(op->distMapHeight);
+						frame->Format()->SetStride(0,0);
 						frame->Allocate();
 					}
 
-					unsigned char* d = frame->Data(0);
-					for (int k=0;k<frame->Format()->PlaneSize(0);k++)
+					unsigned int* d = (unsigned int*)frame->Data(0);
+					int planeSize = frame->Format()->PlaneSize(0);
+					int planeW = frame->Format()->Width();
+					int planeH = frame->Format()->Height();
+					for (int y=0; y<planeH; y++)
 					{
-						d[k] = (unsigned char)(k+m_LastPTS);
+						for (int x=0; x<planeW; x++)
+						{
+							d[y*(planeW)+x] = colormap[((m_LastPTS/33+y))%256];
+						}
 					}
 
 					frame->SetInfo(VIEW_ID, viewIds.at(j));
