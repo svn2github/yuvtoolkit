@@ -89,11 +89,9 @@ void VideoView::Init( Transform* transform, VideoQueue* source, QString outputNa
 	UpdateMenu();
 }
 
-void VideoView::Init( Measure* measure, VideoQueue* source, VideoQueue* source1 )
+void VideoView::Init(unsigned int source, unsigned int processed)
 {
-	m_Type = PLUGIN_TRANSFORM;
-	m_Measure = measure;
-	// m_RefVideoQueue = source;
+	m_Type = PLUGIN_MEASURE;
 
 	UpdateMenu();
 }
@@ -250,7 +248,7 @@ void VideoView::SetGeometry( int x, int y, int width, int height )
 	RepositionVideo();
 }
 
-void VideoView::SetTitle( const char* title )
+void VideoView::SetTitle( QString title )
 {
 	m_Title = title;
 	m_Menu->setTitle(m_Title);

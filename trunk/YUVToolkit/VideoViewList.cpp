@@ -27,7 +27,7 @@ VideoViewList::~VideoViewList()
 	SAFE_DELETE(m_ProcessThread);
 }
 
-VideoView* VideoViewList::NewVideoViewInternal( const char* title )
+VideoView* VideoViewList::NewVideoViewInternal( QString title, unsigned int viewId )
 {
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
@@ -48,7 +48,7 @@ VideoView* VideoViewList::NewVideoViewInternal( const char* title )
 
 	// m_RenderThread->Stop();
 
-	VideoView* vv = new VideoView(m_MainWindow, m_IDCounter++, m_RenderWidget, m_ProcessThread, &m_Control);
+	VideoView* vv = new VideoView(m_MainWindow, viewId, m_RenderWidget, m_ProcessThread, &m_Control);
 	INFO_LOG("VideoViewList::NewVideoView %X", vv);
 
 	m_RenderWidget->layout->AddView(vv);
@@ -131,6 +131,16 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 	if (plugin == PLUGIN_SOURCE)
 	{
 		emit VideoViewSourceListChanged();
+	}
+}
+
+void VideoViewList::CloseVideoView( unsigned int viewId )
+{
+	VideoView* vv = find(viewId);
+
+	if (vv)
+	{
+		CloseVideoView(vv);
 	}
 }
 
@@ -398,7 +408,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 
 	if (!hasView)
 	{
-		VideoView* planeVv = NewVideoViewInternal(data->outputName.toAscii());
+		VideoView* planeVv = NewVideoViewInternal(data->outputName.toAscii(), m_IDCounter++);
 
 		Transform* transform = data->transformPlugin->NewTransform(data->transformName);
 
@@ -495,7 +505,7 @@ void VideoViewList::UpdateRenderLayout()
 
 VideoView* VideoViewList::NewVideoViewSource( const char* path )
 {
-	VideoView* vv = NewVideoViewInternal(path);
+	VideoView* vv = NewVideoViewInternal(path, m_IDCounter++);
 	vv->Init(path);
 	UpdateDuration();
 
@@ -507,6 +517,15 @@ VideoView* VideoViewList::NewVideoViewSource( const char* path )
 unsigned int VideoViewList::NewVideoViewId()
 {
 	return m_IDCounter++;
+}
+
+VideoView* VideoViewList::NewVideoViewCompare(QString measureName, unsigned int viewId, unsigned int orig, unsigned int processed )
+{
+	VideoView* vv = NewVideoViewInternal(measureName, viewId);
+	vv->Init(orig, processed);
+
+	emit VideoViewListChanged();
+	return vv;
 }
 
 /*

@@ -369,6 +369,8 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 	unsigned int sourceViewId1 = 0;
 	unsigned int sourceViewId2 = 0;
 	QList<MeasureOperation*> operations;
+	QList<unsigned int> viewIds;
+
 	if (m_MeasureRequests.size()>0)
 	{
 		for (int i=0; i<m_MeasureRequests.size(); i++)
@@ -377,16 +379,8 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 			if (item.plugin != plugin || item.measure != measure || 
 				item.sourceViewId1 != sourceViewId1 || item.sourceViewId2 != sourceViewId2)
 			{
-				if (operations.size()>0)
-				{
-					FramePtr f1 = FindFrame(scene, sourceViewId1);
-					FramePtr f2 = FindFrame(scene, sourceViewId2);
-					if (f1 && f2)
-					{
-						measure->Process(f1, f2, plane, operations);
-					}
-					operations.clear();
-				}
+				ProcessOperations(scene, plane, operations, viewIds,
+					measure, sourceViewId1, sourceViewId2);
 
 				plugin = item.plugin;
 				measure = item.measure;
@@ -402,21 +396,19 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 
 			if (item.showDistortionMap)
 			{
-				// item.op.distortionMap = new QVector<double>();
+				if (!m_DistMaps.contains(item.viewId))
+				{
+					m_DistMaps.insert(item.viewId, DistMapPtr(new DistMap));
+				}
+
+				item.op.distMap = m_DistMaps[item.viewId];
 			}
 			operations.append(&item.op);
+			viewIds.append(item.viewId);
 		}
 
-		if (operations.size()>0)
-		{
-			FramePtr f1 = FindFrame(scene, sourceViewId1);
-			FramePtr f2 = FindFrame(scene, sourceViewId2);
-			if (f1 && f2)
-			{
-				measure->Process(f1, f2, plane, operations);
-			}
-			operations.clear();
-		}
+		ProcessOperations(scene, plane, operations, viewIds,
+			measure, sourceViewId1, sourceViewId2);
 	}
 }
 
@@ -445,4 +437,61 @@ bool ProcessThread::IsLastScene( FrameListPtr scene )
 	}
 
 	return true;
+}
+
+void ProcessThread::ProcessOperations(FrameListPtr scene, YUV_PLANE plane, 
+	QList<MeasureOperation*>& operations, QList<unsigned int>& viewIds,
+	Measure* measure, unsigned int sourceViewId1, unsigned int sourceViewId2)
+{
+	if (operations.size()>0)
+	{
+		FramePtr f1 = FindFrame(scene, sourceViewId1);
+		FramePtr f2 = FindFrame(scene, sourceViewId2);
+		if (f1 && f2)
+		{
+			YUV_PLANE p = plane;
+			if (p == PLANE_COLOR && !measure->GetCapabilities().hasColorDistortionMap)
+			{
+				p = PLANE_Y;
+			}
+			measure->Process(f1, f2, p, operations);
+
+			for (int j=0; j<operations.size(); j++)
+			{
+				MeasureOperation* op = operations.at(j);
+
+				if (op->distMapWidth && op->distMapHeight)
+				{
+					FramePtr frame = m_DistMapFramePool->Get();
+					FormatPtr format = frame->Format();
+
+					if (format->Color()!=XRGB32 || format->Width()!=op->distMapWidth || format->Height()!=op->distMapHeight)
+					{
+						frame->Reset();
+					}
+
+					if (frame->Data(0) == 0)
+					{
+						// Allocate
+						frame->Format()->SetColor(XRGB32);
+						frame->Format()->SetWidth(op->distMapWidth);
+						frame->Format()->SetHeight(op->distMapHeight);
+						frame->Allocate();
+					}
+
+					unsigned char* d = frame->Data(0);
+					for (int k=0;k<frame->Format()->PlaneSize(0);k++)
+					{
+						d[k] = (unsigned char)(k+m_LastPTS);
+					}
+
+					frame->SetInfo(VIEW_ID, viewIds.at(j));
+					frame->SetInfo(IS_LAST_FRAME, true);
+					scene->append(frame);
+				}
+			}
+		}
+		operations.clear();
+		viewIds.clear();
+	}
 }

@@ -42,6 +42,9 @@ private:
 	void ProcessMeasures(FrameListPtr scene, YUV_PLANE plane);
 	FramePtr FindFrame(FrameListPtr, unsigned int);
 	bool IsLastScene(FrameListPtr scene);
+	void ProcessOperations(FrameListPtr scene, YUV_PLANE plane, 
+		QList<MeasureOperation*>& operations, QList<unsigned int>& viewIds,
+		Measure* measure, unsigned int sourceViewId1, unsigned int sourceViewId2);
 private:
 	QMap<unsigned int, FrameList > m_SourceFrames;
 	PlaybackControl* m_Control;

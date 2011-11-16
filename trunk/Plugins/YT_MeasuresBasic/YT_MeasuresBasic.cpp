@@ -178,9 +178,9 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 	if (mseMap)
 	{
 		int mapSize = distMapWidth*distMapHeight;
-		if (opPsnr)
+		if (opPsnr && opPsnr->distMap)
 		{
-			if (opMse)
+			if (opMse && opMse->distMap)
 			{
 				// generate PSNR map from MSE map
 				if (opPsnr->distMap->size()<mapSize)

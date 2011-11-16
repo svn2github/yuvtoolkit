@@ -38,6 +38,7 @@ class MeasureWindow : public QMainWindow
 
 	UintList m_SourceList;
 	QList<MeasureItem> m_MeasureItemList;
+	bool m_ShowDisortionMap;
 public:
 	MeasureWindow(VideoViewList* vvList, QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MeasureWindow();
@@ -57,6 +58,7 @@ protected:
 	void UpdateLabels();
 public slots:
 	void OnVideoViewSourceListChanged();
+	void OnShowDistortionMap(bool);
 private slots:
 	void onComboIndexChanged(int);
 	void on_button_Options_clicked();

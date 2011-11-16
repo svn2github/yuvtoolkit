@@ -64,7 +64,7 @@ class VideoView : public QObject, public sigslot::has_slots<>
 private:
 	void Init(const char* path); // for source view
 	void Init(Transform* transform, VideoQueue* source, QString outputName); // for tranform view
-	void Init(Measure* measure, VideoQueue* source, VideoQueue* source1); // for measure view
+	void Init(unsigned int source, unsigned int processed); // for measure view
 	void UnInit();
 public:
 	VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control);
@@ -76,7 +76,7 @@ public:
 	int Height() {return m_VideoHeight;}
 	void SetZoomLevel(int mode);
 	void SetGeometry(int x, int y, int width, int height);
-	void SetTitle(const char* title);
+	void SetTitle(QString title);
 	const QString& GetTitle() {return m_Title; }
 	const QList<QAction*>& GetTransformActions() {return m_TransformActionList; }
 	QAction* GetCloseAction() {return m_CloseAction; }

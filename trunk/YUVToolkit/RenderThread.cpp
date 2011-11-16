@@ -174,7 +174,8 @@ void RenderThread::RenderFrames(FrameListPtr sourceFrames, YUV_PLANE plane)
 		float scaleY = 1;
 		if (plane != PLANE_COLOR)
 		{
-			if (sourceFrameOrig->Format()->Color() != Y800)
+			COLOR_FORMAT c = sourceFrameOrig->Format()->Color();
+			if (c == I420 || c == I422 || c == I444)
 			{
 				sourceFrame = &tempFrame;
 

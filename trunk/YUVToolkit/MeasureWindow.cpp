@@ -202,7 +202,7 @@ QVariant DistortionMapModel::data( const QModelIndex &index, int role ) const
 
 MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags flags) : 
 	QMainWindow(parent, flags), m_VideoViewList(vvList), m_ResultsModel(NULL), m_UpdateTimer(NULL),
-		m_ResultsTable(new QTableView(this)), m_ToolBar(new QToolBar(this))
+		m_ResultsTable(new QTableView(this)), m_ToolBar(new QToolBar(this)), m_ShowDisortionMap(false)
 {
 	m_ToolBar->setMovable(false);
 	m_ToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -350,7 +350,6 @@ void MeasureWindow::UpdateRequest()
 	for (int j=1; j<m_SourceList.size(); j++)
 	{
 		unsigned int sourceView2 = m_SourceList.at(j);
-		unsigned int viewId = m_VideoViewList->NewVideoViewId();
 
 		const QList<PlugInInfo*>& plugins = GetHostImpl()->GetMeasurePluginList();
 		for (int i=0; i<plugins.size(); i++)
@@ -365,12 +364,22 @@ void MeasureWindow::UpdateRequest()
 			const MeasureCapabilities& caps = req.measure->GetCapabilities();
 			for (int j=0; j<caps.measures.size(); j++)
 			{
+				unsigned int viewId = m_VideoViewList->NewVideoViewId();
 				QString m = caps.measures.at(j).name;
-				req.op.measureName = m;
+				bool showDistMap = m_ShowDisortionMap?distMap.contains(m):false;
 				
+
+				if (showDistMap)
+				{
+					// Create new views
+					m_VideoViewList->NewVideoViewCompare(m, viewId, sourceView1, sourceView2);
+				}
+
+				
+				req.op.measureName = m;
 				req.sourceViewId1 = sourceView1;
 				req.sourceViewId2 = sourceView2;
-				req.showDistortionMap = distMap.contains(m);
+				req.showDistortionMap = showDistMap;
 				req.viewId = viewId;
 
 				m_MeasureItemList.append(req);
@@ -429,6 +438,11 @@ void MeasureWindow::ClearAll()
 	for (int i=0; i<m_MeasureItemList.size(); i++)
 	{
 		const MeasureItem& req = m_MeasureItemList.at(i);
+		if (req.showDistortionMap)
+		{
+			m_VideoViewList->CloseVideoView(req.viewId);
+		}
+
 		if (!measureListDeleted.contains(req.measure))
 		{
 			measureListDeleted.insert(req.measure);
@@ -469,4 +483,14 @@ void MeasureWindow::UpdateLabels()
 			labels[i]->hide();
 		}
 	}*/
+}
+
+void MeasureWindow::OnShowDistortionMap( bool b)
+{
+	m_ShowDisortionMap = b;
+
+	if (isVisible())
+	{
+		UpdateRequest();
+	}
 }

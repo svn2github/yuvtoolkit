@@ -186,6 +186,7 @@ QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
 	m_MeasureDockWidget->setWidget(m_MeasureWindow);
 	addDockWidget(Qt::LeftDockWidgetArea, m_MeasureDockWidget);
 	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), m_MeasureWindow, SLOT(OnVideoViewSourceListChanged()));
+	connect(ui.action_Distortion_Map, SIGNAL(toggled(bool)), m_MeasureWindow, SLOT(OnShowDistortionMap(bool)));
 
 	m_MeasureWindow->GetToolBar()->addAction(ui.action_Enable_Measures);
 	m_MeasureWindow->GetToolBar()->addAction(ui.action_Distortion_Map);

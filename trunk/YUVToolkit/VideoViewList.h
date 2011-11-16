@@ -44,10 +44,14 @@ public:
 	void CheckResolutionChanged();
 	
 	void UpdateRenderLayout();
-	VideoView* NewVideoViewSource(const char* path);
+
 	unsigned int NewVideoViewId();
+	VideoView* NewVideoViewSource(const char* path);
+	VideoView* NewVideoViewCompare(QString measureName, unsigned int viewId, unsigned int orig, unsigned int processed);
+
+	void CloseVideoView(unsigned int viewId);
 private:
-	VideoView* NewVideoViewInternal(const char* title);
+	VideoView* NewVideoViewInternal(QString title, unsigned int viewId);
 public slots:
 	void UpdateDuration();
 	void CloseVideoView(VideoView*);
