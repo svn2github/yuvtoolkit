@@ -18,24 +18,16 @@
 
 
 VideoView::VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control) :
-	parent(_parent), m_Type(PLUGIN_UNKNOWN), m_MainWindow(_mainWin), m_TransformActionListUpdated(false),
-		m_Dock(NULL), m_PluginGUI(NULL), m_ProcessThread(processThread), m_Control(control), m_Menu(NULL), m_ViewID(viewId)
+	m_Type(PLUGIN_UNKNOWN), m_SourceThread(NULL), m_ProcessThread(processThread),
+	m_Control(control), m_Transform(0),m_Measure(0),
+	m_MainWindow(_mainWin),m_VideoWidth(0),m_VideoHeight(0),
+	m_Duration(0), m_Menu(NULL), m_CloseAction(0),
+	m_TransformActionListUpdated(false), m_ViewID(viewId),
+	m_ScaleNum(1), m_ScaleDen(1), m_SrcLeft(0), m_SrcTop(0), m_SrcWidth(0), m_SrcHeight(0),
+	m_Dock(NULL), m_PluginGUI(NULL), parent(NULL)
 {
 	m_LastMousePoint.setX(-1);
 	m_LastMousePoint.setY(-1);
-	m_ScaleNum = 0;
-	m_ScaleDen = 0;
-	m_SrcLeft = 0;
-	m_SrcTop = 0;
-	m_SrcWidth = 0;
-	m_SrcHeight = 0;
-	m_VideoHeight = 0;
-	m_VideoWidth = 0;
-	m_Duration = 0;
-
-	m_Transform = 0;
-	m_Measure = 0; 
-	m_SourceThread = 0;
 
 	m_RenderFormat = FormatPtr(new FormatImpl);
 	m_SourceFormat = FormatPtr(new FormatImpl); 
@@ -360,7 +352,7 @@ void VideoView::UpdateTransformActionList()
 			SourceInfo info;
 			source->GetInfo(info);
 
-			const QList<PlugInInfo*>& lst = GetHostImpl()->GetTransformPluginList();
+			// const QList<PlugInInfo*>& lst = GetHostImpl()->GetTransformPluginList();
 			
 			/*
 			for (int i=0; i<lst.size(); i++)

@@ -201,8 +201,9 @@ QVariant DistortionMapModel::data( const QModelIndex &index, int role ) const
 */
 
 MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags flags) : 
-	QMainWindow(parent, flags), m_VideoViewList(vvList), m_ResultsModel(NULL), m_UpdateTimer(NULL),
-		m_ResultsTable(new QTableView(this)), m_ToolBar(new QToolBar(this)), m_ShowDisortionMap(false)
+	QMainWindow(parent, flags), m_VideoViewList(vvList), m_ToolBar(new QToolBar(this)),
+	m_ResultsTable(new QTableView(this)), m_ResultsModel(NULL), m_UpdateTimer(NULL),
+	m_ShowDisortionMap(false)
 {
 	m_ToolBar->setMovable(false);
 	m_ToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -314,12 +315,13 @@ void MeasureWindow::UpdateMeasureWindow()
 
 QSize MeasureWindow::sizeHint() const
 {
-	QTableView* view = m_ResultsTable;
+	/*QTableView* view = m_ResultsTable;
 	QAbstractItemModel* m = view->model();
 
 	QPainter painter;
 	QFontMetrics fontMetrics = painter.fontMetrics();
-	int columnWidth = fontMetrics.width("WWW.WW");
+	int columnWidth = fontMetrics.width("WWW.WW");*/
+	int columnWidth = 50;
 	
 	return QSize(columnWidth*3, 250);
 }

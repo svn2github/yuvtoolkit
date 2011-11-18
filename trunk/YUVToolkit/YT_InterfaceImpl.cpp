@@ -195,7 +195,6 @@ size_t FormatImpl::PlaneSize( int plane )
 			break;
 		}
 
-		size_t data_length = 0;
 		for (int i=0; i<4; i++)
 		{
 			if (stride[i] != 0)
@@ -269,8 +268,9 @@ bool FormatImpl::IsPlanar( int plane )
 	case YUY2:
 	case UYVY:
 		return false;
+	default:
+		return false;
 	}
-	return false;
 }
 
 const char* FormatImpl::PlaneName( int plane )
@@ -315,8 +315,9 @@ int FormatImpl::PlaneWidth( int plane )
 		{
 			return width/2;
 		}
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 int FormatImpl::PlaneHeight( int plane )
@@ -352,13 +353,15 @@ int FormatImpl::PlaneHeight( int plane )
 		{
 			return height/2;
 		}
+	default:
+		return 0;
 	}
-	return 0;
 }
 
-FrameImpl::FrameImpl(FramePool* p) : pool(p), pts(0), frame_num(0), externData(0),
-	allocated_data(0), allocated_size(0), 
-	format(new FormatImpl)
+FrameImpl::FrameImpl(FramePool* p) :
+	pts(0), frame_num(0), externData(0),
+	allocated_data(0), allocated_size(0),
+	format(new FormatImpl), pool(p)
 {
 	memset(data, 0, sizeof(data));
 }
@@ -866,7 +869,7 @@ FramePool::FramePool( unsigned int size )
 
 FramePool::~FramePool()
 {
-	for (unsigned int i=0; i<m_Pool.size(); i++)
+	for (int i=0; i<m_Pool.size(); i++)
 	{
 		delete m_Pool.at(i);
 	}

@@ -34,7 +34,7 @@ class MeasureWindow : public QMainWindow
 	QToolBar* m_ToolBar;
 	QTableView* m_ResultsTable;
 	MeasureResultsModel* m_ResultsModel;
-	QTimer* m_UpdateTimer;	
+	QTimer* m_UpdateTimer;
 
 	UintList m_SourceList;
 	QList<MeasureItem> m_MeasureItemList;

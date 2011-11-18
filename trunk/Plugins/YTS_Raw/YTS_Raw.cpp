@@ -44,9 +44,9 @@ void RawPlugin::ReleaseSource( Source* source)
 }
 
 
-YTS_Raw::YTS_Raw() : m_RawFormatWidget(0), m_FrameIndex(0)
+YTS_Raw::YTS_Raw() : m_FPS(30), m_FrameIndex(0),
+	m_NumFrames(0), m_Duration(0), m_File(0), m_RawFormatWidget(0)
 {
-	m_FPS = 30;
 }
 
 YTS_Raw::~YTS_Raw()
@@ -187,7 +187,7 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 	}
 
 	int file_status = 0;
-	if (ftell(m_File) != frame_size * m_FrameIndex) 
+	if (ftell(m_File) != (int) (frame_size * m_FrameIndex))
 	{
 		file_status = fseek(m_File, frame_size*m_FrameIndex, SEEK_SET);
 	}
@@ -257,7 +257,7 @@ void YTS_Raw::ReInit( const FormatPtr format, double FPS )
 {
 	QMutexLocker locker(&m_Mutex);
 	
-	unsigned int pts = IndexToPTS(m_FrameIndex);
+	// unsigned int pts = IndexToPTS(m_FrameIndex);
 
 	*m_Format = *format;
 	m_FPS = FPS;

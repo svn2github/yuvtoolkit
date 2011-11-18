@@ -8,8 +8,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) : m_Path(p), 
-			m_Source(0), m_ViewID(id), m_EndOfFile(false), m_Control(c), m_LastSeekingPTS(INVALID_PTS)
+SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) :
+	m_ViewID(id), m_LastSeekingPTS(INVALID_PTS), m_Path(p),
+	m_Source(0), m_EndOfFile(false), m_FramePool(0), m_Control(c)
 {
 	moveToThread(this);
 
@@ -99,7 +100,6 @@ void SourceThread::ReadFrames()
 
 		FramePtr frame;
 		FramePtr frameOrig;
-		bool needConversion = true;
 		COLOR_FORMAT c = info.format->Color();
 		if (IsNativeFormat(c))
 		{

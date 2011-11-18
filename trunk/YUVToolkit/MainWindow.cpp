@@ -31,7 +31,13 @@
 
 int MainWindow::windowCounter = 0;
 MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
-QMainWindow(parent, flags), m_IsPlaying(false), m_ActiveVideoView(0)
+	QMainWindow(parent, flags), m_VideoViewList(0),
+	m_ActiveVideoView(0), m_Slider(0),
+	m_TimeLabel1(0), m_TimeLabel2(0), m_RenderSpeedLabel(0),
+	m_ZoomLabel(0), m_ActionsButton(0), m_CompareButton(0),
+	m_ColorGroup(0), m_ZoomGroup(0), m_MeasureWindow(0),
+	m_MeasureDockWidget(0), m_ZoomMode(0), m_LastSliderValue(0),
+	m_IsPlaying(false), m_UpdateTimer(0)
 {
 	windowCounter++;
 
@@ -514,7 +520,8 @@ void MainWindow::openFileInternal( QString strPath)
 		return;
 	}
 
-	VideoView* vv = m_VideoViewList->NewVideoViewSource(strPath.toAscii());
+	// VideoView* vv =
+	m_VideoViewList->NewVideoViewSource(strPath.toAscii());
 }
 
 void MainWindow::play( bool play )
@@ -702,7 +709,7 @@ void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int p
 {
 	// int ticks = qCeil(duration * fps / 1000)-1;
 
-	if (m_Slider->maximum() != duration)
+	if (m_Slider->maximum() != (int)duration)
 	{
 		bool old = m_Slider->blockSignals(true);
 		m_Slider->setRange(0, duration/SLIDER_STEP_MS);
@@ -710,7 +717,7 @@ void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int p
 	}
 
 	// int pos = qRound(pts * fps / 1000);
-	if (m_Slider->sliderPosition() != pts/SLIDER_STEP_MS)
+	if (m_Slider->sliderPosition() != (int) pts/SLIDER_STEP_MS)
 	{
 		bool old = m_Slider->blockSignals(true);
 		m_Slider->setSliderPosition(pts/SLIDER_STEP_MS);
@@ -927,7 +934,7 @@ void MainWindow::stepVideo( int step )
 	SourceInfo info;
 	source->GetInfo(info);
 
-	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), info.num_frames-1);
+	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), (int)info.num_frames-1);
 	unsigned int pts = source->IndexToPTS(frame_num);
 
 	m_VideoViewList->GetControl()->Seek(pts, false);
@@ -1088,7 +1095,7 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 		// VideoQueue* vq = vv->GetRefVideoQueue();
 		for (int i=0; i<m_VideoViewList->size(); i++)
 		{
-			VideoView* vvRef = m_VideoViewList->at(i);
+			// VideoView* vvRef = m_VideoViewList->at(i);
 			/*if (vq == vvRef->GetVideoQueue())
 			{
 				const QList<QAction*>& actions = vvRef->GetTransformActions();

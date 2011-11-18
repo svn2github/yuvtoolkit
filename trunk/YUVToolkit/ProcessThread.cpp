@@ -482,7 +482,6 @@ void ProcessThread::ProcessOperations(FrameListPtr scene, YUV_PLANE plane,
 					}
 
 					unsigned int* d = (unsigned int*)frame->Data(0);
-					int planeSize = frame->Format()->PlaneSize(0);
 					int planeW = frame->Format()->Width();
 					int planeH = frame->Format()->Height();
 					for (int y=0; y<planeH; y++)

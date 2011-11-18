@@ -35,31 +35,6 @@ class VideoView : public QObject, public sigslot::has_slots<>
 {
 	Q_OBJECT;
 
-	PLUGIN_TYPE m_Type;
-	SourceThread* m_SourceThread;
-	ProcessThread* m_ProcessThread;
-	PlaybackControl* m_Control;
-	Transform* m_Transform; // Used for transform view
-	QString m_OutputName;
-	Measure* m_Measure; // Used for measure view
-	// Render_Frame* m_RenderFrame;
-	QMainWindow* m_MainWindow;
-	
-	int m_VideoWidth;
-	int m_VideoHeight;
-	int m_Duration;
-	QString m_Title;
-
-	QMenu* m_Menu;
-	QAction* m_CloseAction;
-	bool m_TransformActionListUpdated;
-	QList<QAction*> m_TransformActionList;
-	void UpdateTransformActionList();
-
-	
-	unsigned int m_ViewID;
-	FramePtr m_LastFrame;
-
 	friend class VideoViewList;
 private:
 	void Init(const char* path); // for source view
@@ -121,9 +96,34 @@ public slots:
 protected:
 	void RenderPlane(FramePtr, int plane);
 	void RepositionVideo(bool emitSignal=false);
+	void UpdateTransformActionList();
 public:
 	void computeAR( int src_width, int src_height, int& win_width, int& win_height );
 private:
+	PLUGIN_TYPE m_Type;
+	SourceThread* m_SourceThread;
+	ProcessThread* m_ProcessThread;
+	PlaybackControl* m_Control;
+	Transform* m_Transform; // Used for transform view
+	QString m_OutputName;
+	Measure* m_Measure; // Used for measure view
+	// Render_Frame* m_RenderFrame;
+	QMainWindow* m_MainWindow;
+
+	int m_VideoWidth;
+	int m_VideoHeight;
+	int m_Duration;
+	QString m_Title;
+
+	QMenu* m_Menu;
+	QAction* m_CloseAction;
+	bool m_TransformActionListUpdated;
+	QList<QAction*> m_TransformActionList;
+
+
+	unsigned int m_ViewID;
+	FramePtr m_LastFrame;
+
 	int m_ScaleNum, m_ScaleDen;
 	int m_SrcLeft, m_SrcTop, m_SrcWidth, m_SrcHeight;
 	

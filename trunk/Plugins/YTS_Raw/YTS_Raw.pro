@@ -6,8 +6,7 @@ SOURCES += RawFormatWidget.cpp\
 		   YTS_Raw.cpp
 
 HEADERS += RawFormatWidget.h\
-		   YTS_Raw.h \
-		   RawFormatWidget.h
+		   YTS_Raw.h
 		
 FORMS   += RawFormatWidget.ui
 

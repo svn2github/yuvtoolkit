@@ -39,7 +39,7 @@ void OpenGLRendererPlugin::ReleaseRenderer( Renderer* parent )
 
 
 OpenGLRenderer::OpenGLRenderer(Host* host, QWidget* widget, const QString& name) 
-: m_Host(host), QGLWidget(widget), m_ReadyToRender(false)
+: QGLWidget(widget), m_Host(host), m_ReadyToRender(false)
 {
 	setAutoBufferSwap(false); // swap buffer in rendering thread	
 

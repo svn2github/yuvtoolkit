@@ -27,8 +27,9 @@ COLOR_FORMAT GetFlippedColor(COLOR_FORMAT c)
 		return I422;
 	case YV24:
 		return I444;
+	default:
+		return I420;
 	}
-	return I420;
 }
 void PrepareCC(COLOR_FORMAT& color, unsigned char* (&data)[4])
 {
@@ -46,6 +47,8 @@ void PrepareCC(COLOR_FORMAT& color, unsigned char* (&data)[4])
 		break;
 	case IYUV:
 		color = I420;
+		break;
+	default:
 		break;
 	}
 }

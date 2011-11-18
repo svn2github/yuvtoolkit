@@ -10,13 +10,13 @@
 
 #include <assert.h>
 
-VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) : m_RenderThread(NULL),
-	m_ProcessThread(NULL), m_Duration(0), m_LongestVideoView(0), m_VideoCount(0),
-	m_EndOfFile(false), m_IDCounter(0)
+VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) :
+	m_RenderWidget(rw), m_MainWindow(mainWindow),
+	m_IDCounter(0), m_RenderThread(NULL),
+	m_ProcessThread(NULL), m_Duration(0), m_VideoCount(0),
+	m_LongestVideoView(0),
+	m_EndOfFile(false)
 {
-	m_RenderWidget = rw;
-	m_MainWindow = mainWindow;
-
 	m_ProcessThread = new ProcessThread(&m_Control);	
 	
 	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
@@ -71,8 +71,6 @@ VideoView* VideoViewList::NewVideoViewInternal( QString title, unsigned int view
 
 void VideoViewList::OnUpdateRenderWidgetPosition()
 {
-	QRect rcClient = m_RenderWidget->rect();
-	int width = rcClient.width();
 	m_RenderWidget->layout->UpdateGeometry();
 
 	UpdateRenderLayout();
@@ -84,7 +82,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 	INFO_LOG("VideoViewList::CloseVideoView %X", vv);
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
-		VideoView* vv2 = m_VideoList.at(i);
+		// VideoView* vv2 = m_VideoList.at(i);
 		/*
 		if (vv2->GetRefVideoQueue() == vv->GetVideoQueue())
 		{
@@ -396,7 +394,7 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	bool hasView = false;
 	for (int i=0; i<m_VideoList.size(); ++i) 
 	{
-		VideoView* vv2 = m_VideoList.at(i);
+		// VideoView* vv2 = m_VideoList.at(i);
 		/*
 		if (vv2->GetType() == PLUGIN_TRANSFORM && vv2->GetRefVideoQueue() == 
 			vv->GetVideoQueue() && vv2->GetOutputName() == data->outputName)

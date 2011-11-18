@@ -55,19 +55,6 @@ class FramePool;
 
 class FrameImpl : public Frame
 {
-	unsigned char* data[4]; 	// pointers to the planes, for packed frame, only first one is used
-	unsigned int pts; // presentation timestamp in miliseconds
-	unsigned int frame_num;
-	void* externData;
-	
-	unsigned char* allocated_data;
-	size_t allocated_size;
-
-	FormatPtr format;
-	FramePool* pool;
-
-	QMap<INFO_KEY, QVariant> info;
-
 	void Deallocate();
 public:
 	FrameImpl(FramePool* p=NULL);
@@ -102,6 +89,19 @@ public:
 	RESULT Reset();
 
 	static void Recyle(Frame *obj);
+private:
+	unsigned char* data[4]; 	// pointers to the planes, for packed frame, only first one is used
+	unsigned int pts; // presentation timestamp in miliseconds
+	unsigned int frame_num;
+	void* externData;
+
+	unsigned char* allocated_data;
+	size_t allocated_size;
+
+	FormatPtr format;
+	FramePool* pool;
+
+	QMap<INFO_KEY, QVariant> info;
 };
 
 class FramePool

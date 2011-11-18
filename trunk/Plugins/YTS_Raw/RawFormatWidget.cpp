@@ -30,7 +30,7 @@ QString color_names[COLOR_COUNT] =
 };
 
 
-RawFormatWidget::RawFormatWidget(YTS_Raw* r, QWidget *parent) : rawSource(r), QWidget(parent), m_Format(NULL)
+RawFormatWidget::RawFormatWidget(YTS_Raw* r, QWidget *parent) : QWidget(parent), rawSource(r), m_Format(NULL)
 {
 	ui.setupUi(this);
 

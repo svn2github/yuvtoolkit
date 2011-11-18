@@ -6,8 +6,10 @@
 
 #include <assert.h>
 
-RenderThread::RenderThread(Renderer* renderer, PlaybackControl* c) : m_Renderer(renderer), 
-	m_SpeedRatio(1.0f), m_Exit(false), m_Control(c)
+RenderThread::RenderThread(Renderer* renderer, PlaybackControl* c) :
+	m_RenderCounter(0), m_RenderInterval(0), m_SpeedRatio(1.0f),
+	m_Renderer(renderer), m_LastPTS(0), m_LastSeeking(false), m_Control(c), m_Exit(false)
+
 {
 	moveToThread(this);
 }

@@ -16,12 +16,6 @@ class QAction;
 class VideoViewList : public QObject
 {
 	Q_OBJECT;
-	RendererWidget* m_RenderWidget;
-	QList<VideoView*> m_VideoList;
-	QMainWindow* m_MainWindow;
-
-	unsigned int m_IDCounter;
-	PlaybackControl m_Control;
 public:
 	VideoViewList(QMainWindow*, RendererWidget*);
 	virtual ~VideoViewList();
@@ -66,6 +60,13 @@ signals:
 	void VideoViewSourceListChanged();
 	void VideoViewListChanged();
 private:
+	RendererWidget* m_RenderWidget;
+	QList<VideoView*> m_VideoList;
+	QMainWindow* m_MainWindow;
+
+	unsigned int m_IDCounter;
+	PlaybackControl m_Control;
+
 	RenderThread* m_RenderThread;
 	ProcessThread* m_ProcessThread;
 
