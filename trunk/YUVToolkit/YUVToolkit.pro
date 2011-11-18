@@ -108,6 +108,10 @@ macx {
         }
     }
 
+    # If there is any issue with loading QT library after making this package, verify how the
+    # library dependency is setup by running otool:
+    #   otool -L YUVToolkit.app/Contents/MacOS/YUVToolkit
+    #   otool -L YUVToolkit.app/Contents/MacOS/libYTS_Raw.dylib
     QMAKE_POST_LINK += macdeployqt $${DESTDIR}/$${TARGET}.app -dmg;
 
     SETUPDIR = $$PWD/../Setup
