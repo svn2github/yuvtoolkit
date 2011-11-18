@@ -7,6 +7,13 @@ yuv player and analyzer. It is currently in early
 stage of development, and current development 
 focus is on playback features.
 
+Known Issues
+=================================================
+When video FPS is not dividable by the screen update frequency, playback 
+speed will not be 100%. YUV Toolkit does not try to apply pulldown scheme
+to correct the playback speed. For instance, if you try to play 30FPS 
+video on 50Hz screen, the playback speed will be about 83%.
+
 Version History
 =================================================
 
