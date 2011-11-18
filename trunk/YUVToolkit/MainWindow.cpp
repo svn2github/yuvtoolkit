@@ -10,6 +10,7 @@
 #include "VideoViewList.h"
 #include "MeasureWindow.h"
 #include "Options.h"
+#include "Settings.h"
 
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
@@ -87,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	ui.statusBar->addPermanentWidget(m_RenderSpeedLabel);
 
 	QSettings settings;
-	m_RenderType = settings.value("main/renderer", "D3D").toString();
+	m_RenderType = settings.SETTINGS_GET_RENDERER();
 	
 	m_ZoomGroup = new QActionGroup(this);
 	m_ZoomGroup->addAction(ui.action_Zoom_50);	
@@ -96,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_ZoomGroup->addAction(ui.action_Zoom_400);	
 	m_ZoomGroup->addAction(ui.action_Zoom_Fit);	
 
-	m_ZoomMode = settings.value("main/zoom", 1).toInt();
+	m_ZoomMode = settings.SETTINGS_GET_ZOOM();
 	m_ZoomMode = qMin(qMax(m_ZoomMode, 0), 4);
 	switch (m_ZoomMode)
 	{
@@ -322,7 +323,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 void MainWindow::on_action_Open_triggered()
 {
 	QSettings settings;
-	QString openFilesPath = settings.value("main/openfilespath", "").toString();
+	QString openFilesPath = settings.SETTINGS_GET_FILE_PATH();
 
 	QFileDialog::Options options;
 	QString selectedFilter;
@@ -336,7 +337,7 @@ void MainWindow::on_action_Open_triggered()
 	if (files.size()>0)
 	{
 		QFileInfo fileInfo(files.first());
-		settings.setValue("main/openfilespath", fileInfo.path());
+		settings.SETTINGS_SET_FILE_PATH(fileInfo.path());
 	}
 
 	openFiles(files);
@@ -346,7 +347,7 @@ void MainWindow::on_action_Open_triggered()
 void MainWindow::on_action_Run_Script_triggered()
 {
 	QSettings settings;
-	QString openFilesPath = settings.value("main/openscriptpath", "").toString();
+	QString openFilesPath = settings.SETTINGS_GET_SCRIPT_PATH();
 
 	QFileDialog::Options options;
 	QString selectedFilter;
@@ -360,7 +361,7 @@ void MainWindow::on_action_Run_Script_triggered()
 	if (fileList.size()>0)
 	{
 		QFileInfo fileInfo(fileList.first());
-		settings.setValue("main/openscriptpath", fileInfo.path());
+		settings.SETTINGS_SET_SCRIPT_PATH(fileInfo.path());
 	}
 
 	for ( int i=0; i<fileList.size(); i++)
@@ -466,7 +467,7 @@ void MainWindow::SetZoomMode( int mode )
 		autoResizeWindow();
 
 		QSettings settings;
-		settings.setValue("main/zoom", m_ZoomMode);
+		settings.SETTINGS_SET_ZOOM(m_ZoomMode);
 	}	
 
 	switch(mode)
@@ -1016,7 +1017,7 @@ void MainWindow::OnRendererSelected()
 		m_RenderType = action->objectName();
 
 		QSettings settings;
-		settings.setValue("main/renderer", m_RenderType);
+		settings.SETTINGS_SET_RENDERER(m_RenderType);
 
 		openFiles(fileList);
 

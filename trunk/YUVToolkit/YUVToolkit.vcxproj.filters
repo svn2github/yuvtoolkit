@@ -180,6 +180,9 @@
     <ClInclude Include="GeneratedFiles\ui_Options.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="Settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="YUVToolkit.ico" />

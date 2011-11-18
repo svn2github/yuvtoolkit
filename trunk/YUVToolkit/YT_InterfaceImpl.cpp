@@ -1,6 +1,7 @@
 #include "YT_Interface.h"
 #include "YT_InterfaceImpl.h"
 #include "MainWindow.h"
+#include "Settings.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -743,7 +744,7 @@ void HostImpl::InitLogging()
 	}
 	
 	QSettings settings;
-	if (QDir().exists(dir) && settings.value("main/logging", false).toBool())
+	if (QDir().exists(dir) && settings.SETTINGS_GET_LOGGING())
 	{
 		// Clean up old log files
 		QDir qdir(dir);
@@ -786,7 +787,7 @@ void HostImpl::UnInitLogging()
 void HostImpl::EnableLogging( bool enable )
 {
 	QSettings settings;
-	settings.setValue("main/logging", enable);
+	settings.SETTINGS_SET_LOGGING(enable);
 
 	UnInitLogging();
 

@@ -3,8 +3,7 @@
 #include "MeasureWindow.h"
 #include "VideoView.h"
 #include "VideoViewList.h"
-
-
+#include "Settings.h"
 
 MeasureResultsModel::MeasureResultsModel( QObject *parent, QList<MeasureItem>& results) :
 QAbstractTableModel(parent), m_Results(results)
@@ -346,9 +345,7 @@ void MeasureWindow::UpdateRequest()
 	ClearAll();
 
 	QSettings settings;
-	QStringList enabledDistMaps("MSE");
-	enabledDistMaps.append("PSNR");
-	QStringList distMap = settings.value("measure/distmap", enabledDistMaps).toStringList();
+	QStringList distMap = settings.SETTINGS_GET_DIST_MAP();
 
 	unsigned int sourceView1 = m_SourceList.at(0);
 	for (int j=1; j<m_SourceList.size(); j++)

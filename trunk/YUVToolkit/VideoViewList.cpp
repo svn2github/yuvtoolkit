@@ -7,7 +7,7 @@
 #include "SourceThread.h"
 #include "Layout.h"
 #include "ColorConversion.h"
-
+#include "Settings.h"
 #include <assert.h>
 
 VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) :
@@ -32,7 +32,7 @@ VideoView* VideoViewList::NewVideoViewInternal( QString title, unsigned int view
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
 		QSettings settings;
-		QString renderType = settings.value("main/renderer", "D3D").toString();
+		QString renderType = settings.SETTINGS_GET_RENDERER();
 		m_RenderWidget->Init(renderType);
 
 		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), &m_Control);
