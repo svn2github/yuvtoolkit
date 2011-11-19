@@ -31,7 +31,7 @@
 #define SLIDER_STEP_MS  100
 
 int MainWindow::windowCounter = 0;
-MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) : 
+MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	QMainWindow(parent, flags), m_VideoViewList(0),
 	m_ActiveVideoView(0), m_Slider(0),
 	m_TimeLabel1(0), m_TimeLabel2(0), m_RenderSpeedLabel(0),
@@ -54,14 +54,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_Slider->setTickPosition(QSlider::TicksBelow);
 	m_Slider->setTickInterval(1000/SLIDER_STEP_MS);
 	m_Slider->setSingleStep(1);
-	
+
 	m_VideoViewList = new VideoViewList(this, ui.rendererWidget);
 	connect(m_VideoViewList, SIGNAL(ResolutionDurationChanged()), this, SLOT(OnAutoResizeWindow()));
 	connect(m_VideoViewList, SIGNAL(VideoViewClosed(VideoView*)), this, SLOT(OnVideoViewClosed(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewListChanged()), this, SLOT(OnVideoViewListChanged()));
 	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), this, SLOT(OnVideoViewSourceListChanged()));
-	
+
 	ui.playbackToolBar->insertWidget(ui.action_Seek_Beginning, m_Slider);
 	ui.playbackToolBar->insertSeparator(ui.action_Seek_Beginning);
 
@@ -89,13 +89,13 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 
 	QSettings settings;
 	m_RenderType = settings.SETTINGS_GET_RENDERER();
-	
+
 	m_ZoomGroup = new QActionGroup(this);
-	m_ZoomGroup->addAction(ui.action_Zoom_50);	
-	m_ZoomGroup->addAction(ui.action_Zoom_100);	
-	m_ZoomGroup->addAction(ui.action_Zoom_200);	
-	m_ZoomGroup->addAction(ui.action_Zoom_400);	
-	m_ZoomGroup->addAction(ui.action_Zoom_Fit);	
+	m_ZoomGroup->addAction(ui.action_Zoom_50);
+	m_ZoomGroup->addAction(ui.action_Zoom_100);
+	m_ZoomGroup->addAction(ui.action_Zoom_200);
+	m_ZoomGroup->addAction(ui.action_Zoom_400);
+	m_ZoomGroup->addAction(ui.action_Zoom_Fit);
 
 	m_ZoomMode = settings.SETTINGS_GET_ZOOM();
 	m_ZoomMode = qMin(qMax(m_ZoomMode, 0), 4);
@@ -121,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	SetZoomMode(m_ZoomMode);
 
 	ui.mainToolBar->addSeparator();
-	QToolButton* zoomButton = new QToolButton( ui.mainToolBar );	
+	QToolButton* zoomButton = new QToolButton( ui.mainToolBar );
 	ui.mainToolBar->addWidget(zoomButton);
 	zoomButton->setDefaultAction(ui.action_Zoom_Switch);
 	// zoomButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -143,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 
 	m_ColorGroup = new QActionGroup(this);
 	m_ColorGroup->addAction(ui.action_Color);
-	m_ColorGroup->addAction(ui.action_Y);	
+	m_ColorGroup->addAction(ui.action_Y);
 	m_ColorGroup->addAction(ui.action_U);
 	m_ColorGroup->addAction(ui.action_V);
 	ui.action_Color->setChecked(true);
@@ -158,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	QIcon iconPlane;
 	iconPlane.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/plane.png"), QSize(), QIcon::Normal, QIcon::Off);
 	m_ActionsButton = new QToolButton( ui.mainToolBar );
-	ui.mainToolBar->addWidget(m_ActionsButton);	
+	ui.mainToolBar->addWidget(m_ActionsButton);
 	m_ActionsButton->setIcon(iconPlane);
 	m_ActionsButton->setText(QApplication::translate("MainWindow", "Actions", 0, QApplication::UnicodeUTF8));
 	m_ActionsButton->setShortcut(tr("ALT+A"));
@@ -168,7 +168,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_ActionsButton->setPopupMode( QToolButton::InstantPopup);
 
 	m_CompareButton = new QToolButton( ui.mainToolBar );
-	ui.mainToolBar->addWidget(m_CompareButton);	
+	ui.mainToolBar->addWidget(m_CompareButton);
 	m_CompareButton->setDefaultAction(ui.action_Compare);
 	m_CompareButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
@@ -176,7 +176,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	QIcon iconGraph;
 	iconGraph.addFile(QString::fromUtf8(":/RawVideoToolkit/Resources/utilities-system-monitor.png"), QSize(), QIcon::Normal, QIcon::Off);
 	QToolButton* graphButton = new QToolButton( ui.mainToolBar );
-	ui.mainToolBar->addWidget(graphButton);	
+	ui.mainToolBar->addWidget(graphButton);
 	graphButton->setIcon(iconGraph);
 	graphButton->setText(QApplication::translate("MainWindow", "&Graph", 0, QApplication::UnicodeUTF8));
 	graphButton->setToolTip(QApplication::translate("MainWindow", "Compare videos and show graph", 0, QApplication::UnicodeUTF8));
@@ -184,7 +184,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	graphButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	graphButton->setEnabled(false);
 #endif
-	
+
 	QString str("Compare");
 	m_MeasureDockWidget= new QDockWidget(str, this );
 	m_MeasureDockWidget->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
@@ -230,7 +230,7 @@ void MainWindow::dragEnterEvent( QDragEnterEvent *event )
 {
 	// accept just text/uri-list mime format
 	if (event->mimeData()->hasUrls())
-	{     
+	{
 		event->acceptProposedAction();
 	}
 }
@@ -303,12 +303,12 @@ void MainWindow::openFiles( const QStringList& fileList )
 
 	// Update source list
 	m_VideoViewList->GetProcessThread()->SetSources(m_VideoViewList->GetSourceIDList());
-	
+
 	// Trigger new seeking frame
 	m_VideoViewList->GetControl()->Seek(status.lastProcessPTS, status.isPlaying);
 
 	// Start source
-	for (int i=0; i<m_VideoViewList->size(); ++i) 
+	for (int i=0; i<m_VideoViewList->size(); ++i)
 	{
 		VideoView* vv = m_VideoViewList->at(i);
 		SourceThread* st = vv->GetSourceThread();
@@ -400,7 +400,7 @@ void MainWindow::on_action_Close_triggered()
 	VideoView* vv = NULL;
 	if (m_ActiveVideoView)
 	{
-		vv = m_ActiveVideoView;		
+		vv = m_ActiveVideoView;
 	}else if (m_VideoViewList->size()>0)
 	{
 		vv = m_VideoViewList->last();
@@ -409,7 +409,7 @@ void MainWindow::on_action_Close_triggered()
 	if (vv)
 	{
 		m_VideoViewList->CloseVideoView(vv);
-		
+
 		m_UpdateTimer->start();
 	}else
 	{
@@ -457,8 +457,8 @@ void MainWindow::SetZoomMode( int mode )
 	if (mode != m_ZoomMode)
 	{
 		m_ZoomMode = mode;
-	
-		for (int i=0; i<m_VideoViewList->size(); ++i) 
+
+		for (int i=0; i<m_VideoViewList->size(); ++i)
 		{
 			VideoView* vv = m_VideoViewList->at(i);
 			vv->SetZoomLevel(m_ZoomMode);
@@ -468,7 +468,7 @@ void MainWindow::SetZoomMode( int mode )
 
 		QSettings settings;
 		settings.SETTINGS_SET_ZOOM(m_ZoomMode);
-	}	
+	}
 
 	switch(mode)
 	{
@@ -502,7 +502,7 @@ void MainWindow::openFile( QString strPath)
 void MainWindow::openFileInternal( QString strPath)
 {
 	QStringList fileList;
-	for (int i=0; i<m_VideoViewList->size(); ++i) 
+	for (int i=0; i<m_VideoViewList->size(); ++i)
 	{
 		SourceThread* st = m_VideoViewList->at(i)->GetSourceThread();
 		if (st)
@@ -516,7 +516,7 @@ void MainWindow::openFileInternal( QString strPath)
 
 	QFile file(strPath);
 	if (!file.exists())
-	{		
+	{
 		QMessageBox::warning(this, "Error", "File does not exist.");
 		return;
 	}
@@ -553,9 +553,9 @@ void MainWindow::openScript( QString strPath, bool debug )
 	 QString contents = file.readAll();
 	 file.close();
 
-	 if (debug) 
+	 if (debug)
 	 {
-		 if (!debugger) 
+		 if (!debugger)
 		 {
 			 debugger = new QScriptEngineDebugger(this);
 			 debuggerWindow = debugger->standardWindow();
@@ -604,7 +604,7 @@ void MainWindow::autoResizeWindow()
 		m_VideoViewList->OnUpdateRenderWidgetPosition();
 		return;
 	}
-	
+
 	if (ui.rendererWidget->layout->GetVideoCount()>0)
 	{
 		QSize newSize;
@@ -636,7 +636,7 @@ void MainWindow::autoResizeWindow()
 
 		resize(newSize);
 
-		if (pos().x()+newSize.width()>screen.right() || 
+		if (pos().x()+newSize.width()>screen.right() ||
 			pos().y()+newSize.height()>screen.bottom())
 		{
 			this->move(qMin(pos().x(), screen.right()-newSize.width()),
@@ -655,21 +655,21 @@ void MainWindow::on_action_File_Association()
 {
 /*
 	LPAPPASSOCREGUI p_appassoc;
-    CoInitialize( 0 );
+	CoInitialize( 0 );
 
-    if( S_OK == CoCreateInstance( &clsid_IApplication2,
-                NULL, CLSCTX_INPROC_SERVER,
-                &IID_IApplicationAssociationRegistrationUI,
-                (void **)&p_appassoc) )
-    {
-        if(S_OK == p_appassoc->vt->LaunchAdvancedAssociationUI(p_appassoc, L"YUVToolkit" ) )
-        {
-            CoUninitialize();
-            return;
-        }
-    }
+	if( S_OK == CoCreateInstance( &clsid_IApplication2,
+				NULL, CLSCTX_INPROC_SERVER,
+				&IID_IApplicationAssociationRegistrationUI,
+				(void **)&p_appassoc) )
+	{
+		if(S_OK == p_appassoc->vt->LaunchAdvancedAssociationUI(p_appassoc, L"YUVToolkit" ) )
+		{
+			CoUninitialize();
+			return;
+		}
+	}
 
-    CoUninitialize();
+	CoUninitialize();
 
 */}
 
@@ -690,9 +690,9 @@ void MainWindow::on_action_About_triggered()
 	QTextStream(&str) << "<H1>YUV Toolkit</H1>"
 		<< "<B> Version " <<
 #include "../Setup/VERSION_1"
-		<< "." << 
+		<< "." <<
 #include "../Setup/VERSION_2"
-		<< "." << 
+		<< "." <<
 #include "../Setup/VERSION_3"
 		<< " Build " <<
 #include "../Setup/VERSION_4"
@@ -710,10 +710,13 @@ void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int p
 {
 	// int ticks = qCeil(duration * fps / 1000)-1;
 
-	if (m_Slider->maximum() != (int)duration)
+	if (m_Slider->maximum() != (int)duration/SLIDER_STEP_MS)
 	{
 		bool old = m_Slider->blockSignals(true);
 		m_Slider->setRange(0, duration/SLIDER_STEP_MS);
+
+		m_Slider->setTickInterval(1000/SLIDER_STEP_MS);
+
 		m_Slider->blockSignals(old);
 	}
 
@@ -751,7 +754,7 @@ void MainWindow::on_action_Step_Forward_triggered()
 	{
 		stepVideo(1);
 	}
-	
+
 }
 
 void MainWindow::on_action_Step_Back_triggered()
@@ -801,7 +804,7 @@ void MainWindow::on_action_Seek_End_triggered()
 	if (longest)
 	{
 		Source* source = longest->GetSource();
-		
+
 		SourceInfo info;
 		source->GetInfo(info);
 
@@ -827,7 +830,7 @@ void MainWindow::OnTimer()
 	{
 		Source* source = VV_SOURCE(longest);
 		FramePtr frame = VV_LASTFRAME(longest);
-		
+
 		if (source && frame)
 		{
 			SourceInfo info;
@@ -862,7 +865,7 @@ void MainWindow::OnTimer()
 
 			str.clear();
 			QTextStream(&str) << frame->PTS() << " / " << info.duration << " ms";
-			m_TimeLabel2->setText(str);			
+			m_TimeLabel2->setText(str);
 		}
 
 		if (status.isPlaying)
@@ -910,7 +913,7 @@ void MainWindow::OnTimer()
 			m_IsPlaying = false;
 		}
 	}
-	
+
 	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
 
 	ui.action_Compare->setChecked(m_MeasureDockWidget->toggleViewAction()->isChecked());
@@ -957,7 +960,7 @@ void MainWindow::EnableButtons( int nrSources )
 	m_Slider->setEnabled(nrSources!=0);
 
 	ui.action_Zoom_Switch->setEnabled(nrSources!=0);
-	
+
 	m_ActionsButton->setEnabled(nrSources!=0);
 	ui.action_Compare->setEnabled(nrSources>1);
 	ui.action_Select_Processed_2->setEnabled(nrSources>2);
@@ -999,7 +1002,7 @@ void MainWindow::OnRendererSelected()
 	if (action)
 	{
 		QStringList fileList;
-		for (int j=0; j<m_VideoViewList->size(); ++j) 
+		for (int j=0; j<m_VideoViewList->size(); ++j)
 		{
 			SourceThread* graph = m_VideoViewList->at(j)->GetSourceThread();
 			if (graph)
@@ -1008,7 +1011,7 @@ void MainWindow::OnRendererSelected()
 			}
 		}
 
-		while (m_VideoViewList->size()>0) 
+		while (m_VideoViewList->size()>0)
 		{
 			VideoView* vv = m_VideoViewList->first();
 			m_VideoViewList->CloseVideoView(vv);
@@ -1083,7 +1086,7 @@ void MainWindow::contextMenuEvent( QContextMenuEvent *event )
 		{
 			menu->exec(event->globalPos());
 		}
-	}	
+	}
 }
 
 void MainWindow::OnVideoViewClosed(VideoView* vv)
@@ -1112,7 +1115,7 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 		}
 	}
 
-	autoResizeWindow();	
+	autoResizeWindow();
 
 	if (m_VideoViewList->size() == 0)
 	{
@@ -1121,13 +1124,13 @@ void MainWindow::OnVideoViewClosed(VideoView* vv)
 }
 
 void MainWindow::OnVideoViewCreated( VideoView* vv)
-{	
+{
 	vv->SetZoomLevel(m_ZoomMode);
 }
 
 void MainWindow::on_action_Quality_Measures_triggered()
 {
-	
+
 }
 
 void MainWindow::on_action_Homepage_triggered()
@@ -1159,7 +1162,7 @@ void MainWindow::Init()
 		if (plugin->string == m_RenderType)
 		{
 			action->setChecked(true);
-		}		
+		}
 	}
 }
 
@@ -1209,7 +1212,7 @@ void MainWindow::on_action_Select_To_triggered()
 
 	updateSelectionSlider();
 
-	
+
 }
 
 void MainWindow::on_action_Clear_Selection_triggered()
