@@ -1,0 +1,33 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YUV]
+@="Raw YUV Video File"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YUV\DefaultIcon]
+@="C:\\Program Files (x86)\\YUVToolkit\\YUVToolkit.exe,1"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YUV\shell\open\command]
+@="\"C:\\Program Files (x86)\\YUVToolkit\\YUVToolkit.exe\" \"%1\""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YTS]
+@="YuvToolkit Script File"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YTS\DefaultIcon]
+@="C:\\Program Files (x86)\\YUVToolkit\\YUVToolkit.exe,2"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YTS\shell\open\command]
+@="\"C:\\Program Files (x86)\\YUVToolkit\\YUVToolkit.exe\" \"%1\""
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\yuvtoolkit.com\YuvToolkit]
+@="YuvToolkit"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\yuvtoolkit.com\YuvToolkit\Capabilities]
+"ApplicationDescription"="New YUV Player"
+"ApplicationName"="YuvToolkit"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\yuvtoolkit.com\YuvToolkit\Capabilities\FileAssociations]
+".yuv"="YuvToolkit.YUV"
+".yts"="YuvToolkit.YTS"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\RegisteredApplications]
+"YuvToolkit"="SOFTWARE\\yuvtoolkit.com\\YuvToolkit\\Capabilities"
