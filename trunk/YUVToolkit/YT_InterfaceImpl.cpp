@@ -547,10 +547,6 @@ FormatPtr HostImpl::NewFormat()
 
 HostImpl::HostImpl(int argc, char *argv[]) : m_LogFile(this)
 {
-	QCoreApplication::setOrganizationName("YUVToolkit");
-	QCoreApplication::setOrganizationDomain("YUVToolkit");
-	QCoreApplication::setApplicationName("YUVToolkit");
-
 	if (argc > 1)
 	{
 		for (int i=1; i<argc; i++)

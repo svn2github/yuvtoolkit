@@ -11,8 +11,9 @@ Host* GetHost()
 
 YTApplication::YTApplication(int & argc, char ** argv) : QApplication(argc, argv)
 {
+	setOrganizationName("yuvtoolkit.com");
+	setOrganizationDomain("yuvtoolkit.com");
 	setApplicationName("YUVToolkit");
-	setOrganizationName("Yocto.net");
 	setQuitOnLastWindowClosed(true);
 
 	g_Host = new HostImpl(argc, argv);

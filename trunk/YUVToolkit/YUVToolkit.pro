@@ -121,6 +121,8 @@ macx {
 
 	# Icon
 	ICON = YUVToolkit.icns
+
+	QMAKE_INFO_PLIST = Resources/info.plist
  }
 
 linux-g++ {
@@ -128,5 +130,9 @@ linux-g++ {
 }
 
 LIBS += -lswscale
+
+OTHER_FILES += \
+	info.plist
+
 
 
