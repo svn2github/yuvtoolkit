@@ -13,7 +13,7 @@ class FormatImpl : public Format
 	int width;
 	int height;
 	int stride[4];				// number of bytes per row in each plane
-	
+
 	size_t plane_size[4];
 	bool format_changed;
 	char name[4][32];
@@ -84,7 +84,7 @@ public:
 	virtual void SetInfo(INFO_KEY, QVariant);
 
 	// Given the format, allocate the memory and populate Data
-	RESULT Allocate(); 
+	RESULT Allocate();
 	// Reset the internal buffer, call me before changing the format
 	RESULT Reset();
 
@@ -153,11 +153,13 @@ public:
 public slots:
 	void Init();
 public:
-	void InitLogging(); 
+	void InitLogging();
 	void UnInitLogging();
 	void EnableLogging(bool enable);
 	bool IsLoggingEnabled();
 	void OpenLoggingDirectory();
+	bool IsInited();
+	void OpenFiles(QStringList);
 
 	FramePool* NewFramePool(unsigned int size);
 	void ReleaseFramePool(FramePool*);
@@ -208,7 +210,7 @@ public:
 
 	PlaybackControl();
 
-	void GetStatus(Status* status); 
+	void GetStatus(Status* status);
 	void Reset();
 
 	void Play(bool play);
@@ -219,7 +221,7 @@ public:
 	void SelectFrom();
 	void SelectTo();
 	void ClearSelection();
-	
+
 	void OnFrameProcessed(unsigned int pts, unsigned int seekingPTS);
 	void OnFrameDisplayed(unsigned int pts, unsigned int seekingPTS);
 private:

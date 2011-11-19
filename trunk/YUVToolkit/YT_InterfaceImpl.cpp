@@ -178,7 +178,7 @@ size_t FormatImpl::PlaneSize( int plane )
 			vstride[2] = height;
 			break;
 		case YV16:
-		case I422:		
+		case I422:
 		case I420:
 		case IYUV:
 		case YV12:
@@ -221,7 +221,7 @@ bool FormatImpl::operator==( const Format &f )
 
 	return (this->color == f.Color()) && (this->width == f.Width()) &&
 		(this->height == f.Height()) && (this->stride[0] == f.Stride(0)) &&
-		(this->stride[1] == f.Stride(1)) && (this->stride[2] == f.Stride(2)) && 
+		(this->stride[1] == f.Stride(1)) && (this->stride[2] == f.Stride(2)) &&
 		(this->stride[3] == f.Stride(3));
 }
 
@@ -232,12 +232,12 @@ bool FormatImpl::operator!=( const Format &f )
 
 Format& FormatImpl::operator=( const Format &f )
 {
-	this->SetColor(f.Color()); 
+	this->SetColor(f.Color());
 	this->width = f.Width();
 	this->height = f.Height();
 	this->stride[0] = f.Stride(0);
 	this->stride[1] = f.Stride(1);
-	this->stride[2] = f.Stride(2); 
+	this->stride[2] = f.Stride(2);
 	this->stride[3] = f.Stride(3);
 	this->format_changed = true;
 
@@ -477,7 +477,7 @@ RESULT FrameImpl::Allocate()
 		while (((unsigned long)d) & (DEFAULT_ALIGNMENT-1))
 			d ++;
 		data[i] = d;
-	
+
 		d += format->PlaneSize(i);
 	}
 
@@ -576,7 +576,6 @@ void HostImpl::Init()
 #	error Unsupported platform
 #endif
 	foreach (QString fileName, pluginsDir.entryList(files, QDir::Files)) {
-		QApplication::processEvents();
 		QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
 
 		QObject *plugin = loader.instance();
@@ -676,7 +675,7 @@ YTPlugIn* HostImpl::FindSourcePlugin( const QString file_ext )
 
 YTPlugIn* HostImpl::FindRenderPlugin( const QString& type )
 {
-	for (int i = 0; i < m_RendererList.size(); ++i) 
+	for (int i = 0; i < m_RendererList.size(); ++i)
 	{
 		PlugInInfo* info = m_RendererList.at(i);
 		if (info->string == type)
@@ -701,7 +700,7 @@ void HostImpl::Logging(void* ptr,  LOGGING_LEVELS level, const char* fmt, ... )
 		if (m_LogFile.isOpen())
 		{
 			QString msg;
-	
+
 			va_list list;
 			va_start(list, fmt);
 			msg.vsprintf(fmt, list);
@@ -709,7 +708,7 @@ void HostImpl::Logging(void* ptr,  LOGGING_LEVELS level, const char* fmt, ... )
 			QTextStream stream(&m_LogFile);
 
 			stream << QTime::currentTime().toString();
-			switch (level)	 
+			switch (level)
 			{
 				case LL_INFO:
 					stream << " I ";
@@ -742,7 +741,7 @@ void HostImpl::InitLogging()
 	{
 		QDir().mkdir(dir);
 	}
-	
+
 	QSettings settings;
 	if (QDir().exists(dir) && settings.SETTINGS_GET_LOGGING())
 	{
@@ -752,17 +751,17 @@ void HostImpl::InitLogging()
 		qdir.setSorting(QDir::Time | QDir::Reversed);
 
 		QFileInfoList list = qdir.entryInfoList(QStringList("YUVToolkit-[1-9][0-9][0-1][0-9][0-3][0-9]-[0-2][0-9][0-6][0-9][0-6][0-9].log"));
-		for (int i = 0; i <= list.size()-3; ++i) 
+		for (int i = 0; i <= list.size()-3; ++i)
 		{
 			// Keep 3 logs
 			QFileInfo fileInfo = list.at(i);
 			QFile::remove(fileInfo.filePath());
 		}
 
-		// Create new 
+		// Create new
 		QString filename;
 
-		QTextStream stream(&filename); 
+		QTextStream stream(&filename);
 		stream << dir << "/" << "YUVToolkit-";
 		stream << QDateTime::currentDateTime().toString("yyMMdd-hhmmss");
 		stream << ".log";
@@ -1017,4 +1016,21 @@ void PlaybackControl::ClearSelection()
 {
 	QMutexLocker locker(&m_Mutex);
 	m_Status.selectionFrom = m_Status.selectionTo = INVALID_PTS;
+}
+
+bool HostImpl::IsInited()
+{
+	return m_PlugInList.size()>0 && m_MainWindowList.size()>0;
+}
+
+void HostImpl::OpenFiles(QStringList fileList)
+{
+	if (IsInited())
+	{
+		MainWindow* win = m_MainWindowList.at(0);
+		win->openFiles(fileList);
+	}else
+	{
+		m_InitFileList.append(fileList);
+	}
 }
