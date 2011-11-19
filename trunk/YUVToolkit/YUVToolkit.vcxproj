@@ -280,6 +280,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_Options.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Settings.h" />
     <CustomBuild Include="YTApplication.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -480,6 +481,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
     </CustomBuild>
+    <None Include="Resources\filetype_yuv.ico" />
     <None Include="YUVToolkit.ico" />
   </ItemGroup>
   <ItemGroup>

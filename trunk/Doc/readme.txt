@@ -23,6 +23,7 @@ Version History
 New video pipeline, more efficient playback and more reliable seeking.
 Support for 720P 60FPS playback of 4 side-by-side videos using D3D renderer.
 Support for MSE and PSNR objective measures and error map visualization.
+Improved OsX support as default program for opening yuv files.
 
 * Minor New Features
 Playback of a selected time interval (Select using Ctrl-HOME and Ctrl-END)

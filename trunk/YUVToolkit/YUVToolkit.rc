@@ -1,2 +1,2 @@
-IDI_ICON1		ICON		DISCARDABLE	"YUVToolkit.ico"
-
+IDI_ICON_DEFAULT		ICON		DISCARDABLE	"YUVToolkit.ico"
+IDI_ICON_YUV			ICON		DISCARDABLE	"Resources/filetype_yuv.ico"

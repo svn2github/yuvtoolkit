@@ -1,12 +1,10 @@
 Bugs
 ===================
-Double clicking YUV file in OsX doesnt start playback
+parsing of file name doesn't work with CIF, QCIF, VGA, QVGA, QQVGA
 Crash when wrong stride is used
-
 
 0.0.2 
 ===================
-Convert internal format to be I420, YUV444 or YUV420
 Tools -> Compare Window
 - Compare videos frame by frame and compute objective measures like MSE and PSNR
 - Visualize frame difference 
