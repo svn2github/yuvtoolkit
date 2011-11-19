@@ -12,7 +12,7 @@
 				<string>yuv</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>@ICON@</string>
+			<string>filetype_yuv.icns</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>video/yuv</string>

@@ -169,6 +169,18 @@
     <ClCompile Include="GeneratedFiles\Template\moc_Options.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="YTApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_YTApplication.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_YTApplication.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_YTApplication.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorConversion.h">
@@ -237,6 +249,9 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="Options.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="YTApplication.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
