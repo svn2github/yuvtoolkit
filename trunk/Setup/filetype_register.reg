@@ -18,16 +18,16 @@ REGEDIT4
 [HKEY_LOCAL_MACHINE\SOFTWARE\Classes\YuvToolkit.YTS\shell\open\command]
 @="\"C:\\Program Files (x86)\\YUVToolkit\\YUVToolkit.exe\" \"%1\""
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\yuvtoolkit.com\YuvToolkit]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\yuvtoolkit.com\YuvToolkit]
 @="YuvToolkit"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\yuvtoolkit.com\YuvToolkit\Capabilities]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\yuvtoolkit.com\YuvToolkit\Capabilities]
 "ApplicationDescription"="New YUV Player"
 "ApplicationName"="YuvToolkit"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\yuvtoolkit.com\YuvToolkit\Capabilities\FileAssociations]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\yuvtoolkit.com\YuvToolkit\Capabilities\FileAssociations]
 ".yuv"="YuvToolkit.YUV"
 ".yts"="YuvToolkit.YTS"
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\RegisteredApplications]
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\RegisteredApplications]
 "YuvToolkit"="SOFTWARE\\yuvtoolkit.com\\YuvToolkit\\Capabilities"

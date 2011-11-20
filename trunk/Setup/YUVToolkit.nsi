@@ -5,8 +5,8 @@
 ############################################################################################
 
 !define /date NOW "%Y%m%d-%H%M%S"
-!define APP_NAME "YUVToolkit"
-!define COMP_NAME "http://www.yuvtoolkit.com"
+!define APP_NAME "YuvToolkit"
+!define COMP_NAME "yuvtoolkit.com"
 !define WEB_SITE "http://www.yuvtoolkit.com"
 !define /file VERSION_1 VERSION_1
 !define /file VERSION_2 VERSION_2
@@ -133,6 +133,25 @@ WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "Publisher" "${COMP_NAME}"
 !ifdef WEB_SITE
 WriteRegStr ${REG_ROOT} "${UNINSTALL_PATH}"  "URLInfoAbout" "${WEB_SITE}"
 !endif
+
+# Register YUV file type
+WriteRegStr "HKCR" "${APP_NAME}.yuv" "" "YUV Video File"
+WriteRegStr "HKCR" "${APP_NAME}.yuv\DefaultIcon" "" "$INSTDIR\${MAIN_APP_EXE},1"
+WriteRegStr "HKCR" "${APP_NAME}.yuv\shell\open\command" "" "$\"$INSTDIR\${MAIN_APP_EXE}$\" $\"%1$\""
+
+# Register YTS file type
+WriteRegStr "HKCR" "${APP_NAME}.yts" "" "YuvToolkit Script File"
+WriteRegStr "HKCR" "${APP_NAME}.yts\DefaultIcon" "" "$INSTDIR\${MAIN_APP_EXE},2"
+WriteRegStr "HKCR" "${APP_NAME}.yts\shell\open\command" "" "$\"$INSTDIR\${MAIN_APP_EXE}$\" $\"%1$\""
+
+# Declare capabilities
+WriteRegStr "HKLM" "SOFTWARE\RegisteredApplications" "${APP_NAME}" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities"
+WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}" "" "${APP_NAME}"
+WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities" "ApplicationDescription" "Open-source and cross platform YUV player and analyzer for raw video"
+WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities" "ApplicationName" "${APP_NAME}"
+WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities\FileAssociations" ".yuv" "${APP_NAME}.yuv"
+WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities\FileAssociations" ".yts" "${APP_NAME}.yts"
+
 SectionEnd
 
 ######################################################################
@@ -167,6 +186,11 @@ RmDir "$SMPROGRAMS\YUVToolkit"
 
 DeleteRegKey ${REG_ROOT} "${REG_APP_PATH}"
 DeleteRegKey ${REG_ROOT} "${UNINSTALL_PATH}"
+DeleteRegKey "HKCR" "${APP_NAME}.yuv"
+DeleteRegKey "HKCR" "${APP_NAME}.yts"
+DeleteRegValue "HKLM" "SOFTWARE\RegisteredApplications" "${APP_NAME}"
+DeleteRegKey "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}"
+
 SectionEnd
 
 ######################################################################

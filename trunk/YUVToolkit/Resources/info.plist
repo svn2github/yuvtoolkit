@@ -18,7 +18,25 @@
 				<string>video/yuv</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>YUV Video File</string>
+			<string>Yuv Video File</string>
+			<key>CFBundleTypeRole</key>
+			<string>@EXECUTABLE@</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>yts</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>filetype_yts.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>video/yts</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>YuvToolkit Script File</string>
 			<key>CFBundleTypeRole</key>
 			<string>@EXECUTABLE@</string>
 			<key>LSIsAppleDefaultForType</key>
