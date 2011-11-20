@@ -19,4 +19,7 @@
 #define SETTINGS_GET_LOGGING()         value("main/logging", false).toBool()
 #define SETTINGS_SET_LOGGING(v)        setValue("main/logging", v)
 
+#define SETTINGS_GET_AUTO_RESIZE()     value("main/autoresize", true).toBool()
+#define SETTINGS_SET_AUTO_RESIZE(v)    setValue("main/autoresize", v)
+
 #endif

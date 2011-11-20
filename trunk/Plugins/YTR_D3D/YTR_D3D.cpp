@@ -56,7 +56,7 @@ void YTR_D3D::OnResizeTimer()
 	int h = height();
 	if (w>640 || h>480)
 	{
-		if (w!=bufferWidth || w!=bufferHeight)
+		if (w!=bufferWidth || h!=bufferHeight)
 		{
 			if (w == m_ResetLastCheckedWidth && h == m_ResetLastCheckedHeight)
 			{

@@ -599,7 +599,8 @@ void MainWindow::autoResizeWindow()
 	QSize display;
 	QSize window = ui.rendererWidget->size();
 
-	if (isMaximized() || isMinimized())
+	QSettings settings;
+	if (isMaximized() || isMinimized() || !settings.SETTINGS_GET_AUTO_RESIZE())
 	{
 		m_VideoViewList->OnUpdateRenderWidgetPosition();
 		return;

@@ -11,6 +11,8 @@ public:
 	Options(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~Options();
 
+private slots:
+	void OnAccepted();
 private:
 	Ui::Options ui;
 };
