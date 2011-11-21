@@ -332,6 +332,11 @@ struct MeasureInfo
 	float upperRange;
 	float lowerRange;
 	bool biggerValueIsBetter;
+
+	// Duplicated info as already defined in MeasureCapabilities, but put here for convenience
+	// A measure plugin can support multiple measures, but if multiple measures are within
+	// same plugin, they MUST all have or not have distortion map.
+	bool hasDistortionMap; 
 };
 
 struct MeasureCapabilities

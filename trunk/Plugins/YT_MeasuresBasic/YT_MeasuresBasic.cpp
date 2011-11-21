@@ -64,6 +64,7 @@ const MeasureCapabilities& MeasuresBasic::GetCapabilities()
 		info.lowerRange = 1;
 		info.upperRange = 400;
 		info.biggerValueIsBetter = false;
+		info.hasDistortionMap = true;
 		m_Capabilities.measures.append(info);
 
 		info.name = "PSNR";
@@ -71,6 +72,7 @@ const MeasureCapabilities& MeasuresBasic::GetCapabilities()
 		info.lowerRange = 22;
 		info.upperRange = 50;
 		info.biggerValueIsBetter = true;
+		info.hasDistortionMap = true;
 		m_Capabilities.measures.append(info);
 	}
 
@@ -105,11 +107,18 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 	DistMapPtr mseMap;
 	int distMapWidth = 0;
 	int distMapHeight = 0;
-	
+	double* mseResults;
 	if (opMse)
 	{
 		opMse->results[PLANE_Y] = opMse->results[PLANE_U] = 
 			opMse->results[PLANE_V] = opMse->results[PLANE_COLOR] = 0;
+		mseResults = opMse->results;
+	}else if (opPsnr)
+	{
+		mseResults = opPsnr->results;
+	}else
+	{
+		return;
 	}
 	
 	if (opPsnr)
@@ -156,19 +165,25 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 					mse = ComputeMSE(source1, source2, i, DistMapPtr());
 				}
 
-				opMse->hasResults[i] = true;
-				opMse->results[i] = mse;
-				opMse->results[PLANE_COLOR] += weightPlane*mse;
+				mseResults[i] = mse;
+				mseResults[PLANE_COLOR] += weightPlane*mse;
+				if (opMse)
+				{
+					opMse->hasResults[i] = true;
+				}
 			}
 		}else
 		{
-			opMse->hasResults[i] = true;
-			opMse->results[i] /= weightSum;
+			mseResults[i] /= weightSum;
+			if (opMse)
+			{
+				opMse->hasResults[i] = true;
+			}
 		}
 
-		if (opMse->hasResults[i] && weightSum>0)
+		if (weightSum>0)
 		{
-			float mse_min = qMax<float>(opMse->results[i], 0.001f);
+			float mse_min = qMax<float>(mseResults[i], 0.001f);
 			opPsnr->results[i] = 20.0*log10(255.0) - 10.0*log10(mse_min);
 			opPsnr->hasResults[i] = true;
 		}

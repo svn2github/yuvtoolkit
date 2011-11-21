@@ -236,6 +236,7 @@ void MeasureWindow::UpdateRequest()
 
 	QSettings settings;
 	QStringList distMap = settings.SETTINGS_GET_DIST_MAP();
+	QStringList measureList = settings.SETTINGS_GET_MEASURES();
 
 	unsigned int sourceView1 = m_SourceList.at(0);
 	for (int j=1; j<m_SourceList.size(); j++)
@@ -255,8 +256,13 @@ void MeasureWindow::UpdateRequest()
 			const MeasureCapabilities& caps = req.measure->GetCapabilities();
 			for (int k=0; k<caps.measures.size(); k++)
 			{
-				unsigned int viewId = m_VideoViewList->NewVideoViewId();
 				QString m = caps.measures.at(k).name;
+				if (!measureList.contains(m))
+				{
+					continue;
+				}
+
+				unsigned int viewId = m_VideoViewList->NewVideoViewId();
 				bool showDistMap = m_ShowDisortionMap?distMap.contains(m):false;
 
 				if (showDistMap)
@@ -385,4 +391,12 @@ void MeasureWindow::OnShowDistortionMap( bool b)
 	{
 		UpdateRequest();
 	}
+
+	QSettings settings;
+	settings.SETTINGS_SET_SHOW_DIST_MAP(b);
+}
+
+void MeasureWindow::OnOptionChanged()
+{
+	UpdateRequest();
 }

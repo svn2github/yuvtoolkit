@@ -589,6 +589,8 @@ void HostImpl::Init()
 		}
 	}
 
+	m_Measures = m_MeasureInfo.keys();
+
 	for (int i=0; i<m_MainWindowList.size(); i++)
 	{
 		MainWindow* win = m_MainWindowList.at(i);
@@ -1056,4 +1058,9 @@ const MeasureInfo& HostImpl::GetMeasureInfo( QString measureName )
 void HostImpl::UpdateMeasureInfo()
 {
 	
+}
+
+const QStringList& HostImpl::GetMeasures()
+{
+	return m_Measures;
 }

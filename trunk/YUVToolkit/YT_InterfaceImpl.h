@@ -149,6 +149,7 @@ class HostImpl : public QObject, public Host
 	QStringList m_InitFileList;
 
 	QMap<QString, MeasureInfo> m_MeasureInfo;
+	QStringList m_Measures;
 public:
 	HostImpl(int argc, char *argv[]);
 	~HostImpl();
@@ -171,6 +172,7 @@ public:
 	void ReleaseFrameList(FrameList*);
 	static void RecyleFrameList(FrameList*);
 
+	const QStringList& GetMeasures();
 	const MeasureInfo& GetMeasureInfo(QString measureName);
 
 	virtual FormatPtr NewFormat();

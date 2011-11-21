@@ -1251,11 +1251,21 @@ void MainWindow::OnVideoViewListChanged()
 void MainWindow::on_action_Options_triggered()
 {
 	Options* o = new Options(this);
+	if (m_MeasureWindow->isVisible())
+	{
+		connect(o, SIGNAL(OptionChanged()), m_MeasureWindow, SLOT(OnOptionChanged()));
+	}
+
 	o->exec(0);
 }
 
 void MainWindow::on_action_Enable_Measures_triggered()
 {
-	Options* o = new Options(this);	
+	Options* o = new Options(this);
+	if (m_MeasureWindow->isVisible())
+	{
+		connect(o, SIGNAL(OptionChanged()), m_MeasureWindow, SLOT(OnOptionChanged()));
+	}
+
 	o->exec(1);
 }

@@ -7,6 +7,9 @@
 #define SETTINGS_GET_ZOOM()            value("main/zoom", 1).toInt()
 #define SETTINGS_SET_ZOOM(v)           setValue("main/zoom", v)
 
+#define SETTINGS_GET_MEASURES()        value("measure/measures", QStringList()<<"PSNR").toStringList()
+#define SETTINGS_SET_MEASURES(v)       setValue("measure/measures", v)
+
 #define SETTINGS_GET_SHOW_DIST_MAP()   value("measure/showdistmap", true).toBool()
 #define SETTINGS_SET_SHOW_DIST_MAP(v)  setValue("measure/showdistmap", v)
 

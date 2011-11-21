@@ -58,6 +58,7 @@ protected:
 public slots:
 	void OnVideoViewSourceListChanged();
 	void OnShowDistortionMap(bool);
+	void OnOptionChanged();
 private slots:
 	void on_button_Options_clicked();
 	void OnTimer();

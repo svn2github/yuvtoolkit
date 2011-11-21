@@ -58,8 +58,7 @@ unsigned int colorMaps[][256] = {
 };
 
 
-void CreateColorMap( FramePtr frame, DistMapPtr distMap, int width, int height,
-	double upperRange, double lowerRange, bool biggerValueIsBetter )
+void CreateColorMap( FramePtr frame, DistMapPtr distMap, int width, int height, float upperRange, float lowerRange, bool biggerValueIsBetter )
 {
 	FormatPtr format = frame->Format();
 	if (format->Color()!=XRGB32 || format->Width()!=width || format->Height()!=height)
@@ -85,7 +84,7 @@ void CreateColorMap( FramePtr frame, DistMapPtr distMap, int width, int height,
 	unsigned int* colormap = colorMaps[colorIdx];
 	if (upperRange<lowerRange)
 	{
-		qSwap<double>(upperRange, lowerRange);
+		qSwap<float>(upperRange, lowerRange);
 	}
 	
 	int offset=50; // cut of last range of colors to make overshoot/undershoot more distinct
