@@ -117,7 +117,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 		ui.action_Zoom_Fit->setChecked(true);
 		break;
 	}
-
+		
 	SetZoomMode(m_ZoomMode);
 
 	ui.mainToolBar->addSeparator();
@@ -195,6 +195,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	addDockWidget(Qt::LeftDockWidgetArea, m_MeasureDockWidget);
 	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), m_MeasureWindow, SLOT(OnVideoViewSourceListChanged()));
 	connect(ui.action_Distortion_Map, SIGNAL(toggled(bool)), m_MeasureWindow, SLOT(OnShowDistortionMap(bool)));
+	
+	bool showDistMap = settings.SETTINGS_GET_SHOW_DIST_MAP();
+	ui.action_Distortion_Map->setChecked(showDistMap);
 
 	m_MeasureWindow->GetToolBar()->addAction(ui.action_Enable_Measures);
 	m_MeasureWindow->GetToolBar()->addAction(ui.action_Distortion_Map);
@@ -651,28 +654,6 @@ void MainWindow::autoResizeWindow()
 
 	m_VideoViewList->OnUpdateRenderWidgetPosition();
 }
-
-void MainWindow::on_action_File_Association()
-{
-/*
-	LPAPPASSOCREGUI p_appassoc;
-	CoInitialize( 0 );
-
-	if( S_OK == CoCreateInstance( &clsid_IApplication2,
-				NULL, CLSCTX_INPROC_SERVER,
-				&IID_IApplicationAssociationRegistrationUI,
-				(void **)&p_appassoc) )
-	{
-		if(S_OK == p_appassoc->vt->LaunchAdvancedAssociationUI(p_appassoc, L"YUVToolkit" ) )
-		{
-			CoUninitialize();
-			return;
-		}
-	}
-
-	CoUninitialize();
-
-*/}
 
 void MainWindow::on_action_New_Window_triggered()
 {
@@ -1270,5 +1251,11 @@ void MainWindow::OnVideoViewListChanged()
 void MainWindow::on_action_Options_triggered()
 {
 	Options* o = new Options(this);
-	o->exec();
+	o->exec(0);
+}
+
+void MainWindow::on_action_Enable_Measures_triggered()
+{
+	Options* o = new Options(this);	
+	o->exec(1);
 }

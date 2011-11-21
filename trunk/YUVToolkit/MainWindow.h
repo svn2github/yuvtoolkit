@@ -79,8 +79,7 @@ private slots:
 	void on_action_Homepage_triggered();
 	void on_action_About_triggered();
 	void on_action_Exit_triggered();
-	void on_action_File_Association();
-
+	
 	void on_action_Zoom_50_triggered();
 	void on_action_Zoom_100_triggered();
 	void on_action_Zoom_200_triggered();
@@ -105,6 +104,7 @@ private slots:
 	void on_action_Clear_Selection_triggered();
 	
 	void on_action_Options_triggered();
+	void on_action_Enable_Measures_triggered();
 
 	void OnColorActionTriggered(QAction* a);
 private:

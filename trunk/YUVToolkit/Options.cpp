@@ -63,3 +63,9 @@ void Options::on_button_File_Associations_clicked()
 	}
 #endif
 }
+
+int Options::exec( int index )
+{
+	ui.tabWidget->setCurrentIndex(index);
+	return QDialog::exec();
+}

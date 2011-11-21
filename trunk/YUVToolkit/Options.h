@@ -11,6 +11,7 @@ public:
 	Options(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~Options();
 
+	int exec(int index);
 private slots:
 	void OnAccepted();
 	void on_button_File_Associations_clicked();
