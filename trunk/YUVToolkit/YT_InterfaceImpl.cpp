@@ -624,7 +624,18 @@ RESULT HostImpl::RegisterPlugin( YTPlugIn* plugin, PLUGIN_TYPE type, const QStri
 		m_TransformList.append(info);
 		break;
 	case PLUGIN_MEASURE:
-		m_MeasureList.append(info);
+		{
+			m_MeasureList.append(info);
+			Measure* m = plugin->NewMeasure(name);
+			const MeasureCapabilities& cap = m->GetCapabilities();
+			for (int i=0; i<cap.measures.size(); i++)
+			{
+				const MeasureInfo& info = cap.measures.at(i);
+
+				m_MeasureInfo.insert(info.name, info);
+			}
+			
+		}
 		break;
 	case PLUGIN_UNKNOWN:
 		break;
@@ -1029,4 +1040,14 @@ void HostImpl::OpenFiles(QStringList fileList)
 	{
 		m_InitFileList.append(fileList);
 	}
+}
+
+const MeasureInfo& HostImpl::GetMeasureInfo( QString measureName )
+{
+	return m_MeasureInfo[measureName];
+}
+
+void HostImpl::UpdateMeasureInfo()
+{
+	
 }

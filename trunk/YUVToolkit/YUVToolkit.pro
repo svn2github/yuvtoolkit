@@ -19,7 +19,8 @@ HEADERS += ./ColorConversion.h \
 	./VideoViewList.h \
 	./YT_InterfaceImpl.h \
 	../Plugins/YT_Interface.h \
-	./YTApplication.h
+	./YTApplication.h \
+	./ColorMap.h
 SOURCES += \
 	./ColorConversion.cpp \
 	./Layout.cpp \
@@ -34,7 +35,8 @@ SOURCES += \
 	./VideoView.cpp \
 	./VideoViewList.cpp \
 	./YT_InterfaceImpl.cpp \
-	./YTApplication.cpp
+	./YTApplication.cpp \
+	./ColorMap.cpp
 FORMS += ./MainWindow.ui \
 	 ./Options.ui
 RESOURCES += YUVToolkit.qrc

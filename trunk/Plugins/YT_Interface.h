@@ -329,8 +329,8 @@ struct MeasureInfo
 {
 	QString name;
 	QString unit;
-	double upperRange;
-	double lowerRange;
+	float upperRange;
+	float lowerRange;
 	bool biggerValueIsBetter;
 };
 
@@ -342,7 +342,7 @@ struct MeasureCapabilities
 	bool hasColorDistortionMap; // Can generate distortion map for Y, U, or V planes combined
 };
 
-typedef QVector<double> DistMap;
+typedef QVector<float> DistMap;
 typedef QSharedPointer<DistMap> DistMapPtr;
 
 struct MeasureOperation

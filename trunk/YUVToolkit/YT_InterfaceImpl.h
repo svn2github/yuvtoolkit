@@ -146,6 +146,8 @@ class HostImpl : public QObject, public Host
 	QMutex m_MutexFrameListPool;
 	QList<FrameList*> m_FrameListPool;
 	QStringList m_InitFileList;
+
+	QMap<QString, MeasureInfo> m_MeasureInfo;
 public:
 	HostImpl(int argc, char *argv[]);
 	~HostImpl();
@@ -168,6 +170,8 @@ public:
 	void ReleaseFrameList(FrameList*);
 	static void RecyleFrameList(FrameList*);
 
+	const MeasureInfo& GetMeasureInfo(QString measureName);
+
 	virtual FormatPtr NewFormat();
 
 	virtual FramePtr NewFrame();
@@ -189,6 +193,9 @@ public:
 	const QList<PlugInInfo*>& GetRenderPluginList() {return m_RendererList; }
 	const QList<PlugInInfo*>& GetTransformPluginList() {return m_TransformList; }
 	const QList<PlugInInfo*>& GetMeasurePluginList() {return m_MeasureList; }
+
+private:
+	void UpdateMeasureInfo();
 };
 
 extern HostImpl* GetHostImpl();

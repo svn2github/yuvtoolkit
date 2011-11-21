@@ -181,6 +181,9 @@
     <ClCompile Include="GeneratedFiles\Template\moc_YTApplication.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="ColorMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorConversion.h">
@@ -196,6 +199,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

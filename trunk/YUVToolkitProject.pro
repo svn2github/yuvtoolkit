@@ -5,6 +5,10 @@ SUBDIRS  = \
     Plugins/YT_MeasuresBasic \
     Plugins/YTS_Raw
 
+win32 {
+SUBDIRS  = Plugins/YTR_D3D
+}
+
 # build must be last:
 CONFIG  += ordered
 SUBDIRS += YUVToolkit

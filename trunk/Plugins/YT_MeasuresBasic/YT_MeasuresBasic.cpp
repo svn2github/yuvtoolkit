@@ -1,6 +1,5 @@
 #include "YT_MeasuresBasicPlugin.h"
 #include "YT_MeasuresBasic.h"
-#include "color_map.h"
 
 MeasuresBasic::MeasuresBasic()
 {
@@ -10,7 +9,7 @@ MeasuresBasic::~MeasuresBasic()
 {
 }
 
-double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, DistMapPtr mseMap)
+float MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, DistMapPtr mseMap)
 {
 	int width = input1->Format()->PlaneWidth(plane);
 	int height = input1->Format()->PlaneHeight(plane);
@@ -28,7 +27,7 @@ double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, D
 	int stride1 = input1->Format()->Stride(plane);
 	int stride2 = input2->Format()->Stride(plane);
 
-	double mse = 0;
+	float mse = 0;
 	int mseI = 0;
 	for (int i=0; i<height; i++)
 	{
@@ -40,7 +39,7 @@ double MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, D
 
 			if (mseMap)
 			{
-				(*mseMap)[mseI++] = (double)diff;
+				(*mseMap)[mseI++] = (float)diff;
 			}
 		}
 		p1 += stride1;
@@ -134,7 +133,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 				int weightPlane = source1->Format()->Width()*source1->Format()->Height()*4/width1/height1;
 				weightSum += weightPlane;
 
-				double mse = 0;
+				float mse = 0;
 				if (i == plane)
 				{
 					if (opMse)
@@ -169,7 +168,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 
 		if (opMse->hasResults[i] && weightSum>0)
 		{
-			double mse_min = qMax(opMse->results[i], 0.001);
+			float mse_min = qMax<float>(opMse->results[i], 0.001f);
 			opPsnr->results[i] = 20.0*log10(255.0) - 10.0*log10(mse_min);
 			opPsnr->hasResults[i] = true;
 		}
@@ -188,7 +187,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 					opPsnr->distMap->resize(mapSize);
 				}
 
-				double c = 20.0*log10(255.0);
+				float c = 20.0*log10(255.0);
 				for (int i=0; i<mapSize; i++)
 				{
 					(*opPsnr->distMap)[i] = c - 10.0*log10((*opMse->distMap)[i]);
@@ -196,7 +195,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 			}else
 			{
 				// generate PSNR map in-place
-				double c = 20.0*log10(255.0);
+				float c = 20.0*log10(255.0);
 				for (int i=0; i<mapSize; i++)
 				{
 					(*opPsnr->distMap)[i] = c - 10.0*log10((*opPsnr->distMap)[i]);

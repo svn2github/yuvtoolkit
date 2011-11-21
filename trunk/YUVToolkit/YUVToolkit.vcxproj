@@ -127,6 +127,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ColorConversion.cpp" />
+    <ClCompile Include="ColorMap.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_Options.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</ExcludedFromBuild>
@@ -279,6 +280,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorMap.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Settings.h" />

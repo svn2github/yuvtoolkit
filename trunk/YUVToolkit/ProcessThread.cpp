@@ -1,6 +1,6 @@
 #include <assert.h>
 #include "ProcessThread.h"
-#include "color_map.h"
+#include "ColorMap.h"
 
 ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c), m_IsLastFrame(false), m_DistMapFramePool(NULL)
 {
@@ -365,6 +365,11 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 {
 	QMutexLocker locker(&m_MutexMeasure);
 
+	if (!m_MeasureRequests.size())
+	{
+		return;
+	}
+
 	PlugInInfo* plugin = 0;
 	Measure* measure = 0;
 	unsigned int sourceViewId1 = 0;
@@ -372,45 +377,49 @@ void ProcessThread::ProcessMeasures( FrameListPtr scene, YUV_PLANE plane )
 	QList<MeasureOperation*> operations;
 	QList<unsigned int> viewIds;
 
-	if (m_MeasureRequests.size()>0)
+	QMap<QString, double> measureUpperRange;
+	QMap<QString, double> measureLowerRange;
+	QMap<QString, bool> measureBiggerValueIsBetter;
+
+	// Group the measure operations that have same 
+	// plugin/measure pointers and same sources
+	for (int i=0; i<m_MeasureRequests.size(); i++)
 	{
-		for (int i=0; i<m_MeasureRequests.size(); i++)
+		MeasureItem& item = m_MeasureRequests[i];
+
+		if (item.plugin != plugin || item.measure != measure || 
+			item.sourceViewId1 != sourceViewId1 || item.sourceViewId2 != sourceViewId2)
 		{
-			MeasureItem& item = m_MeasureRequests[i];
-			if (item.plugin != plugin || item.measure != measure || 
-				item.sourceViewId1 != sourceViewId1 || item.sourceViewId2 != sourceViewId2)
-			{
-				ProcessOperations(scene, plane, operations, viewIds,
-					measure, sourceViewId1, sourceViewId2);
+			ProcessOperations(scene, plane, operations, viewIds,
+				measure, sourceViewId1, sourceViewId2);
 
-				plugin = item.plugin;
-				measure = item.measure;
-				sourceViewId1 = item.sourceViewId1;
-				sourceViewId2 = item.sourceViewId2;
-			}
-
-			item.op.hasResults[PLANE_Y] = 
-				item.op.hasResults[PLANE_U] = 
-				item.op.hasResults[PLANE_V] = 
-				item.op.hasResults[PLANE_COLOR] = 
-				false;
-
-			if (item.showDistortionMap)
-			{
-				if (!m_DistMaps.contains(item.viewId))
-				{
-					m_DistMaps.insert(item.viewId, DistMapPtr(new DistMap));
-				}
-
-				item.op.distMap = m_DistMaps[item.viewId];
-			}
-			operations.append(&item.op);
-			viewIds.append(item.viewId);
+			plugin = item.plugin;
+			measure = item.measure;
+			sourceViewId1 = item.sourceViewId1;
+			sourceViewId2 = item.sourceViewId2;
 		}
 
-		ProcessOperations(scene, plane, operations, viewIds,
-			measure, sourceViewId1, sourceViewId2);
+		item.op.hasResults[PLANE_Y] = 
+			item.op.hasResults[PLANE_U] = 
+			item.op.hasResults[PLANE_V] = 
+			item.op.hasResults[PLANE_COLOR] = 
+			false;
+
+		if (item.showDistortionMap)
+		{
+			if (!m_DistMaps.contains(item.viewId))
+			{
+				m_DistMaps.insert(item.viewId, DistMapPtr(new DistMap));
+			}
+
+			item.op.distMap = m_DistMaps[item.viewId];
+		}
+		operations.append(&item.op);
+		viewIds.append(item.viewId);
 	}
+
+	ProcessOperations(scene, plane, operations, viewIds,
+		measure, sourceViewId1, sourceViewId2);
 }
 
 FramePtr ProcessThread::FindFrame( FrameListPtr lst, unsigned int id)
@@ -444,61 +453,40 @@ void ProcessThread::ProcessOperations(FrameListPtr scene, YUV_PLANE plane,
 	QList<MeasureOperation*>& operations, QList<unsigned int>& viewIds,
 	Measure* measure, unsigned int sourceViewId1, unsigned int sourceViewId2)
 {
-	if (operations.size()>0)
+	if (!operations.size())
 	{
-		FramePtr f1 = FindFrame(scene, sourceViewId1);
-		FramePtr f2 = FindFrame(scene, sourceViewId2);
-		if (f1 && f2)
+		return;
+	}
+
+	FramePtr f1 = FindFrame(scene, sourceViewId1);
+	FramePtr f2 = FindFrame(scene, sourceViewId2);
+	if (f1 && f2)
+	{
+		YUV_PLANE p = plane;
+		const MeasureCapabilities& cap = measure->GetCapabilities();
+		if (p == PLANE_COLOR && !cap.hasColorDistortionMap)
 		{
-			YUV_PLANE p = plane;
-			if (p == PLANE_COLOR && !measure->GetCapabilities().hasColorDistortionMap)
+			p = PLANE_Y;
+		}
+		measure->Process(f1, f2, p, operations);
+
+		for (int j=0; j<operations.size(); j++)
+		{
+			MeasureOperation* op = operations.at(j);
+			if (op->distMapWidth && op->distMapHeight)
 			{
-				p = PLANE_Y;
-			}
-			measure->Process(f1, f2, p, operations);
+				const MeasureInfo& info = GetHostImpl()->GetMeasureInfo(op->measureName);
+				FramePtr frame = m_DistMapFramePool->Get();
 
-			for (int j=0; j<operations.size(); j++)
-			{
-				MeasureOperation* op = operations.at(j);
+				CreateColorMap(frame, op->distMap, op->distMapWidth, op->distMapHeight, 
+					info.upperRange, info.lowerRange, info.biggerValueIsBetter);
 
-				if (op->distMapWidth && op->distMapHeight)
-				{
-					FramePtr frame = m_DistMapFramePool->Get();
-					FormatPtr format = frame->Format();
-
-					if (format->Color()!=XRGB32 || format->Width()!=op->distMapWidth || format->Height()!=op->distMapHeight)
-					{
-						frame->Reset();
-					}
-
-					if (frame->Data(0) == 0)
-					{
-						// Allocate
-						frame->Format()->SetColor(XRGB32);
-						frame->Format()->SetWidth(op->distMapWidth);
-						frame->Format()->SetHeight(op->distMapHeight);
-						frame->Format()->SetStride(0,0);
-						frame->Allocate();
-					}
-
-					unsigned int* d = (unsigned int*)frame->Data(0);
-					int planeW = frame->Format()->Width();
-					int planeH = frame->Format()->Height();
-					for (int y=0; y<planeH; y++)
-					{
-						for (int x=0; x<planeW; x++)
-						{
-							d[y*(planeW)+x] = colormap[((m_LastPTS/33+y))%256];
-						}
-					}
-
-					frame->SetInfo(VIEW_ID, viewIds.at(j));
-					frame->SetInfo(IS_LAST_FRAME, true);
-					scene->append(frame);
-				}
+				frame->SetInfo(VIEW_ID, viewIds.at(j));
+				frame->SetInfo(IS_LAST_FRAME, true);
+				scene->append(frame);
 			}
 		}
-		operations.clear();
-		viewIds.clear();
 	}
+	operations.clear();
+	viewIds.clear();
 }
