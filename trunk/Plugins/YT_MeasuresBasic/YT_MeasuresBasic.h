@@ -7,7 +7,7 @@ class MeasuresBasic : public QObject, public Measure
 {
 	Q_OBJECT;
 
-	double ComputeMSE(FramePtr input1, FramePtr input2, int plane, DistMapPtr mseMap);
+	float ComputeMSE(FramePtr input1, FramePtr input2, int plane, DistMapPtr mseMap);
 
 	MeasureCapabilities m_Capabilities;
 public:

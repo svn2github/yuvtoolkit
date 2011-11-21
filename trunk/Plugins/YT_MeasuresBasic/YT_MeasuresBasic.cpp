@@ -187,18 +187,21 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 					opPsnr->distMap->resize(mapSize);
 				}
 
+				float* psnrData = opPsnr->distMap->data();
+				float* mseData = opMse->distMap->data();
 				float c = 20.0*log10(255.0);
 				for (int i=0; i<mapSize; i++)
 				{
-					(*opPsnr->distMap)[i] = c - 10.0*log10((*opMse->distMap)[i]);
+					psnrData[i] = c - 10.0*log10(mseData[i]);
 				}
 			}else
 			{
 				// generate PSNR map in-place
 				float c = 20.0*log10(255.0);
+				float* psnrData = opPsnr->distMap->data();
 				for (int i=0; i<mapSize; i++)
 				{
-					(*opPsnr->distMap)[i] = c - 10.0*log10((*opPsnr->distMap)[i]);
+					psnrData[i] = c - 10.0*log10(psnrData[i]);
 				}
 			}
 

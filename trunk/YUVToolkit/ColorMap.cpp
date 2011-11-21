@@ -90,11 +90,12 @@ void CreateColorMap( FramePtr frame, DistMapPtr distMap, int width, int height,
 	
 	int offset=50; // cut of last range of colors to make overshoot/undershoot more distinct
 	float rangeScale = 1.0/(upperRange-lowerRange) * (255-offset*2);
+	float* mapData = distMap->data();
 	if (biggerValueIsBetter)
 	{
 		for (int x=0; x<total; x++)
 		{
-			float v = (float)distMap->at(x);
+			float v = mapData[x];
 			if (v>=upperRange)
 			{
 				d[x] = upperColor;
@@ -110,7 +111,7 @@ void CreateColorMap( FramePtr frame, DistMapPtr distMap, int width, int height,
 	{
 		for (int x=0; x<total; x++)
 		{
-			float v = (float)distMap->at(x);
+			float v = mapData[x];
 			if (v>=upperRange)
 			{
 				d[x] = upperColor;
