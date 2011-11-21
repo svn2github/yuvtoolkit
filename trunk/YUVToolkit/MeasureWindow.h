@@ -14,7 +14,9 @@ class MeasureResultsModel : public QAbstractTableModel
 	Q_OBJECT;
 	QList<MeasureItem>& m_Results;
 	QStringList m_MeasureNameRows;
-	QList<unsigned int> m_ViewIdCols;
+	QList<unsigned int> m_SourceView1Ids;
+	QList<unsigned int> m_SourceView2Ids;
+	
 public:
 	MeasureResultsModel(QObject *parent, QList<MeasureItem>& );
 	int rowCount(const QModelIndex &parent = QModelIndex()) const ;
@@ -44,10 +46,7 @@ public:
 	~MeasureWindow();
 
 	QToolBar* GetToolBar() {return m_ToolBar;}
-	void UpdateMeasure();
-
-	void UpdateMeasureWindow();
-
+	
 	QSize sizeHint() const;
 protected:
 	void showEvent(QShowEvent *event);
@@ -60,7 +59,6 @@ public slots:
 	void OnVideoViewSourceListChanged();
 	void OnShowDistortionMap(bool);
 private slots:
-	void onComboIndexChanged(int);
 	void on_button_Options_clicked();
 	void OnTimer();
 };

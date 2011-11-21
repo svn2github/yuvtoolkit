@@ -818,9 +818,9 @@ void HostImpl::OpenLoggingDirectory()
 	QDesktopServices::openUrl(QUrl("file:///" + path));
 }
 
-FramePool* HostImpl::NewFramePool(unsigned int size)
+FramePool* HostImpl::NewFramePool(unsigned int size, bool canGrow)
 {
-	FramePool* pool = new FramePool(size);
+	FramePool* pool = new FramePool(size, canGrow);
 	m_FramePoolList.append(pool);
 	return pool;
 }
@@ -866,7 +866,7 @@ void HostImpl::RecyleFrameList( FrameList* frameList)
 	GetHostImpl()->ReleaseFrameList(frameList);
 }
 
-FramePool::FramePool( unsigned int size )
+FramePool::FramePool( unsigned int size, bool canGrow ) : m_CanGrow(canGrow)
 {
 	for (unsigned int i=0; i<size; i++)
 	{
@@ -899,7 +899,13 @@ FramePtr FramePool::Get()
 		return FramePtr(frame, FrameImpl::Recyle);
 	}
 
-	return FramePtr(NULL);
+	if (m_CanGrow)
+	{
+		return FramePtr(new FrameImpl(this));
+	}else
+	{
+		return FramePtr(NULL);
+	}
 }
 
 int FramePool::Size()

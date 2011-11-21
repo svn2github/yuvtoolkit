@@ -108,8 +108,9 @@ class FramePool
 {
 	QList<Frame*> m_Pool;
 	QMutex m_Mutex;
+	bool m_CanGrow;
 public:
-	FramePool(unsigned int size);
+	FramePool(unsigned int size, bool canGrow);
 	virtual ~FramePool();
 
 	FramePtr Get();
@@ -163,7 +164,7 @@ public:
 	bool IsInited();
 	void OpenFiles(QStringList);
 
-	FramePool* NewFramePool(unsigned int size);
+	FramePool* NewFramePool(unsigned int size, bool canGrow);
 	void ReleaseFramePool(FramePool*);
 
 	FrameListPtr GetFrameList();

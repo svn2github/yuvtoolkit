@@ -20,7 +20,7 @@ SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) :
 
 	m_Source->Init(m_Path);
 
-	m_FramePool = GetHostImpl()->NewFramePool(BUFFER_COUNT);
+	m_FramePool = GetHostImpl()->NewFramePool(BUFFER_COUNT, false);
 	m_FrameOrig = GetHostImpl()->NewFrame();
 	m_FormatNew = GetHostImpl()->NewFormat();
 }

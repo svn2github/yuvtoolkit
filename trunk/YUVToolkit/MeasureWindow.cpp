@@ -11,12 +11,24 @@ QAbstractTableModel(parent), m_Results(results)
 	for (int i=0; i<m_Results.size(); i++)
 	{
 		const MeasureItem& item = m_Results.at(i);
-		if (!m_ViewIdCols.contains(item.viewId))
+
+		bool found = false;
+		for (int j=0; j<m_SourceView1Ids.size(); j++)
 		{
-			m_ViewIdCols.append(item.viewId);
+			if (m_SourceView1Ids.at(j) == item.sourceViewId1 && m_SourceView2Ids.at(j) == item.sourceViewId2)
+			{
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)
+		{
+			m_SourceView1Ids.append(item.sourceViewId1);
+			m_SourceView2Ids.append(item.sourceViewId2);
 		}
 
-		if (item.viewId == m_ViewIdCols.at(0))
+		if (item.sourceViewId1 == m_SourceView1Ids.at(0) && item.sourceViewId2 == m_SourceView2Ids.at(0))
 		{
 			m_MeasureNameRows.append(item.op.measureName);
 		}
@@ -30,8 +42,7 @@ int MeasureResultsModel::rowCount( const QModelIndex &parent /*= QModelIndex()*/
 
 int MeasureResultsModel::columnCount( const QModelIndex &parent /*= QModelIndex()*/ ) const
 {
-	
-	return m_ViewIdCols.size();
+	return m_SourceView1Ids.size();
 }
 
 QVariant MeasureResultsModel::data( const QModelIndex &index, int role /*= Qt::DisplayRole*/ ) const
@@ -42,13 +53,14 @@ QVariant MeasureResultsModel::data( const QModelIndex &index, int role /*= Qt::D
 	switch(role){
 	case Qt::DisplayRole:
 		{
-			unsigned int viewId = m_ViewIdCols.at(col);
+			unsigned int sourceViewId1 = m_SourceView1Ids.at(col);
+			unsigned int sourceViewId2 = m_SourceView2Ids.at(col);
 			const QString& measureName = m_MeasureNameRows.at(row/4);
 
 			for (int i=0; i<m_Results.size(); i++)
 			{
 				const MeasureItem& res = m_Results.at(i);
-				if (res.op.measureName == measureName && res.viewId == viewId)
+				if (res.op.measureName == measureName && res.sourceViewId1 == sourceViewId1 && res.sourceViewId2 == sourceViewId2)
 				{
 					int plane = row % 4;
 					if (res.op.hasResults[plane])
@@ -136,13 +148,14 @@ Qt::ItemFlags MeasureResultsModel::flags( const QModelIndex & index ) const
 {
 	int row = index.row();
 	int col = index.column();
-	unsigned int viewId = m_ViewIdCols.at(col);
+	unsigned int sourceViewId1 = m_SourceView1Ids.at(col);
+	unsigned int sourceViewId2 = m_SourceView2Ids.at(col);
 	const QString& measureName = m_MeasureNameRows.at(row/4);
 
 	for (int i=0; i<m_Results.size(); i++)
 	{
 		const MeasureItem& res = m_Results.at(i);
-		if (res.op.measureName == measureName && res.viewId == viewId)
+		if (res.op.measureName == measureName && res.sourceViewId1 == sourceViewId1 && res.sourceViewId2 == sourceViewId2)
 		{
 			int plane = row % 4;
 			if (res.op.hasResults[plane])
@@ -158,46 +171,6 @@ void MeasureResultsModel::ResultsUpdated()
 {
 	emit dataChanged(index(0,0), index(8, 1));
 }
-
-/*DistortionMapModel::DistortionMapModel( QObject *parent, QList<MeasureItem>& res) :
-	QAbstractTableModel(parent), m_Results(res)
-{
-	QStringList measures;
-	for (int i=0; i<m_Results.size(); i++)
-	{
-		const MeasureItem& item = m_Results.at(i);
-		if (!measures.contains(item.op.measureName))
-		{
-			m_Index.append(i);
-			measures.append(item.op.measureName);
-		}
-	}
-}
-*/
-
-/*
-QVariant DistortionMapModel::data( const QModelIndex &index, int role ) const
-{
-	int row = index.row();
-	int col = index.column();
-	const MeasureItem& item = m_Results.at(m_Index.at(row));
-
-	switch(role){
-	case Qt::DisplayRole:
-		return item.op.measureName;
-		break;
-	case Qt::CheckStateRole:
-		if (item.showDistortionMap)
-		{
-			return Qt::Checked;
-		}else
-		{
-			return Qt::Unchecked;
-		}
-	}
-	return QVariant();
-}
-*/
 
 MeasureWindow::MeasureWindow(VideoViewList* vvList, QWidget *parent, Qt::WFlags flags) : 
 	QMainWindow(parent, flags), m_VideoViewList(vvList), m_ToolBar(new QToolBar(this)),
@@ -227,89 +200,6 @@ void MeasureWindow::showEvent( QShowEvent *event )
 void MeasureWindow::hideEvent( QHideEvent *event )
 {
 	ClearAll();
-}
-
-
-void MeasureWindow::onComboIndexChanged( int )
-{
-	/*if (ui.originalList->count()<=1)
-	{
-		return;
-	}
-
-	m_Original = m_VideoViewList->at(ui.originalList->currentIndex());
-	m_Processed = m_VideoViewList->at(ui.processedList->currentIndex());
-
-	if (m_MeasureList.size()>0)
-	{
-		for (int i=0; i<m_MeasureList.size(); i++)
-		{
-			// TODO clean up.
-		}
-	}
-
-	const QList<PlugInInfo*>& lst = GetHostImpl()->GetMeasurePluginList();
-	for (int i=0; i<lst.size(); i++)
-	{
-		PlugInInfo* plugInInfo = lst[i];
-
-		Measure* measure = plugInInfo->plugin->NewMeasure(plugInInfo->string);
-		m_MeasureList.append(measure);
-
-		SourceInfo origInfo, procInfo;
-		m_Original->GetSource()->GetInfo(origInfo);
-		m_Processed->GetSource()->GetInfo(procInfo);
-		measure->GetSupportedModes(origInfo.format, procInfo.format, m_ViewOutItems, m_MeasureOutItems);
-
-		for (int i=0; i<m_MeasureOutItems.size(); i++)
-		{
-			Measure::MeasureItem item = m_MeasureOutItems.at(i);
-			m_OutputMeasureItems.insert(item, QVariant(-1));
-		}
-	}
-
-	*/
-}
-
-void MeasureWindow::UpdateMeasure()
-{
-	/*
-	if (ui.originalList->count()<=1)
-	{
-		return;
-	}
-
-	VideoQueue::Frame* origFrame  = m_Original->GetVideoQueue()->GetLastRenderFrame();			
-	VideoQueue::Frame* procFrame  = m_Processed->GetVideoQueue()->GetLastRenderFrame();			
-	if (!(origFrame && procFrame))
-	{
-		return;
-	}
-
-	Measure* measure = m_MeasureList.at(0);
-
-	measure->Process(origFrame->source, procFrame->source, m_OutputViewItems, m_OutputMeasureItems);*/
-}
-
-void MeasureWindow::UpdateMeasureWindow()
-{
-	if (!isVisible())	
-	{
-		// TODO; enable timer only when needed
-		return;
-	}
-
-	/*QMapIterator<Measure::MeasureItem, QVariant> i(m_OutputMeasureItems);
-	while (i.hasNext()) {
-		i.next();
-		// cout << i.key() << ": " << i.value() << endl;
-		QTableWidgetItem* item = ui.tableWidget->item(i.key().plane, i.key().measureType);
-		if (item)
-		{
-			item->setText(i.value().toString());
-		}
-	}
-	*/
 }
 
 QSize MeasureWindow::sizeHint() const
@@ -368,7 +258,6 @@ void MeasureWindow::UpdateRequest()
 				unsigned int viewId = m_VideoViewList->NewVideoViewId();
 				QString m = caps.measures.at(j).name;
 				bool showDistMap = m_ShowDisortionMap?distMap.contains(m):false;
-				
 
 				if (showDistMap)
 				{

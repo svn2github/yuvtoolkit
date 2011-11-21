@@ -19,7 +19,7 @@ void ProcessThread::run()
 	qRegisterMetaType<RectList>("RectList");
 	qRegisterMetaType<FrameListPtr>("FrameListPtr");
 
-	m_DistMapFramePool = GetHostImpl()->NewFramePool(8);
+	m_DistMapFramePool = GetHostImpl()->NewFramePool(8, true);
 
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(ProcessFrameQueue()), Qt::DirectConnection);
@@ -478,12 +478,15 @@ void ProcessThread::ProcessOperations(FrameListPtr scene, YUV_PLANE plane,
 				const MeasureInfo& info = GetHostImpl()->GetMeasureInfo(op->measureName);
 				FramePtr frame = m_DistMapFramePool->Get();
 
-				CreateColorMap(frame, op->distMap, op->distMapWidth, op->distMapHeight, 
-					info.upperRange, info.lowerRange, info.biggerValueIsBetter);
+				if (frame)
+				{
+					CreateColorMap(frame, op->distMap, op->distMapWidth, op->distMapHeight, 
+						info.upperRange, info.lowerRange, info.biggerValueIsBetter);
 
-				frame->SetInfo(VIEW_ID, viewIds.at(j));
-				frame->SetInfo(IS_LAST_FRAME, true);
-				scene->append(frame);
+					frame->SetInfo(VIEW_ID, viewIds.at(j));
+					frame->SetInfo(IS_LAST_FRAME, true);
+					scene->append(frame);
+				}
 			}
 		}
 	}
