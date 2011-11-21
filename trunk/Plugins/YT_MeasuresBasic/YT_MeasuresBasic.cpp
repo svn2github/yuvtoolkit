@@ -26,6 +26,7 @@ float MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, Di
 	unsigned char* p2 = input2->Data(plane);
 	int stride1 = input1->Format()->Stride(plane);
 	int stride2 = input2->Format()->Stride(plane);
+	float* mseData = mseMap?mseMap->data():0;
 
 	float mse = 0;
 	int mseI = 0;
@@ -37,9 +38,9 @@ float MeasuresBasic::ComputeMSE( FramePtr input1, FramePtr input2, int plane, Di
 			diff = diff*diff;
 			mse += diff;
 
-			if (mseMap)
+			if (mseData)
 			{
-				(*mseMap)[mseI++] = (float)diff;
+				mseData[mseI++] = (float)diff;
 			}
 		}
 		p1 += stride1;
