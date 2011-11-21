@@ -843,7 +843,9 @@ void MainWindow::OnTimer()
 
 	if (active)
 	{
-		UpdateStatusMessage(active->GetTitle());
+		QString str;
+		QTextStream(&str) << "[" << QString("%1").arg(active->GetID()) << "] - " << active->GetTitle();
+		UpdateStatusMessage(str);
 	}else
 	{
 		active = longest;
@@ -1042,10 +1044,7 @@ void MainWindow::UpdateActiveVideoView()
 
 void MainWindow::OnActiveVideoViewChanged( VideoView* view)
 {
-	if (view)
-	{
-		UpdateStatusMessage(view->GetTitle());
-	}else
+	if (!view)
 	{
 		ui.statusBar->clearMessage();
 	}

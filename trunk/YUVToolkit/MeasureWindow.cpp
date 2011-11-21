@@ -253,16 +253,18 @@ void MeasureWindow::UpdateRequest()
 			req.measure = info->plugin->NewMeasure(info->string);
 
 			const MeasureCapabilities& caps = req.measure->GetCapabilities();
-			for (int j=0; j<caps.measures.size(); j++)
+			for (int k=0; k<caps.measures.size(); k++)
 			{
 				unsigned int viewId = m_VideoViewList->NewVideoViewId();
-				QString m = caps.measures.at(j).name;
+				QString m = caps.measures.at(k).name;
 				bool showDistMap = m_ShowDisortionMap?distMap.contains(m):false;
 
 				if (showDistMap)
 				{
-					// Create new views
-					m_VideoViewList->NewVideoViewCompare(m, viewId, sourceView1, sourceView2);
+					QString str;
+					QTextStream(&str) << m << " map " << QString("%1").arg(j) << " between [" << 
+						QString("%1").arg(sourceView1) << "] and [" << QString("%1").arg(sourceView2) << "]";
+					m_VideoViewList->NewVideoViewCompare(str, viewId, sourceView1, sourceView2);
 				}
 
 				
