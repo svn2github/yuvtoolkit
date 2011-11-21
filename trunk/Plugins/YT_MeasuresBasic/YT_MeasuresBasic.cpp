@@ -136,10 +136,10 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 				float mse = 0;
 				if (i == plane)
 				{
-					if (opMse)
+					if (opMse && opMse->distMap)
 					{
 						mseMap = opMse->distMap;
-					}else if (opPsnr)
+					}else if (opPsnr && opPsnr->distMap)
 					{
 						mseMap = opPsnr->distMap;
 					}
@@ -209,7 +209,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 			opPsnr->distMapHeight = distMapHeight;
 		}
 
-		if (opMse)
+		if (opMse && opMse->distMap)
 		{
 			opMse->distMapWidth = distMapWidth;
 			opMse->distMapHeight = distMapHeight;

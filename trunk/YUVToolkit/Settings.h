@@ -7,7 +7,7 @@
 #define SETTINGS_GET_ZOOM()            value("main/zoom", 1).toInt()
 #define SETTINGS_SET_ZOOM(v)           setValue("main/zoom", v)
 
-#define SETTINGS_GET_DIST_MAP()        value("measure/distmap", QStringList()<<"MSE"<<"PSNR").toStringList()
+#define SETTINGS_GET_DIST_MAP()        value("measure/distmap", QStringList()<<"PSNR").toStringList()
 #define SETTINGS_SET_DIST_MAP(v)       setValue("measure/distmap", v)
 
 #define SETTINGS_GET_FILE_PATH()       value("main/openfilespath", "").toString()
