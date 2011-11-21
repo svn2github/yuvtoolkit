@@ -947,7 +947,11 @@ void MainWindow::EnableButtons( int nrSources )
 
 	m_ActionsButton->setEnabled(nrSources!=0);
 	ui.action_Compare->setEnabled(nrSources>1);
-	ui.action_Select_Processed_2->setEnabled(nrSources>2);
+	
+	// ui.action_Select_Processed_2->setEnabled(nrSources>2);
+	ui.action_Select_Original->setEnabled(false);
+	ui.action_Select_Processed_1->setEnabled(false);
+	ui.action_Select_Processed_2->setEnabled(false);
 
 	m_ZoomGroup->setEnabled(nrSources!=0);
 	m_ColorGroup->setEnabled(nrSources!=0);
@@ -1192,8 +1196,6 @@ void MainWindow::on_action_Select_To_triggered()
 	m_VideoViewList->GetControl()->SelectTo();
 
 	updateSelectionSlider();
-
-
 }
 
 void MainWindow::on_action_Clear_Selection_triggered()

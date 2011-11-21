@@ -243,7 +243,10 @@ void VideoView::SetGeometry( int x, int y, int width, int height )
 void VideoView::SetTitle( QString title )
 {
 	m_Title = title;
-	m_Menu->setTitle(m_Title);
+
+	QString str;
+	QTextStream(&str) << "[" << QString("%1").arg(GetID()) << "] - " << m_Title;
+	m_Menu->setTitle(str);
 }
 
 bool VideoView::CheckResolutionDurationChanged()

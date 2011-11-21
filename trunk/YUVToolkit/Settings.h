@@ -1,7 +1,11 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#if defined(Q_WS_WIN)
 #define SETTINGS_GET_RENDERER()        value("main/renderer", "D3D").toString()
+#else
+#define SETTINGS_GET_RENDERER()        value("main/renderer", "OpenGL").toString()
+#endif
 #define SETTINGS_SET_RENDERER(v)       setValue("main/renderer", v)
 
 #define SETTINGS_GET_ZOOM()            value("main/zoom", 1).toInt()
