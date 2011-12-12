@@ -1,8 +1,15 @@
 Bugs
 ===================
-parsing of file name doesn't work with CIF, QCIF, VGA, QVGA, QQVGA
-Crash when wrong stride is used
+- fix that no file option pops up when resolution is missing from file name
+- Fix when changing the renderer video starts playing, even if it was paused before that
+- parsing of file name doesn't work with CIF, QCIF, VGA, QVGA, QQVGA
+- On Mac, drag in two videos, open compare menu, select show distortion map, click on U or V, crash.
+- On Mac, drag in two videos, open compare menu, videos are now cropped to keep the same window width including both videos, compare toolbar, and distortion map.
+- Crash when wrong stride is used
 
+Requests
+===================
+- Support for *.rgb extension
 
 0.0.3+
 ===================
