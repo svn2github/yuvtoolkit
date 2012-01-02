@@ -7,6 +7,13 @@ yuv player and analyzer. It is currently in early
 stage of development, and current development 
 focus is on playback features.
 
+New in 0.0.2 build X
+=================================================
+* Bug fixes
+
+- Fixed that no file option pops up when resolution is missing 
+  from file name
+- Fixed that video stoppes playing after changing the resolution
 
 New in 0.0.2
 =================================================

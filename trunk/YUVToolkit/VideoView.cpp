@@ -43,29 +43,10 @@ VideoView::VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget*
 void VideoView::Init( const char* path)
 {
 	m_Type = PLUGIN_SOURCE;
-	m_SourceThread = new SourceThread(m_ViewID, m_Control, path);
+	m_SourceThread = new SourceThread(this, m_ViewID, m_Control, path);
 
-	Source* source = m_SourceThread->GetSource();
-	if (source && source->HasGUI())
-	{
-		m_Dock = new QDockWidget("Video Source Options", m_MainWindow);
-		//m_Dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);		
-		m_Dock->setAllowedAreas(NULL);
 
-		m_PluginGUI = m_SourceThread->GetSource()->CreateGUI(m_Dock);
-		m_Dock->setWidget(m_PluginGUI);
-
-		m_Dock->setVisible(false);
-		m_MainWindow->addDockWidget(Qt::BottomDockWidgetArea, m_Dock);
-		m_Dock->setFloating(true);
-		
-		connect(m_Dock, SIGNAL(dockLocationChanged( Qt::DockWidgetArea)), m_MainWindow, SLOT(OnAutoResizeWindow()));
-		connect(m_Dock, SIGNAL(topLevelChanged(bool)), this, SLOT(OnDockFloating(bool)));
-		connect(m_Dock, SIGNAL(visibilityChanged(bool)), this, SLOT(OnDockFloating(bool)));
-
-		source->GUINeeded.connect(this, &VideoView::OnSourceGUINeeded);
-	}
-
+	connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(VideoFormatReset()));
 	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
 
 	UpdateMenu();
@@ -409,10 +390,46 @@ void VideoView::OnTransformTriggered()
 	emit TransformTriggered(action, this, data);
 }
 
-void VideoView::OnSourceGUINeeded()
+void VideoView::GuiNeeded(Source* source)
 {
-	m_Dock->setVisible(true);
+	if (m_Dock == NULL)
+	{
+		if (source && source->HasGUI())
+		{
+			m_Dock = new QDockWidget("Video Source Options", m_MainWindow);
+			//m_Dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);		
+			m_Dock->setAllowedAreas(NULL);
+
+			m_PluginGUI = source->CreateGUI(m_Dock);
+			m_Dock->setWidget(m_PluginGUI);
+
+			m_Dock->setVisible(false);
+			m_MainWindow->addDockWidget(Qt::BottomDockWidgetArea, m_Dock);
+			m_Dock->setFloating(true);
+
+			connect(m_Dock, SIGNAL(dockLocationChanged( Qt::DockWidgetArea)), m_MainWindow, SLOT(OnAutoResizeWindow()));
+			connect(m_Dock, SIGNAL(topLevelChanged(bool)), this, SLOT(OnDockFloating(bool)));
+			connect(m_Dock, SIGNAL(visibilityChanged(bool)), this, SLOT(OnDockFloating(bool)));
+		}
+	}
+	
+	if (m_Dock)
+	{
+		m_Dock->setVisible(true);
+	}
 }
+
+
+void VideoView::VideoFormatReset()
+{
+	PlaybackControl::Status status = {0};
+	m_Control->GetStatus(&status);
+
+	m_Control->Seek(status.lastDisplayPTS);
+
+	emit NeedVideoFormatReset();
+}
+
 
 void VideoView::OnDockFloating(bool f)
 {

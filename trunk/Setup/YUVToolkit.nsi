@@ -144,6 +144,11 @@ WriteRegStr "HKCR" "${APP_NAME}.yts" "" "YuvToolkit Script File"
 WriteRegStr "HKCR" "${APP_NAME}.yts\DefaultIcon" "" "$INSTDIR\${MAIN_APP_EXE},2"
 WriteRegStr "HKCR" "${APP_NAME}.yts\shell\open\command" "" "$\"$INSTDIR\${MAIN_APP_EXE}$\" $\"%1$\""
 
+# Register RGB file type
+WriteRegStr "HKCR" "${APP_NAME}.rgb" "" "RGB Video File"
+WriteRegStr "HKCR" "${APP_NAME}.rgb\DefaultIcon" "" "$INSTDIR\${MAIN_APP_EXE},3"
+WriteRegStr "HKCR" "${APP_NAME}.rgb\shell\open\command" "" "$\"$INSTDIR\${MAIN_APP_EXE}$\" $\"%1$\""
+
 # Declare capabilities
 WriteRegStr "HKLM" "SOFTWARE\RegisteredApplications" "${APP_NAME}" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities"
 WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}" "" "${APP_NAME}"
@@ -151,6 +156,7 @@ WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities" "Application
 WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities" "ApplicationName" "${APP_NAME}"
 WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities\FileAssociations" ".yuv" "${APP_NAME}.yuv"
 WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities\FileAssociations" ".yts" "${APP_NAME}.yts"
+WriteRegStr "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}\Capabilities\FileAssociations" ".rgb" "${APP_NAME}.rgb"
 
 SectionEnd
 
@@ -188,6 +194,7 @@ DeleteRegKey ${REG_ROOT} "${REG_APP_PATH}"
 DeleteRegKey ${REG_ROOT} "${UNINSTALL_PATH}"
 DeleteRegKey "HKCR" "${APP_NAME}.yuv"
 DeleteRegKey "HKCR" "${APP_NAME}.yts"
+DeleteRegKey "HKCR" "${APP_NAME}.rgb"
 DeleteRegValue "HKLM" "SOFTWARE\RegisteredApplications" "${APP_NAME}"
 DeleteRegKey "HKLM" "SOFTWARE\${COMP_NAME}\${APP_NAME}"
 

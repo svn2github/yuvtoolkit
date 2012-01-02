@@ -20,7 +20,7 @@ class SourceThread : public QThread
 {
 	Q_OBJECT;
 public:
-	SourceThread(int id, PlaybackControl* c, const char* path);
+	SourceThread(SourceCallback* cb, int id, PlaybackControl* c, const char* path);
 	~SourceThread(void);
 
 	void Start();
@@ -36,17 +36,19 @@ public slots:
 
 private slots:
 	void ReadFrames();
+	void VideoFormatReset();
 
 private:
 	void run();
 	void EnsureFrameFormat(FramePtr frame, FormatPtr format);
 	
 private:
-	int m_ViewID;
+	volatile int m_ViewID;
 	unsigned int m_LastSeekingPTS;
 	QString m_Path;
 	Source* m_Source;
-	bool m_EndOfFile;
+	volatile bool m_EndOfFile;
+	volatile bool m_VideoFormatReset;
 	
 	FramePtr m_FrameOrig;
 	FormatPtr m_FormatNew;

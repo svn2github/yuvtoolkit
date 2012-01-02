@@ -1,6 +1,5 @@
 Bugs
 ===================
-- fix that no file option pops up when resolution is missing from file name
 - Fix when changing the renderer video starts playing, even if it was paused before that
 - parsing of file name doesn't work with CIF, QCIF, VGA, QVGA, QQVGA
 - On Mac, drag in two videos, open compare menu, select show distortion map, click on U or V, crash.

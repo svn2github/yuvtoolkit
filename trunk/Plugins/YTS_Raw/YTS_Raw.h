@@ -34,7 +34,7 @@ public:
 	virtual RESULT EnumSupportedItems(char** items);
 
 	// Create and destroy
-	virtual RESULT Init(const QString& path);
+	virtual RESULT Init(SourceCallback* callback, const QString& path);
 	virtual RESULT UnInit();
 
 	virtual RESULT GetFrame(FramePtr frame, unsigned int seekingPTS);
@@ -65,6 +65,7 @@ private:
 	QString m_Path;
 	RawFormatWidget* m_RawFormatWidget;
 
+	SourceCallback* m_Callback;
 	QMutex m_Mutex;
 };
 

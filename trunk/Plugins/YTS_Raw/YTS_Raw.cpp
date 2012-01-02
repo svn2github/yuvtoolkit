@@ -26,7 +26,7 @@ RESULT RawPlugin::Init( Host* host)
 {
 	g_Host = host;
 
-	g_Host->RegisterPlugin(this, PLUGIN_SOURCE, QString("Raw Video Files (*.yuv; *.raw)"));
+	g_Host->RegisterPlugin(this, PLUGIN_SOURCE, QString("YUV/RGB Raw Video Files (*.yuv; *.rgb; *.raw)"));
 
 	return OK;
 }
@@ -45,7 +45,7 @@ void RawPlugin::ReleaseSource( Source* source)
 
 
 YTS_Raw::YTS_Raw() : m_FPS(30), m_FrameIndex(0),
-	m_NumFrames(0), m_Duration(0), m_File(0), m_RawFormatWidget(0)
+	m_NumFrames(0), m_Duration(0), m_File(0), m_RawFormatWidget(0), m_Callback(0)
 {
 }
 
@@ -58,8 +58,9 @@ RESULT YTS_Raw::EnumSupportedItems( char** items )
 	return OK;
 }
 
-RESULT YTS_Raw::Init( const QString& path)
+RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 {
+	m_Callback = callback;
 	m_Format = GetHost()->NewFormat();
 	
 	m_Path = path;
@@ -123,7 +124,7 @@ RESULT YTS_Raw::Init( const QString& path)
 
 	if (unknownResolution)
 	{
-		GUINeeded();
+		m_Callback->GuiNeeded(this);
 	}
 
 	return OK;
@@ -199,7 +200,10 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 	{
 		unsigned int plane_size = m_Format->PlaneSize(i);
 
-		file_status = (fread(frame->Data(i), 1, plane_size, m_File ) == plane_size)? 0 : -1;
+		if (plane_size>0)
+		{
+			file_status = (fread(frame->Data(i), 1, plane_size, m_File ) == plane_size)? 0 : -1;
+		}
 	}
 
 	if (file_status == 0)
@@ -276,6 +280,8 @@ void YTS_Raw::ReInit( const FormatPtr format, double FPS )
 
 		m_Duration = IndexToPTS(m_NumFrames);
 	}
+
+	m_Callback->VideoFormatReset();
 }
 
 unsigned int YTS_Raw::SeekPTS( unsigned int pts )

@@ -28,7 +28,7 @@ signals:
 	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
 	
 public slots:
-	void ReceiveFrame(FramePtr frame);	
+	void ReceiveFrame(FramePtr frame);
 
 private slots:
 	void ProcessFrameQueue();

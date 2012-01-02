@@ -59,7 +59,7 @@ VideoView* VideoViewList::NewVideoViewInternal( QString title, unsigned int view
 	OnUpdateRenderWidgetPosition();
 
 	// m_RenderThread->Start();
-
+	connect(vv, SIGNAL(NeedVideoFormatReset()), this, SLOT(VideoFormatReset()));
 	connect(vv, SIGNAL(ViewPortUpdated(VideoView*,double,double)), this, SLOT(OnViewPortUpdated(VideoView*,double,double)));
 	connect(vv, SIGNAL(Close(VideoView*)), this, SLOT(CloseVideoView(VideoView*)));
 	connect(vv, SIGNAL(TransformTriggered(QAction*, VideoView*, TransformActionData*)), this, SLOT(OnVideoViewTransformTriggered(QAction*, VideoView*, TransformActionData*)));
@@ -524,6 +524,12 @@ VideoView* VideoViewList::NewVideoViewCompare(QString measureName, unsigned int 
 
 	emit VideoViewListChanged();
 	return vv;
+}
+
+void VideoViewList::VideoFormatReset()
+{
+	m_ProcessThread->Stop();
+	m_ProcessThread->Start();
 }
 
 /*

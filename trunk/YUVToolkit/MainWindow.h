@@ -1,8 +1,6 @@
 #ifndef RAWVIDEOTOOLKIT_H
 #define RAWVIDEOTOOLKIT_H
 
-#include <sigslot.h>
-
 #include <QtGui>
 // #include <QtScript>
 #include "ui_MainWindow.h"
@@ -20,7 +18,7 @@ struct SourceInfo;
 class MeasureWindow;
 class QDockWidget;
 
-class MainWindow : public QMainWindow, public sigslot::has_slots<>
+class MainWindow : public QMainWindow
 {
 	Q_OBJECT;
 public:

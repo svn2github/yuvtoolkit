@@ -1,3 +1,4 @@
 IDI_ICON_0			ICON		DISCARDABLE	"YUVToolkit.ico"
 IDI_ICON_1			ICON		DISCARDABLE	"Resources/filetype_yuv.ico"
 IDI_ICON_2			ICON		DISCARDABLE	"Resources/filetype_yts.ico"
+IDI_ICON_3			ICON		DISCARDABLE	"Resources/filetype_rgb.ico"

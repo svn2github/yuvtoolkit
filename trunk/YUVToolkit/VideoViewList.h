@@ -53,6 +53,8 @@ public slots:
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
 	void OnSceneRendered(FrameListPtr scene, unsigned int pts, bool seeking);
 	void OnViewPortUpdated(VideoView*, double x, double y);
+
+	void VideoFormatReset();
 signals:
 	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);

@@ -31,7 +31,7 @@ struct TransformActionData
 #define VV_VIDEOQUEUE(vv) ((vv)?vv->GetVideoQueue():NULL)
 #define VV_LASTFRAME(vv) ((vv)?vv->GetLastFrame():FramePtr())
 
-class VideoView : public QObject, public sigslot::has_slots<>
+class VideoView : public QObject, public SourceCallback
 {
 	Q_OBJECT;
 
@@ -80,7 +80,8 @@ public:
 	void OnMousePressEvent( const QPoint& pt );
 	void OnMouseReleaseEvent( const QPoint& pt);
 
-	void OnSourceGUINeeded();
+	void GuiNeeded(Source*);
+	void VideoFormatReset();
 
 	void UpdateMenu();
 	QMenu* GetMenu();
@@ -88,6 +89,8 @@ signals:
 	void ViewPortUpdated(VideoView*, double x, double y);
 	void Close(VideoView*);
 	void TransformTriggered(QAction*, VideoView*, TransformActionData*);
+
+	void NeedVideoFormatReset();
 public slots:
 	void OnClose();
 	void OnTransformTriggered();

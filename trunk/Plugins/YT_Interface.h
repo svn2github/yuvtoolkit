@@ -1,7 +1,6 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
-#include "sigslot.h"
 #include <QtCore>
 class QWidget;
 
@@ -221,6 +220,20 @@ struct SourceInfo
 	unsigned int lastPTS; // PTS of last frame
 };
 
+class Source;
+
+class SourceCallback
+{
+public:
+	virtual ~SourceCallback() {}
+
+	// Signals when GUI is needed and should be popped up
+	virtual void GuiNeeded(Source*) = 0;
+
+	// Signals when video format was changed and new frame should be requested
+	virtual void VideoFormatReset() = 0;
+};
+
 
 // Source produces source video stream
 // can be Webcam, AVI eller raw files or maybe from network?
@@ -234,7 +247,7 @@ public:
 	// virtual RESULT EnumSupportedItems(char** items) = 0;
 
 	// Create and destroy
-	virtual RESULT Init(const QString& path) = 0;
+	virtual RESULT Init(SourceCallback* callback, const QString& path) = 0;
 	virtual RESULT UnInit() = 0;
 
 	// if PTS != 0xFFFFFFFE, seek to PTS
@@ -254,9 +267,6 @@ public:
 
 	virtual bool HasGUI() = 0;
 	virtual QWidget* CreateGUI(QWidget* parent) = 0;
-
-	// Signal when GUI is needed and should be popped up
-	sigslot::signal0<> GUINeeded;
 };
 
 

@@ -8,9 +8,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) :
+SourceThread::SourceThread(SourceCallback* cb, int id, PlaybackControl* c, const char* p) :
 	m_ViewID(id), m_LastSeekingPTS(INVALID_PTS), m_Path(p),
-	m_Source(0), m_EndOfFile(false), m_FramePool(0), m_Control(c)
+	m_Source(0), m_EndOfFile(false), m_FramePool(0), m_Control(c), m_VideoFormatReset(false)
 {
 	moveToThread(this);
 
@@ -18,7 +18,7 @@ SourceThread::SourceThread(int id, PlaybackControl* c, const char* p) :
 	plugin = GetHostImpl()->FindSourcePlugin(m_Path.right(4));
 	m_Source = plugin->NewSource(m_Path.right(4));
 
-	m_Source->Init(m_Path);
+	m_Source->Init(cb, m_Path);
 
 	m_FramePool = GetHostImpl()->NewFramePool(BUFFER_COUNT, false);
 	m_FrameOrig = GetHostImpl()->NewFrame();
@@ -77,22 +77,31 @@ void SourceThread::ReadFrames()
 		}
 
 		m_Control->GetStatus(&m_Status);
-		if (m_Status.seekingPTS != INVALID_PTS && m_Status.seekingPTS == m_LastSeekingPTS)
+		if (!m_VideoFormatReset)
 		{
-			// Seeking done already
-			return;
-		}
+			if (m_Status.seekingPTS != INVALID_PTS && m_Status.seekingPTS == m_LastSeekingPTS)
+			{
+				// Seeking done already
+				return;
+			}
 
-		if (!m_Status.isPlaying && m_LastSeekingPTS != INVALID_PTS && m_Status.seekingPTS == INVALID_PTS)
-		{
-			// Just finished seeking and then paused
-			return;
-		}
+			if (!m_Status.isPlaying && m_LastSeekingPTS != INVALID_PTS && m_Status.seekingPTS == INVALID_PTS)
+			{
+				// Just finished seeking and then paused
+				return;
+			}
 
-		if (m_EndOfFile && m_Status.seekingPTS == INVALID_PTS)
+			if (m_EndOfFile && m_Status.seekingPTS == INVALID_PTS)
+			{
+				// Finished reading to end of file
+				return;
+			}
+		}else
 		{
-			// Finished reading to end of file
-			return;
+			m_VideoFormatReset = false;
+
+			m_LastSeekingPTS = INVALID_PTS;
+			m_EndOfFile = false;
 		}
 
 		SourceInfo info;
@@ -167,4 +176,9 @@ void SourceThread::EnsureFrameFormat( FramePtr frame, FormatPtr format )
 		frame->SetFormat(format);
 		frame->Allocate();
 	}
+}
+
+void SourceThread::VideoFormatReset()
+{
+	m_VideoFormatReset = true;
 }

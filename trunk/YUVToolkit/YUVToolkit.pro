@@ -125,6 +125,7 @@ macx {
 	ICON = YUVToolkit.icns
 	QMAKE_POST_LINK += cp -f $$PWD/Resources/filetype_yuv.icns $${DESTDIR}/$${TARGET}.app/Contents/resources;
 	QMAKE_POST_LINK += cp -f $$PWD/Resources/filetype_yts.icns $${DESTDIR}/$${TARGET}.app/Contents/resources;
+	QMAKE_POST_LINK += cp -f $$PWD/Resources/filetype_rgb.icns $${DESTDIR}/$${TARGET}.app/Contents/resources;
 
 	QMAKE_INFO_PLIST = Resources/info.plist
  }

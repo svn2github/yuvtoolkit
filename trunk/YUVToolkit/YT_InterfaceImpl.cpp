@@ -201,6 +201,9 @@ size_t FormatImpl::PlaneSize( int plane )
 			if (stride[i] != 0)
 			{
 				plane_size[i] = stride[i]*vstride[i];
+			}else
+			{
+				plane_size[i] = 0;
 			}
 		}
 

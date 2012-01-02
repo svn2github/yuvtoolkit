@@ -42,6 +42,24 @@
 			<key>LSIsAppleDefaultForType</key>
 			<true/>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rgb</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>filetype_rgb.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>video/rgb</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Rgb Video File</string>
+			<key>CFBundleTypeRole</key>
+			<string>@EXECUTABLE@</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>YUVToolkit</string>
@@ -56,7 +74,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.2</string>
+	<string>0.0.2</string>
 	<key>CFBundleSignature</key>
 	<string>David Zhao</string>
 </dict>
