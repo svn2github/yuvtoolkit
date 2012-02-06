@@ -526,9 +526,6 @@ VideoView* VideoViewList::NewVideoViewCompare(QString measureName, unsigned int 
 
 void VideoViewList::VideoFormatReset()
 {
-	m_ProcessThread->Stop();
-	m_ProcessThread->Start();
-
 	// Recompute the time stamp list
 	m_MergedTimeStamps.clear();
 	m_MergedTimeStamps.append(0);

@@ -11,6 +11,7 @@ New in 0.0.3 build X
 =================================================
 * New Features
 
+- Support for *.rgb file extension
 - Support for custom time stamps using YTS script
 - Allow changing of video title using YTS script
 

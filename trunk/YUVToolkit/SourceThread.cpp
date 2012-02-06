@@ -79,13 +79,11 @@ void SourceThread::ReadFrames()
 		m_Control->GetStatus(&m_Status);
 		if (!m_VideoFormatReset)
 		{
-			/*
-			/ Optimization not working some times
 			if (m_Status.seekingPTS != INVALID_PTS && m_Status.seekingPTS == m_LastSeekingPTS)
 			{
 				// Seeking done already
 				return;
-			}*/
+			}
 
 			if (!m_Status.isPlaying && m_LastSeekingPTS != INVALID_PTS && m_Status.seekingPTS == INVALID_PTS)
 			{

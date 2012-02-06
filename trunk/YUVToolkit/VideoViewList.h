@@ -31,7 +31,7 @@ public:
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 	ProcessThread* GetProcessThread() {return m_ProcessThread;}
 	PlaybackControl* GetControl() {return &m_Control;}
-	QList<unsigned int> GetMergedTimeStamps() {return m_MergedTimeStamps;}
+	const QList<unsigned int>& GetMergedTimeStamps() {return m_MergedTimeStamps;}
 
 	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}

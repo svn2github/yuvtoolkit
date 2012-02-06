@@ -181,6 +181,8 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 	{
 		m_FrameIndex = PTSToIndex(seekingPTS);
 		m_FrameIndex = MyMin(m_FrameIndex, m_NumFrames-1);
+
+		WARNING_LOG("YTS_Raw GetFrame Seeking frame ptr %d index %d", seekingPTS, m_FrameIndex);
 	}
 
 	unsigned int frame_size = 0;
@@ -324,6 +326,7 @@ RESULT YTS_Raw::GetTimeStamps( QList<unsigned int>& timeStamps )
 	if (m_TimeStamps.size())
 	{
 		timeStamps.append(m_TimeStamps);
+		timeStamps.removeLast();
 	}else
 	{		
 		timeStamps.reserve(m_NumFrames);
@@ -339,7 +342,10 @@ RESULT YTS_Raw::SetTimeStamps( QList<unsigned int> timeStamps )
 {
 	m_TimeStamps = timeStamps;
 
-	while (m_TimeStamps.size()>m_NumFrames)
+	// Ensure that time stamp list is as big as the number of frames + 1
+	// last one for duration
+
+	while (m_TimeStamps.size()>m_NumFrames+1)
 	{
 		m_TimeStamps.removeLast();
 	}
@@ -354,7 +360,7 @@ RESULT YTS_Raw::SetTimeStamps( QList<unsigned int> timeStamps )
 	}
 
 	unsigned int lastTs = (m_TimeStamps.size())?m_TimeStamps.last():0;
-	for (int i=1; m_TimeStamps.size()<m_NumFrames; i++)
+	for (int i=1; m_TimeStamps.size()<m_NumFrames+1; i++)
 	{
 		m_TimeStamps.append(lastTs+IndexToPTSInternal(i));
 	}

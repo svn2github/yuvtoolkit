@@ -55,7 +55,7 @@ private:
 	void autoResizeWindow();
 	void SetZoomMode(int mode);
 public slots:
-	void OnUpdateSlider(unsigned int duration, float fps, unsigned int pts);	
+	void OnUpdateSlider(unsigned int duration, unsigned int pts);	
 	void OnAutoResizeWindow();
 	void OnActiveVideoViewChanged(VideoView*);
 	void OnVideoViewClosed(VideoView* );

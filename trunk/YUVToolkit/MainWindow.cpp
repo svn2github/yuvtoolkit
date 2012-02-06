@@ -715,7 +715,7 @@ void MainWindow::on_action_About_triggered()
 #include "../Setup/VERSION_4"
 		<< "</B><BR><BR>"
 		<< "<I>Compiled " << __DATE__ << " "  << __TIME__ << "</I>"
-		<< "<BR><BR>Copyright David Zhao (C) 2009-2011"
+		<< "<BR><BR>Copyright David Zhao (C) 2009-2012"
 		<< "<BR>All Rights Reserved";
 	about.setText(str);
 
@@ -723,10 +723,8 @@ void MainWindow::on_action_About_triggered()
 	about.exec();
 }
 
-void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int pts)
+void MainWindow::OnUpdateSlider(unsigned int duration, unsigned int pts)
 {
-	// int ticks = qCeil(duration * fps / 1000)-1;
-
 	if (m_Slider->maximum() != (int)duration/SLIDER_STEP_MS)
 	{
 		bool old = m_Slider->blockSignals(true);
@@ -737,7 +735,6 @@ void MainWindow::OnUpdateSlider(unsigned int duration, float fps, unsigned int p
 		m_Slider->blockSignals(old);
 	}
 
-	// int pos = qRound(pts * fps / 1000);
 	if (m_Slider->sliderPosition() != (int) pts/SLIDER_STEP_MS)
 	{
 		bool old = m_Slider->blockSignals(true);
@@ -809,16 +806,19 @@ void MainWindow::on_action_Step_Back_Fast_triggered()
 
 void MainWindow::on_action_Seek_Beginning_triggered()
 {
-	m_VideoViewList->GetControl()->Seek(0, false);
+	const QList<unsigned int>& tsLst = m_VideoViewList->GetMergedTimeStamps();
+	if (tsLst.size())
+	{
+		m_VideoViewList->GetControl()->Seek(tsLst.first(), false);
+	}
 }
 
 void MainWindow::on_action_Seek_End_triggered()
 {
-	VideoView* longest = m_VideoViewList->longest();
-	if (longest)
+	const QList<unsigned int>& tsLst = m_VideoViewList->GetMergedTimeStamps();
+	if (tsLst.size())
 	{
-		SourceInfo* info = longest->GetSourceInfo();
-		m_VideoViewList->GetControl()->Seek(info->duration, false);
+		m_VideoViewList->GetControl()->Seek(tsLst.last(), false);
 	}
 }
 
@@ -826,6 +826,7 @@ void MainWindow::OnTimer()
 {
 	PlaybackControl::Status status;
 	m_VideoViewList->GetControl()->GetStatus(&status);
+	const QList<unsigned int>& tsLst = m_VideoViewList->GetMergedTimeStamps();
 
 	if (m_VideoViewList->size()>0)
 	{
@@ -836,16 +837,9 @@ void MainWindow::OnTimer()
 
 	VideoView* active = m_ActiveVideoView;
 	VideoView* longest = m_VideoViewList->longest();
-	if (longest)
+	if (tsLst.size())
 	{
-		Source* source = VV_SOURCE(longest);
-		FramePtr frame = VV_LASTFRAME(longest);
-
-		if (source && frame)
-		{
-			SourceInfo* info = longest->GetSourceInfo();
-			OnUpdateSlider(info->duration, info->maxFps, status.lastProcessPTS);
-		}
+		OnUpdateSlider(tsLst.last(), status.lastProcessPTS);
 	}
 
 	if (active)
@@ -933,19 +927,19 @@ void MainWindow::stepVideo( int step )
 	PlaybackControl::Status status;
 	m_VideoViewList->GetControl()->GetStatus(&status);
 
-	QList<unsigned int> timeStampList = m_VideoViewList->GetMergedTimeStamps();
+	const QList<unsigned int>& tsLst = m_VideoViewList->GetMergedTimeStamps();
 	// QList<unsigned int>::iterator i = qBinaryFind(timeStampList.begin(), timeStampList.end(), status.lastDisplayPTS);
 	int frame_num=0;
-	for (frame_num=0; frame_num<timeStampList.size(); frame_num++)
+	for (frame_num=0; frame_num<tsLst.size(); frame_num++)
 	{
-		if (status.lastDisplayPTS == timeStampList.at(frame_num))
+		if (status.lastDisplayPTS == tsLst.at(frame_num))
 		{
 			break;
 		}
 	}
 	
-	frame_num = MIN(MAX(frame_num + step, 0), timeStampList.size()-1);
-	unsigned int pts = timeStampList.at(frame_num);
+	frame_num = MIN(MAX(frame_num + step, 0), tsLst.size()-1);
+	unsigned int pts = tsLst.at(frame_num);
 	m_VideoViewList->GetControl()->Seek(pts, false);
 
 	bool old = m_Slider->blockSignals(true);
