@@ -14,12 +14,9 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) :
 	m_RenderWidget(rw), m_MainWindow(mainWindow),
 	m_IDCounter(0), m_RenderThread(NULL),
 	m_ProcessThread(NULL), m_Duration(0), m_VideoCount(0),
-	m_LongestVideoView(0),
 	m_EndOfFile(false)
 {
-	m_ProcessThread = new ProcessThread(&m_Control);	
-	
-	connect(this, SIGNAL(ResolutionDurationChanged()), this, SLOT(UpdateDuration()));
+	m_ProcessThread = new ProcessThread(&m_Control);
 }
 
 VideoViewList::~VideoViewList()
@@ -98,7 +95,7 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 	
 	GetProcessThread()->SetSources(GetSourceIDList());
 
-	UpdateDuration();
+	VideoFormatReset();
 
 	if (m_VideoList.isEmpty())
 	{
@@ -348,45 +345,6 @@ public:
 	}
 };
 
-void VideoViewList::UpdateDuration()
-{
-	m_Duration = 0;
-	m_LongestVideoView = NULL;
-	for (int i=0; i<m_VideoList.size(); ++i) 
-	{
-		VideoView* vv = m_VideoList.at(i);
-		SourceThread* st = vv->GetSourceThread();
-		if (st)
-		{
-			Source* source = st->GetSource();
-
-			SourceInfo* info = vv->GetSourceInfo();
-			if (info->duration>m_Duration)
-			{
-				m_Duration = info->duration;
-				m_LongestVideoView = vv;
-			}
-		}
-	}
-}
-
-void VideoViewList::CheckResolutionChanged()
-{
-	bool changed = false;
-	for (int i=0; i<m_VideoList.size(); ++i) 
-	{
-		if (m_VideoList.at(i)->CheckResolutionDurationChanged())
-		{
-			changed = true;
-		}
-	}
-
-	if (changed)
-	{
-		emit ResolutionDurationChanged();
-	}
-}
-
 void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* vv, TransformActionData *data)
 {
 	bool hasView = false;
@@ -412,11 +370,6 @@ void VideoViewList::OnVideoViewTransformTriggered( QAction* action, VideoView* v
 	}
 
 	action->setChecked(!hasView);
-}
-
-VideoView* VideoViewList::longest() const
-{
-	return m_LongestVideoView;
 }
 
 void VideoViewList::OnSceneRendered( FrameListPtr scene, unsigned int pts, bool seeking )
@@ -503,7 +456,6 @@ VideoView* VideoViewList::NewVideoViewSource( const char* path )
 {
 	VideoView* vv = NewVideoViewInternal(path, m_IDCounter++);
 	vv->Init(path);
-	UpdateDuration();
 
 	emit VideoViewListChanged();
 	emit VideoViewSourceListChanged();
@@ -529,13 +481,22 @@ void VideoViewList::VideoFormatReset()
 	// Recompute the time stamp list
 	m_MergedTimeStamps.clear();
 	m_MergedTimeStamps.append(0);
+	m_Duration = 0;
+
 	for (int i=0; i<size(); ++i) 
 	{
 		VideoView* vv = at(i);
-		if (vv->GetSourceThread())
+		SourceThread* st = vv->GetSourceThread();
+		if (st)
 		{
+			SourceInfo* info = vv->GetSourceInfo();
+			if (info->duration>m_Duration)
+			{
+				m_Duration = info->duration;
+			}
+
 			QList<unsigned int> timeStamps;
-			vv->GetSourceThread()->GetSource()->GetTimeStamps(timeStamps);
+			st->GetSource()->GetTimeStamps(timeStamps);
 			m_MergedTimeStamps.append(timeStamps);
 
 			QSet<unsigned int> set = m_MergedTimeStamps.toSet();
@@ -544,47 +505,3 @@ void VideoViewList::VideoFormatReset()
 		}
 	}
 }
-
-/*
-void VideoViewList::StopSources()
-{
-	if (size()>0)
-	{
-		for (int i=0; i<size(); ++i) 
-		{
-			VideoView* vv = at(i);
-			if (vv->GetSourceThread())
-			{
-				vv->GetSourceThread()->Stop();
-			}
-		}
-
-		// Stop process thread + source thread
-		m_ProcessThread->Stop();
-		// SAFE_DELETE(m_ProcessThread);
-
-		// m_RenderThread->Stop();
-		// SAFE_DELETE(m_RenderThread);
-
-		
-	}
-}
-
-void VideoViewList::StartSources()
-{
-	if (size()>0)
-	{
-		// GetRenderThread()->Start();
-		GetProcessThread()->Start(GetSourceIDList());
-
-		for (int i=0; i<size(); ++i) 
-		{
-			VideoView* vv = at(i);
-			if (vv->GetSourceThread())
-			{
-				vv->GetSourceThread()->Start();
-			}
-		}
-	}
-}
-*/

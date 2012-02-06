@@ -44,7 +44,7 @@ void RawPlugin::ReleaseSource( Source* source)
 }
 
 
-YTS_Raw::YTS_Raw() : m_FPS(30), m_FrameIndex(0),
+YTS_Raw::YTS_Raw() : m_FPS(30), m_FrameIndex(0), m_InsertFrame0(0),
 	m_NumFrames(0), m_Duration(0), m_File(0), m_RawFormatWidget(0), m_Callback(0)
 {
 }
@@ -154,7 +154,7 @@ RESULT YTS_Raw::GetInfo( SourceInfo& info )
 {
 	info.format = m_Format;
 	info.duration = m_Duration;
-	info.num_frames = m_NumFrames;
+	info.num_frames = m_NumFrames+m_InsertFrame0;
 	info.lastPTS = IndexToPTS(m_NumFrames-1);
 	info.maxFps = m_FPS;
 
@@ -191,25 +191,42 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 		frame_size += m_Format->PlaneSize(i);
 	}
 
-	int file_status = 0;
-	if (ftell(m_File) != (int) (frame_size * m_FrameIndex))
-	{
-		file_status = fseek(m_File, frame_size*m_FrameIndex, SEEK_SET);
-	}
-
 	frame->SetFormat(m_Format);
 	frame->Allocate();
 
-	for (int i=0; i<4 && file_status == 0; i++)
+	int file_status = 0;
+	if (m_FrameIndex>0 || !m_InsertFrame0)
 	{
-		unsigned int plane_size = m_Format->PlaneSize(i);
-
-		if (plane_size>0)
+		unsigned int frameIdx = m_FrameIndex - m_InsertFrame0;
+		
+		if (ftell(m_File) != (int) (frame_size * frameIdx))
 		{
-			file_status = (fread(frame->Data(i), 1, plane_size, m_File ) == plane_size)? 0 : -1;
+			file_status = fseek(m_File, frame_size*frameIdx, SEEK_SET);
+		}
+
+		for (int i=0; i<4 && file_status == 0; i++)
+		{
+			unsigned int plane_size = m_Format->PlaneSize(i);
+
+			if (plane_size>0)
+			{
+				file_status = (fread(frame->Data(i), 1, plane_size, m_File ) == plane_size)? 0 : -1;
+			}
+		}
+	}else
+	{
+		for (int i=0; i<4; i++)
+		{
+			unsigned int plane_size = m_Format->PlaneSize(i);
+
+			if (plane_size>0)
+			{
+				memset(frame->Data(i), 0, plane_size);
+			}
 		}
 	}
 
+	
 	if (file_status == 0)
 	{
 		unsigned int pts = IndexToPTS(m_FrameIndex);
@@ -237,7 +254,7 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 
 unsigned int YTS_Raw::IndexToPTS( unsigned int frame_idx )
 {
-	frame_idx = MyMin(frame_idx, m_NumFrames-1);
+	frame_idx = MyMin(frame_idx, m_NumFrames);
 	if (m_TimeStamps.size())
 	{
 		return m_TimeStamps[frame_idx];
@@ -317,7 +334,7 @@ void YTS_Raw::ReInit( const FormatPtr format, double FPS )
 		m_Duration = IndexToPTS(m_NumFrames);
 	}
 
-	m_Callback->VideoFormatReset();
+	m_Callback->ResolutionDurationChanged();
 }
 
 RESULT YTS_Raw::GetTimeStamps( QList<unsigned int>& timeStamps )
@@ -341,31 +358,41 @@ RESULT YTS_Raw::GetTimeStamps( QList<unsigned int>& timeStamps )
 RESULT YTS_Raw::SetTimeStamps( QList<unsigned int> timeStamps )
 {
 	m_TimeStamps = timeStamps;
+	m_InsertFrame0 = 0;
 
-	// Ensure that time stamp list is as big as the number of frames + 1
-	// last one for duration
-
-	while (m_TimeStamps.size()>m_NumFrames+1)
+	if (m_TimeStamps.size()>0)
 	{
-		m_TimeStamps.removeLast();
-	}
+		// Ensure that time stamp list is as big as the number of frames + 1
+		// last one for duration
 
-	// make sure it is non-decreasing
-	for (int i = 1; i < m_TimeStamps.size(); ++i) 
-	{
-		if (m_TimeStamps.at(i) < m_TimeStamps.at(i-1))
+		while (m_TimeStamps.size()>m_NumFrames+1)
 		{
-			m_TimeStamps[i] = m_TimeStamps[i-1];
+			m_TimeStamps.removeLast();
+		}
+
+		// make sure it is non-decreasing
+		for (int i = 1; i < m_TimeStamps.size(); ++i) 
+		{
+			if (m_TimeStamps.at(i) < m_TimeStamps.at(i-1))
+			{
+				m_TimeStamps[i] = m_TimeStamps[i-1];
+			}
+		}
+
+		unsigned int lastTs = (m_TimeStamps.size())?m_TimeStamps.last():0;
+		for (int i=1; m_TimeStamps.size()<m_NumFrames+1; i++)
+		{
+			m_TimeStamps.append(lastTs+IndexToPTSInternal(i));
+		}
+
+		if (!m_TimeStamps.startsWith(0))
+		{
+			m_InsertFrame0 = 1;
+			m_TimeStamps.insert(m_TimeStamps.begin(), 0);
 		}
 	}
 
-	unsigned int lastTs = (m_TimeStamps.size())?m_TimeStamps.last():0;
-	for (int i=1; m_TimeStamps.size()<m_NumFrames+1; i++)
-	{
-		m_TimeStamps.append(lastTs+IndexToPTSInternal(i));
-	}
-
-	m_Callback->VideoFormatReset();
+	m_Callback->ResolutionDurationChanged();
 
 	return OK;
 }

@@ -50,7 +50,6 @@ public:
 	void SetZoomLevel(int mode);
 	void SetGeometry(int x, int y, int width, int height);
 
-	const QList<QAction*>& GetTransformActions() {return m_TransformActionList; }
 	QAction* GetCloseAction() {return m_CloseAction; }
 
 	PLUGIN_TYPE GetType() {return m_Type;}
@@ -71,15 +70,14 @@ public:
 
 	// Update view point to ensure that this region is 
 	void UpdateViewPort(double x, double y);
-	bool CheckResolutionDurationChanged();
-
+	
 	// 
 	void OnMouseMoveEvent( const QPoint& pt);
 	void OnMousePressEvent( const QPoint& pt );
 	void OnMouseReleaseEvent( const QPoint& pt);
 
 	void ShowGui(Source*, bool show);
-	void VideoFormatReset();
+	void ResolutionDurationChanged();
 
 	void UpdateMenu();
 	QMenu* GetMenu();
@@ -117,17 +115,11 @@ private:
 	QMainWindow* m_MainWindow;
 
 	SourceInfo m_SourceInfo;
-	int m_VideoWidth;
-	int m_VideoHeight;
-	int m_Duration;
 	QString m_Title;
 
 	QMenu* m_Menu;
 	QAction* m_CloseAction;
-	bool m_TransformActionListUpdated;
-	QList<QAction*> m_TransformActionList;
-
-
+	
 	unsigned int m_ViewID;
 	FramePtr m_LastFrame;
 
@@ -140,10 +132,6 @@ private:
 	QRect m_VideoViewRect;
 	QPoint m_LastMousePoint;
 	RendererWidget* parent;
-
-	FormatPtr m_RenderFormat;
-	FormatPtr m_SourceFormat;
-	// FramePtr m_EmptyFrame;
 };
 
 #endif

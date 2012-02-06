@@ -57,7 +57,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_Slider->setSingleStep(1);
 
 	m_VideoViewList = new VideoViewList(this, ui.rendererWidget);
-	connect(m_VideoViewList, SIGNAL(ResolutionDurationChanged()), this, SLOT(OnAutoResizeWindow()));
 	connect(m_VideoViewList, SIGNAL(VideoViewClosed(VideoView*)), this, SLOT(OnVideoViewClosed(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewCreated(VideoView*)), this, SLOT(OnVideoViewCreated(VideoView*)));
 	connect(m_VideoViewList, SIGNAL(VideoViewListChanged()), this, SLOT(OnVideoViewListChanged()));
@@ -745,12 +744,6 @@ void MainWindow::OnUpdateSlider(unsigned int duration, unsigned int pts)
 
 void MainWindow::seekVideoFromSlider()
 {
-	VideoView* longest = m_VideoViewList->longest();
-	if (!longest)
-	{
-		return;
-	}
-
 	unsigned int pts = m_Slider->value()*SLIDER_STEP_MS;
 	m_VideoViewList->GetControl()->Seek(pts);
 }
@@ -824,40 +817,35 @@ void MainWindow::on_action_Seek_End_triggered()
 
 void MainWindow::OnTimer()
 {
+	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
+	ui.action_Compare->setChecked(m_MeasureDockWidget->toggleViewAction()->isChecked());
+
+	if (!m_VideoViewList->size())
+	{
+		m_TimeLabel1->setText("   ");
+		m_TimeLabel2->setText("   ");
+		m_RenderSpeedLabel->setText("   ");
+		return;
+	}
+
 	PlaybackControl::Status status;
 	m_VideoViewList->GetControl()->GetStatus(&status);
 	const QList<unsigned int>& tsLst = m_VideoViewList->GetMergedTimeStamps();
 
-	if (m_VideoViewList->size()>0)
-	{
-		m_VideoViewList->CheckResolutionChanged();
-		m_VideoViewList->CheckRenderReset();
-	}
+	m_VideoViewList->CheckRenderReset();
+	
 	UpdateActiveVideoView();
-
 	VideoView* active = m_ActiveVideoView;
-	VideoView* longest = m_VideoViewList->longest();
-	if (tsLst.size())
-	{
-		OnUpdateSlider(tsLst.last(), status.lastProcessPTS);
-	}
-
-	if (active)
-	{
-		QString str;
-		QTextStream(&str) << "[" << QString("%1").arg(active->GetID()) << "] - " << active->title();
-		UpdateStatusMessage(str);
-	}else
-	{
-		active = longest;
-	}
+	OnUpdateSlider(tsLst.last(), status.lastProcessPTS);
 
 	QString str;
 	if (active)
 	{
+		QTextStream(&str) << "[" << QString("%1").arg(active->GetID()) << "] - " << active->title();
+		UpdateStatusMessage(str);
+
 		Source* source = VV_SOURCE(active);
 		FramePtr frame = VV_LASTFRAME(active);
-
 		if (source && frame)
 		{
 			SourceInfo* info = active->GetSourceInfo();
@@ -870,32 +858,35 @@ void MainWindow::OnTimer()
 			QTextStream(&str) << frame->PTS() << " / " << info->duration << " ms";
 			m_TimeLabel2->setText(str);
 		}
-
-		if (status.isPlaying)
-		{
-			str.clear();
-			float renderSpeed = m_VideoViewList->GetRenderThread()->GetSpeedRatio();
-			QTextStream(&str) << QString("%1").arg(renderSpeed, 0, 'f', 2) << " x";
-			m_RenderSpeedLabel->setText(str);
-		}else
-		{
-			unsigned int pts = status.seekingPTS;
-			if (pts != INVALID_PTS)
-			{
-				str.clear();
-				QTextStream(&str) << "Seeking " << pts << " ms";
-				m_RenderSpeedLabel->setText(str);
-			}else
-			{
-				m_RenderSpeedLabel->setText("Paused");
-			}
-		}
 	}else
 	{
 		m_TimeLabel1->setText("   ");
-		m_TimeLabel2->setText("   ");
-		m_RenderSpeedLabel->setText("   ");
+
+		str.clear();
+		QTextStream(&str) << status.lastDisplayPTS << " / " << m_VideoViewList->GetDuration() << " ms";
+		m_TimeLabel2->setText(str);
 	}
+
+	if (status.isPlaying)
+	{
+		str.clear();
+		float renderSpeed = m_VideoViewList->GetRenderThread()->GetSpeedRatio();
+		QTextStream(&str) << QString("%1").arg(renderSpeed, 0, 'f', 2) << " x";
+		m_RenderSpeedLabel->setText(str);
+	}else
+	{
+		unsigned int pts = status.seekingPTS;
+		if (pts != INVALID_PTS)
+		{
+			str.clear();
+			QTextStream(&str) << "Seeking " << pts << " ms";
+			m_RenderSpeedLabel->setText(str);
+		}else
+		{
+			m_RenderSpeedLabel->setText("Paused");
+		}
+	}
+	
 
 	if (status.isPlaying)
 	{
@@ -917,9 +908,7 @@ void MainWindow::OnTimer()
 		}
 	}
 
-	ui.action_Enable_Logging->setChecked(GetHostImpl()->IsLoggingEnabled());
-
-	ui.action_Compare->setChecked(m_MeasureDockWidget->toggleViewAction()->isChecked());
+	
 }
 
 void MainWindow::stepVideo( int step )

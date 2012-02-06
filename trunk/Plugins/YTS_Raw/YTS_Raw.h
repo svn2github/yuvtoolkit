@@ -61,6 +61,7 @@ private:
 	unsigned int	m_NumFrames;
 	unsigned int	m_Duration;
 	QList<unsigned int> m_TimeStamps; // custom time stamps
+	int             m_InsertFrame0; // first timestamp is not zero, insert frame 0
 
 	FILE* m_File;
 

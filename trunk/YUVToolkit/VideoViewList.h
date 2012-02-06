@@ -24,7 +24,6 @@ public:
 	VideoView* at(int i) const {return m_VideoList.at(i);}
 	VideoView* first() const {return m_VideoList.first();}
 	VideoView* last() const {return m_VideoList.last();}
-	VideoView* longest() const;
 	VideoView* find(unsigned int id) const;
 	UintList GetSourceIDList() const;
 
@@ -36,7 +35,6 @@ public:
 	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
 	void CheckRenderReset();
-	void CheckResolutionChanged();
 	
 	void UpdateRenderLayout();
 
@@ -48,7 +46,6 @@ public:
 private:
 	VideoView* NewVideoViewInternal(QString title, unsigned int viewId);
 public slots:
-	void UpdateDuration();
 	void CloseVideoView(VideoView*);
 	void OnUpdateRenderWidgetPosition();
 	void OnVideoViewTransformTriggered( QAction*, VideoView* , TransformActionData *);
@@ -57,7 +54,6 @@ public slots:
 
 	void VideoFormatReset();
 signals:
-	void ResolutionDurationChanged();
 	void VideoViewCreated(VideoView*);
 	void VideoViewClosed(VideoView*);
 	void VideoViewSourceListChanged();
@@ -76,7 +72,6 @@ private:
 
 	unsigned int m_Duration;
 	unsigned int m_VideoCount;
-	VideoView* m_LongestVideoView;
 	bool m_EndOfFile;
 };
 

@@ -225,6 +225,14 @@ struct SourceInfo
 		duration = 0;
 		lastPTS = 0;
 	}
+
+	void Reset() {
+		format.clear();
+		maxFps = 0;
+		num_frames = 0;
+		duration = 0;
+		lastPTS = 0;
+	}
 };
 
 class Source;
@@ -238,7 +246,7 @@ public:
 	virtual void ShowGui(Source*, bool show) = 0;
 
 	// Signals when video format was changed and new frame should be requested
-	virtual void VideoFormatReset() = 0;
+	virtual void ResolutionDurationChanged() = 0;
 };
 
 

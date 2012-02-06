@@ -20,19 +20,14 @@
 VideoView::VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget* _parent, ProcessThread* processThread, PlaybackControl* control) :
 	m_Type(PLUGIN_UNKNOWN), m_SourceThread(NULL), m_ProcessThread(processThread),
 	m_Control(control), m_Transform(0),m_Measure(0),
-	m_MainWindow(_mainWin),m_VideoWidth(0),m_VideoHeight(0),
-	m_Duration(0), m_Menu(NULL), m_CloseAction(0),
-	m_TransformActionListUpdated(false), m_ViewID(viewId),
+	m_MainWindow(_mainWin), m_Menu(NULL), m_CloseAction(0),
+	m_ViewID(viewId),
 	m_ScaleNum(1), m_ScaleDen(1), m_SrcLeft(0), m_SrcTop(0), m_SrcWidth(0), m_SrcHeight(0),
 	m_Dock(NULL), m_PluginGUI(NULL), parent(NULL)
 {
 	m_LastMousePoint.setX(-1);
 	m_LastMousePoint.setY(-1);
 
-	m_RenderFormat = FormatPtr(new FormatImpl);
-	m_SourceFormat = FormatPtr(new FormatImpl); 
-	// m_EmptyFrame = FramePtr(new FrameImpl);
-	
 	m_CloseAction = new QAction("Close", this);
 
 	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(close()));
@@ -45,7 +40,8 @@ void VideoView::Init( const char* path)
 	m_Type = PLUGIN_SOURCE;
 	m_SourceThread = new SourceThread(this, m_ViewID, m_Control, path);
 
-	connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(VideoFormatReset()));
+	connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(ResolutionDurationChanged()));
+	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
 	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
 
 	UpdateMenu();
@@ -131,7 +127,7 @@ void VideoView::SetZoomLevel( int mode )
 
 void VideoView::RepositionVideo(bool emitSignal)
 {
-	if (!m_VideoHeight || !m_VideoWidth)
+	if (!m_SourceInfo.format)
 	{
 		return;
 	}
@@ -142,8 +138,8 @@ void VideoView::RepositionVideo(bool emitSignal)
 	int dstWidth = rcClient.width();
 	int dstHeight = rcClient.height();
 
-	m_SrcWidth = m_VideoWidth;
-	m_SrcHeight = m_VideoHeight;
+	m_SrcWidth = width();
+	m_SrcHeight = height();
 	
 	if (m_ScaleDen == 0 || m_ScaleNum == 0)
 	{
@@ -157,8 +153,8 @@ void VideoView::RepositionVideo(bool emitSignal)
 		m_SrcTop = 0;			
 	}else
 	{
-		dstWidth = m_VideoWidth*m_ScaleNum/m_ScaleDen;
-		dstHeight = m_VideoHeight*m_ScaleNum/m_ScaleDen;
+		dstWidth = width()*m_ScaleNum/m_ScaleDen;
+		dstHeight = height()*m_ScaleNum/m_ScaleDen;
 
 		if (dstWidth<=rcClient.width())
 		{
@@ -170,7 +166,7 @@ void VideoView::RepositionVideo(bool emitSignal)
 			dstWidth = rcClient.width();
 
 			m_SrcWidth = rcClient.width()*m_ScaleDen/m_ScaleNum;
-			m_SrcLeft = min(max(m_SrcLeft, 0),m_VideoWidth-m_SrcWidth);
+			m_SrcLeft = min(max(m_SrcLeft, 0),width()-m_SrcWidth);
 		}
 
 		if (dstHeight<=rcClient.height())
@@ -183,7 +179,7 @@ void VideoView::RepositionVideo(bool emitSignal)
 			dstHeight = rcClient.height();
 
 			m_SrcHeight = rcClient.height()*m_ScaleDen/m_ScaleNum;
-			m_SrcTop = min(max(m_SrcTop, 0),m_VideoHeight-m_SrcHeight);
+			m_SrcTop = min(max(m_SrcTop, 0),height()-m_SrcHeight);
 		}
 	}
 
@@ -192,8 +188,8 @@ void VideoView::RepositionVideo(bool emitSignal)
 
 	if (emitSignal)
 	{
-		double w = m_VideoWidth;
-		double h = m_VideoHeight;
+		double w = width();
+		double h = height();
 
 		emit ViewPortUpdated(this, (m_SrcLeft+m_SrcWidth/2)/w, (m_SrcTop+m_SrcHeight/2)/h);
 	}
@@ -233,46 +229,10 @@ void VideoView::setTitle( QString title )
 	m_Menu->setTitle(str);
 }
 
-bool VideoView::CheckResolutionDurationChanged()
-{
-	Source* source = VV_SOURCE(this);
-	FramePtr frame = VV_LASTFRAME(this);
-
-	UpdateTransformActionList();
-
-	int width  = 0;
-	int height = 0;
-	int duration = 0;
-
-	if (source)
-	{
-		SourceInfo info;
-		source->GetInfo(info);
-		width  = info.format->Width();
-		height = info.format->Height();
-		duration = info.duration;
-	}else if (frame)
-	{
-		width = frame->Format()->Width();
-		height = frame->Format()->Height();
-	}
-	
-	if (m_VideoWidth != width || m_VideoHeight != height || m_Duration != duration)
-	{
-		m_VideoWidth = width;
-		m_VideoHeight = height;
-		m_Duration = duration;
-
-		return true;
-	}
-	
-	return false;
-}
-
 void VideoView::GetVideoSize( QSize& actual, QSize& display )
 {
-	actual.setWidth(m_VideoWidth);
-	actual.setHeight(m_VideoHeight);
+	actual.setWidth(width());
+	actual.setHeight(height());
 
 	if (m_ScaleDen == 0 || m_ScaleNum == 0)
 	{
@@ -320,8 +280,8 @@ void VideoView::OnMouseReleaseEvent(const QPoint& pt)
 
 void VideoView::UpdateViewPort( double x, double y )
 {
-	int xCenter = (int)(x*m_VideoWidth);
-	int yCenter = (int)(y*m_VideoHeight);
+	int xCenter = (int)(x*width());
+	int yCenter = (int)(y*height());
 
 	m_SrcLeft += xCenter-(m_SrcLeft+m_SrcWidth/2);
 	m_SrcTop  += yCenter-(m_SrcTop+m_SrcHeight/2);
@@ -331,16 +291,7 @@ void VideoView::UpdateViewPort( double x, double y )
 
 void VideoView::UpdateTransformActionList()
 {
-	if (!m_TransformActionListUpdated)	
-	{
-		Source* source = GetSource();
-		if (source)
-		{			
-			m_TransformActionListUpdated = true;
-
-			UpdateMenu();
-		}
-	}
+	
 }
 
 void VideoView::close()
@@ -387,8 +338,10 @@ void VideoView::ShowGui(Source* source, bool show)
 }
 
 
-void VideoView::VideoFormatReset()
+void VideoView::ResolutionDurationChanged()
 {
+	m_SourceInfo.Reset();
+
 	if (m_SourceThread)
 	{
 		m_SourceThread->GetSource()->GetInfo(m_SourceInfo);
@@ -430,16 +383,6 @@ void VideoView::UpdateMenu()
 		m_Menu->addAction(m_Dock->toggleViewAction());
 	}
 
-	const QList<QAction*>& actionList = GetTransformActions();
-	if (actionList.size()>0)
-	{
-		m_Menu->addSeparator();
-		for (int i=0; i<actionList.size(); ++i)
-		{
-			m_Menu->addAction(actionList[i]);
-		}
-	}
-
 	m_Menu->addSeparator();
 	m_Menu->addAction(GetCloseAction());
 }
@@ -451,12 +394,25 @@ QMenu* VideoView::GetMenu()
 
 int VideoView::width()
 {
-	return m_VideoWidth;
+	if (m_SourceInfo.format)
+	{
+		return m_SourceInfo.format->Width();
+	}else
+	{
+		return 0;
+	}
+	
 }
 
 int VideoView::height()
 {
-	return m_VideoHeight;
+	if (m_SourceInfo.format)
+	{
+		return m_SourceInfo.format->Height();
+	}else
+	{
+		return 0;
+	}
 }
 
 QString VideoView::title()
