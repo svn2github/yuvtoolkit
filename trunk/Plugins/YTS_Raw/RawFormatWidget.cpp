@@ -83,8 +83,6 @@ void RawFormatWidget::showEvent( QShowEvent *event )
 	}
 
 	SourceInfo info;
-	memset(&info, 0, sizeof(info));
-	info.format = m_Format;
 	rawSource->GetInfo(info);
 
 	ui.Title->setText(rawSource->GetPath());
@@ -100,7 +98,7 @@ void RawFormatWidget::showEvent( QShowEvent *event )
 		}
 	}
 	ui.Color->setCurrentIndex(idx);
-	ui.FPS->setValue(info.fps);
+	ui.FPS->setValue(info.maxFps);
 	/*ui.Stride0->setText(QString::number(info.format->Stride(0)));
 	ui.Stride1->setText(QString::number(info.format->Stride(1)));
 	ui.Stride2->setText(QString::number(info.format->Stride(2)));

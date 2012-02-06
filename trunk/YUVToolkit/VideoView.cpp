@@ -35,7 +35,7 @@ VideoView::VideoView(QMainWindow* _mainWin, unsigned int viewId, RendererWidget*
 	
 	m_CloseAction = new QAction("Close", this);
 
-	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(OnClose()));
+	connect(m_CloseAction, SIGNAL(triggered()), this, SLOT(close()));
 
 	m_Menu = new QMenu(m_MainWindow);
 }
@@ -45,11 +45,14 @@ void VideoView::Init( const char* path)
 	m_Type = PLUGIN_SOURCE;
 	m_SourceThread = new SourceThread(this, m_ViewID, m_Control, path);
 
-
 	connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(VideoFormatReset()));
 	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
 
 	UpdateMenu();
+	
+	
+	m_SourceThread->GetSource()->GetInfo(m_SourceInfo);
+	emit NeedVideoFormatReset();
 }
 
 void VideoView::Init( Transform* transform, VideoQueue* source, QString outputName )
@@ -221,7 +224,7 @@ void VideoView::SetGeometry( int x, int y, int width, int height )
 	RepositionVideo();
 }
 
-void VideoView::SetTitle( QString title )
+void VideoView::setTitle( QString title )
 {
 	m_Title = title;
 
@@ -332,43 +335,7 @@ void VideoView::UpdateTransformActionList()
 	{
 		Source* source = GetSource();
 		if (source)
-		{
-			SourceInfo info;
-			source->GetInfo(info);
-
-			// const QList<PlugInInfo*>& lst = GetHostImpl()->GetTransformPluginList();
-			
-			/*
-			for (int i=0; i<lst.size(); i++)
-			{
-				PlugInInfo* plugInInfo = lst[i];
-
-				Transform* transform = plugInInfo->plugin->NewTransform(plugInInfo->string);
-				
-				QStringList outputNames;
-				QStringList statNames;
-				transform->GetSupportedModes(info.format, outputNames, statNames);
-
-				for (int j=0; j<outputNames.size(); j++)
-				{
-					QString str;
-					QTextStream(&str) << "Show " << outputNames.at(j);
-
-					QAction* action = new QAction(str, this);
-					action->setCheckable(true);
-					action->setChecked(false);
-
-					TransformActionData* data = new TransformActionData;
-					data->transformPlugin = plugInInfo->plugin;
-					data->transformName = plugInInfo->string;
-					data->outputName = outputNames.at(j);
-					action->setData(qVariantFromValue((void*)data));
-
-					connect(action, SIGNAL(triggered()), this, SLOT(OnTransformTriggered()));
-					m_TransformActionList.append(action);
-				}
-			}*/
-
+		{			
 			m_TransformActionListUpdated = true;
 
 			UpdateMenu();
@@ -376,7 +343,7 @@ void VideoView::UpdateTransformActionList()
 	}
 }
 
-void VideoView::OnClose()
+void VideoView::close()
 {
 	emit Close(this);
 }
@@ -390,7 +357,7 @@ void VideoView::OnTransformTriggered()
 	emit TransformTriggered(action, this, data);
 }
 
-void VideoView::GuiNeeded(Source* source)
+void VideoView::ShowGui(Source* source, bool show)
 {
 	if (m_Dock == NULL)
 	{
@@ -413,7 +380,7 @@ void VideoView::GuiNeeded(Source* source)
 		}
 	}
 	
-	if (m_Dock)
+	if (m_Dock && show)
 	{
 		m_Dock->setVisible(true);
 	}
@@ -422,6 +389,11 @@ void VideoView::GuiNeeded(Source* source)
 
 void VideoView::VideoFormatReset()
 {
+	if (m_SourceThread)
+	{
+		m_SourceThread->GetSource()->GetInfo(m_SourceInfo);
+	}
+
 	PlaybackControl::Status status = {0};
 	m_Control->GetStatus(&status);
 
@@ -475,4 +447,27 @@ void VideoView::UpdateMenu()
 QMenu* VideoView::GetMenu()
 {
 	return m_Menu;
+}
+
+int VideoView::width()
+{
+	return m_VideoWidth;
+}
+
+int VideoView::height()
+{
+	return m_VideoHeight;
+}
+
+QString VideoView::title()
+{
+	return m_Title;
+}
+
+void VideoView::setTimeStamps( QList<unsigned int> lst)
+{
+	if (m_SourceThread)
+	{
+		m_SourceThread->GetSource()->SetTimeStamps(lst);
+	}
 }

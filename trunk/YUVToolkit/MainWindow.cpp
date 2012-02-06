@@ -11,6 +11,7 @@
 #include "MeasureWindow.h"
 #include "Options.h"
 #include "Settings.h"
+#include "TextFile.h"
 
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
@@ -267,8 +268,9 @@ void MainWindow::dropEvent( QDropEvent *event )
 }
 
 
-void MainWindow::openFiles( const QStringList& fileList )
+QList<VideoView*> MainWindow::openFiles( const QStringList& fileList )
 {
+	QList<VideoView*> lst;
 	// Open files
 	QStringList fileList2;
 	for ( int i=0; i<fileList.size(); i++) // if at least one QUrl is present in list
@@ -289,7 +291,7 @@ void MainWindow::openFiles( const QStringList& fileList )
 
 	if (fileList2.size() == 0)
 	{
-		return;
+		return lst;
 	}
 
 	// Pause
@@ -301,7 +303,8 @@ void MainWindow::openFiles( const QStringList& fileList )
 	for ( int i=0; i<fileList2.size(); i++) // if at least one QUrl is present in list
 	{
 		const QString& fName = fileList2[i];
-		openFileInternal(fName);
+		VideoView* vv = openFileInternal(fName);
+		lst.append(vv);
 	}
 
 	// Update source list
@@ -320,6 +323,8 @@ void MainWindow::openFiles( const QStringList& fileList )
 			st->Start();
 		}
 	}
+
+	return lst;
 }
 
 
@@ -495,24 +500,33 @@ void MainWindow::SetZoomMode( int mode )
 
 
 
-void MainWindow::openFile( QString strPath)
+VideoView* MainWindow::openFile( QString strPath)
 {
 	QStringList lst;
 	lst.append(strPath);
-	openFiles(lst);
+	QList<VideoView*> vvLst = openFiles(lst);
+	if (vvLst.count()>0) 
+	{
+		return vvLst[0];
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
-void MainWindow::openFileInternal( QString strPath)
+VideoView* MainWindow::openFileInternal( QString strPath )
 {
 	QStringList fileList;
 	for (int i=0; i<m_VideoViewList->size(); ++i)
 	{
-		SourceThread* st = m_VideoViewList->at(i)->GetSourceThread();
+		VideoView* vv = m_VideoViewList->at(i);
+		SourceThread* st = vv->GetSourceThread();
 		if (st)
 		{
 			if (QFileInfo(st->GetSourcePath()) == QFileInfo(strPath))
 			{
-				return;
+				return vv;
 			}
 		}
 	}
@@ -521,11 +535,10 @@ void MainWindow::openFileInternal( QString strPath)
 	if (!file.exists())
 	{
 		QMessageBox::warning(this, "Error", "File does not exist.");
-		return;
+		return NULL;
 	}
 
-	// VideoView* vv =
-	m_VideoViewList->NewVideoViewSource(strPath.toAscii());
+	return m_VideoViewList->NewVideoViewSource(strPath.toAscii());
 }
 
 void MainWindow::play( bool play )
@@ -537,6 +550,21 @@ void MainWindow::play( bool play )
 void MainWindow::infoMsg( QString title, QString msg )
 {
 	QMessageBox::information(this, title, msg, QMessageBox::Ok);
+}
+
+Q_DECLARE_METATYPE(VideoView*);
+Q_DECLARE_METATYPE(QList<VideoView*>);
+Q_DECLARE_METATYPE(QList<unsigned int>);
+Q_SCRIPT_DECLARE_QMETAOBJECT(TextFile, QString);
+
+QScriptValue VideoViewToScriptValue(QScriptEngine *engine, VideoView* const &in)
+{ 
+	return engine->newQObject(in); 
+}
+
+void VideoViewFromScriptValue(const QScriptValue &object, VideoView* &out)
+{ 
+	out = qobject_cast<VideoView*>(object.toQObject()); 
 }
 
 void MainWindow::openScript( QString strPath, bool debug )
@@ -572,6 +600,13 @@ void MainWindow::openScript( QString strPath, bool debug )
 	 QScriptValue scriptMainWindow = engine.newQObject(this);
 	 engine.globalObject().setProperty("yt", scriptMainWindow);
 
+	 // Register VideoView type
+	 qScriptRegisterMetaType(&engine, VideoViewToScriptValue, VideoViewFromScriptValue);
+	 qScriptRegisterSequenceMetaType<QList<VideoView*> >(&engine);
+	 qScriptRegisterSequenceMetaType<QList<unsigned int> >(&engine);
+	 QScriptValue fileClass = engine.scriptValueFromQMetaObject<TextFile>();
+	 engine.globalObject().setProperty("TextFile", fileClass);
+	 
 	 QString oldPath = QDir::currentPath();
 	 QFileInfo fileInfo(strPath);
 	 QDir::setCurrent(fileInfo.path());
@@ -719,9 +754,6 @@ void MainWindow::seekVideoFromSlider()
 		return;
 	}
 
-	SourceInfo info;
-	longest->GetSource()->GetInfo(info);
-
 	unsigned int pts = m_Slider->value()*SLIDER_STEP_MS;
 	m_VideoViewList->GetControl()->Seek(pts);
 }
@@ -785,12 +817,8 @@ void MainWindow::on_action_Seek_End_triggered()
 	VideoView* longest = m_VideoViewList->longest();
 	if (longest)
 	{
-		Source* source = longest->GetSource();
-
-		SourceInfo info;
-		source->GetInfo(info);
-
-		m_VideoViewList->GetControl()->Seek(info.duration, false);
+		SourceInfo* info = longest->GetSourceInfo();
+		m_VideoViewList->GetControl()->Seek(info->duration, false);
 	}
 }
 
@@ -815,17 +843,15 @@ void MainWindow::OnTimer()
 
 		if (source && frame)
 		{
-			SourceInfo info;
-			source->GetInfo(info);
-
-			OnUpdateSlider(info.duration, info.fps, status.lastProcessPTS);
+			SourceInfo* info = longest->GetSourceInfo();
+			OnUpdateSlider(info->duration, info->maxFps, status.lastProcessPTS);
 		}
 	}
 
 	if (active)
 	{
 		QString str;
-		QTextStream(&str) << "[" << QString("%1").arg(active->GetID()) << "] - " << active->GetTitle();
+		QTextStream(&str) << "[" << QString("%1").arg(active->GetID()) << "] - " << active->title();
 		UpdateStatusMessage(str);
 	}else
 	{
@@ -840,15 +866,14 @@ void MainWindow::OnTimer()
 
 		if (source && frame)
 		{
-			SourceInfo info;
-			source->GetInfo(info);
+			SourceInfo* info = active->GetSourceInfo();
 
 			str.clear();
-			QTextStream(&str) << "" << frame->FrameNumber() << " / " << info.num_frames << "";
+			QTextStream(&str) << "" << frame->FrameNumber() << " / " << info->num_frames << "";
 			m_TimeLabel1->setText(str);
 
 			str.clear();
-			QTextStream(&str) << frame->PTS() << " / " << info.duration << " ms";
+			QTextStream(&str) << frame->PTS() << " / " << info->duration << " ms";
 			m_TimeLabel2->setText(str);
 		}
 
@@ -905,26 +930,22 @@ void MainWindow::OnTimer()
 
 void MainWindow::stepVideo( int step )
 {
-	Source* source = 0;
-	VideoView* longest = m_VideoViewList->longest();
-	FramePtr lastFrame;
-	if (longest)
+	PlaybackControl::Status status;
+	m_VideoViewList->GetControl()->GetStatus(&status);
+
+	QList<unsigned int> timeStampList = m_VideoViewList->GetMergedTimeStamps();
+	// QList<unsigned int>::iterator i = qBinaryFind(timeStampList.begin(), timeStampList.end(), status.lastDisplayPTS);
+	int frame_num=0;
+	for (frame_num=0; frame_num<timeStampList.size(); frame_num++)
 	{
-		source = longest->GetSource();
-		lastFrame = longest->GetLastFrame();
+		if (status.lastDisplayPTS == timeStampList.at(frame_num))
+		{
+			break;
+		}
 	}
-
-	if (!source || !lastFrame)
-	{
-		return;
-	}
-
-	SourceInfo info;
-	source->GetInfo(info);
-
-	int frame_num = MIN(MAX(((int)lastFrame->FrameNumber()) + step, 0), (int)info.num_frames-1);
-	unsigned int pts = source->IndexToPTS(frame_num);
-
+	
+	frame_num = MIN(MAX(frame_num + step, 0), timeStampList.size()-1);
+	unsigned int pts = timeStampList.at(frame_num);
 	m_VideoViewList->GetControl()->Seek(pts, false);
 
 	bool old = m_Slider->blockSignals(true);

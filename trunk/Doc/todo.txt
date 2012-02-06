@@ -11,12 +11,15 @@ Requests
 ===================
 - Support for *.rgb extension
 
-0.0.3+
+0.0.3
+===================
+* Custom time stamp support
+
+0.0.4+
 ===================
 * View -> Show Grid (8x8, 16x16, 32x32, 64x64, Custom)
 * View -> Pixel Window, showing 2-8x zoom in of pixels under mouse pointer + YUV pixel values
 * Graph support, plot PSNR/MSE per frame
-* Custom time stamp support
 * Tools -> Histogram
 * SSIM support (maybe also other measures)
 * Support other YUV formats (Y4M/UYNV/Y422/IUYV/YUYV/YUNV/V422/YVYU/IYU2/YV16)

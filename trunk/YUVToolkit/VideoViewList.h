@@ -31,6 +31,7 @@ public:
 	RenderThread* GetRenderThread() {return m_RenderThread;}
 	ProcessThread* GetProcessThread() {return m_ProcessThread;}
 	PlaybackControl* GetControl() {return &m_Control;}
+	QList<unsigned int> GetMergedTimeStamps() {return m_MergedTimeStamps;}
 
 	//bool GetRenderFrameList(QList<Render_Frame>& list, unsigned int& pts);
 	unsigned int GetDuration() {return m_Duration;}
@@ -64,6 +65,7 @@ signals:
 private:
 	RendererWidget* m_RenderWidget;
 	QList<VideoView*> m_VideoList;
+	QList<unsigned int> m_MergedTimeStamps;
 	QMainWindow* m_MainWindow;
 
 	unsigned int m_IDCounter;

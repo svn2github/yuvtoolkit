@@ -122,10 +122,7 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 
 	InitInternal();
 
-	if (unknownResolution)
-	{
-		m_Callback->GuiNeeded(this);
-	}
+	m_Callback->ShowGui(this, unknownResolution);
 
 	return OK;
 }
@@ -159,7 +156,12 @@ RESULT YTS_Raw::GetInfo( SourceInfo& info )
 	info.duration = m_Duration;
 	info.num_frames = m_NumFrames;
 	info.lastPTS = IndexToPTS(m_NumFrames-1);
-	info.fps = m_FPS;
+	info.maxFps = m_FPS;
+
+	if (m_TimeStamps.size())
+	{
+		info.duration = m_TimeStamps.last();
+	}
 
 	return OK;
 }
@@ -234,15 +236,47 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 unsigned int YTS_Raw::IndexToPTS( unsigned int frame_idx )
 {
 	frame_idx = MyMin(frame_idx, m_NumFrames-1);
+	if (m_TimeStamps.size())
+	{
+		return m_TimeStamps[frame_idx];
+	}else
+	{
+		return (unsigned int)floor(1000.0*frame_idx/m_FPS);
+	}
+}
+
+unsigned int YTS_Raw::IndexToPTSInternal( unsigned int frame_idx )
+{
+	frame_idx = MyMin(frame_idx, m_NumFrames-1);
 
 	return (unsigned int)floor(1000.0*frame_idx/m_FPS);
 }
 
 unsigned int YTS_Raw::PTSToIndex( unsigned int PTS )
 {
-	unsigned int frame_idx = (unsigned int)ceil(PTS*m_FPS/1000.0);
-	frame_idx = MyMin(frame_idx, m_NumFrames-1);
+	unsigned int frame_idx = 0;
+	if (m_TimeStamps.size())
+	{
+		QList<unsigned int>::iterator itr;
+		unsigned int i;
+		for (i=0, itr = m_TimeStamps.begin(); itr != m_TimeStamps.end(); ++itr, ++i)
+		{
+			if (itr == m_TimeStamps.end()-1)
+			{
+				frame_idx = i;
+				break;
+			}else if ((*itr)>PTS)
+			{
+				frame_idx = (i>0)?i-1:0;
+				break;
+			}
+		}
+	}else
+	{
+		frame_idx = (unsigned int)ceil(PTS*m_FPS/1000.0);
+	}
 
+	frame_idx = MyMin(frame_idx, m_NumFrames-1);
 	return frame_idx;
 }
 
@@ -284,10 +318,48 @@ void YTS_Raw::ReInit( const FormatPtr format, double FPS )
 	m_Callback->VideoFormatReset();
 }
 
-unsigned int YTS_Raw::SeekPTS( unsigned int pts )
+RESULT YTS_Raw::GetTimeStamps( QList<unsigned int>& timeStamps )
 {
-	unsigned int index = PTSToIndex(pts);	
-	unsigned ptsNew = IndexToPTS(index);
+	timeStamps.clear();
+	if (m_TimeStamps.size())
+	{
+		timeStamps.append(m_TimeStamps);
+	}else
+	{		
+		timeStamps.reserve(m_NumFrames);
+		for (int i=0; i<m_NumFrames; i++) {
+			timeStamps.append(IndexToPTS(i));
+		}
+	}
+	
+	return OK;
+}
 
-	return ptsNew;
+RESULT YTS_Raw::SetTimeStamps( QList<unsigned int> timeStamps )
+{
+	m_TimeStamps = timeStamps;
+
+	while (m_TimeStamps.size()>m_NumFrames)
+	{
+		m_TimeStamps.removeLast();
+	}
+
+	// make sure it is non-decreasing
+	for (int i = 1; i < m_TimeStamps.size(); ++i) 
+	{
+		if (m_TimeStamps.at(i) < m_TimeStamps.at(i-1))
+		{
+			m_TimeStamps[i] = m_TimeStamps[i-1];
+		}
+	}
+
+	unsigned int lastTs = (m_TimeStamps.size())?m_TimeStamps.last():0;
+	for (int i=1; m_TimeStamps.size()<m_NumFrames; i++)
+	{
+		m_TimeStamps.append(lastTs+IndexToPTSInternal(i));
+	}
+
+	m_Callback->VideoFormatReset();
+
+	return OK;
 }

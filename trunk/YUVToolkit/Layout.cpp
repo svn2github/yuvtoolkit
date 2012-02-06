@@ -55,7 +55,7 @@ void Layout::UpdateGrid()
 		{
 			VideoView* vv = m_VideoList.at(i);
 			int w=viewWidth, h=viewHeight;
-			vv->computeAR( vv->Width(), vv->Height(), w, h);
+			vv->computeAR( vv->width(), vv->height(), w, h);
 			area += w*h;
 		}
 		

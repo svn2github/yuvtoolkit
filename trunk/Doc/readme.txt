@@ -7,8 +7,19 @@ yuv player and analyzer. It is currently in early
 stage of development, and current development 
 focus is on playback features.
 
-New in 0.0.2 build X
+New in 0.0.3 build X
 =================================================
+* New Features
+
+- Support for custom time stamps using YTS script
+- Allow changing of video title using YTS script
+
+file = yt.openFile('480p/David-12-iSight-LowLight-640x480-15fps.yuv')
+file.setTitle("My custom title")
+ts = [0, 60, 100, 500, 1000]
+file.setTimeStamps(ts)
+
+
 * Bug fixes
 
 - Fixed that no file option pops up when resolution is missing 

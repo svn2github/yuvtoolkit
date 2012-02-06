@@ -47,17 +47,15 @@ public:
 	virtual ~VideoView();
 	QRect srcRect, dstRect;
 
-	int Width() {return m_VideoWidth;}
-	int Height() {return m_VideoHeight;}
 	void SetZoomLevel(int mode);
 	void SetGeometry(int x, int y, int width, int height);
-	void SetTitle(QString title);
-	const QString& GetTitle() {return m_Title; }
+
 	const QList<QAction*>& GetTransformActions() {return m_TransformActionList; }
 	QAction* GetCloseAction() {return m_CloseAction; }
 
 	PLUGIN_TYPE GetType() {return m_Type;}
 	Source* GetSource();
+	SourceInfo* GetSourceInfo() {return (m_Type == PLUGIN_SOURCE)?&m_SourceInfo:NULL;}
 	SourceThread* GetSourceThread() {return m_SourceThread;} 
 	Transform* GetTransform() {return m_Transform; }
 	VideoQueue* GetVideoQueue() {return NULL;}
@@ -80,7 +78,7 @@ public:
 	void OnMousePressEvent( const QPoint& pt );
 	void OnMouseReleaseEvent( const QPoint& pt);
 
-	void GuiNeeded(Source*);
+	void ShowGui(Source*, bool show);
 	void VideoFormatReset();
 
 	void UpdateMenu();
@@ -92,9 +90,14 @@ signals:
 
 	void NeedVideoFormatReset();
 public slots:
-	void OnClose();
-	void OnTransformTriggered();
+	void close();
+	int width();
+	int height();
+	void setTitle(QString title);
+	QString title();
+	void setTimeStamps(QList<unsigned int>);
 
+	void OnTransformTriggered();
 	void OnDockFloating(bool);
 protected:
 	void RenderPlane(FramePtr, int plane);
@@ -113,6 +116,7 @@ private:
 	// Render_Frame* m_RenderFrame;
 	QMainWindow* m_MainWindow;
 
+	SourceInfo m_SourceInfo;
 	int m_VideoWidth;
 	int m_VideoHeight;
 	int m_Duration;
@@ -141,4 +145,5 @@ private:
 	FormatPtr m_SourceFormat;
 	// FramePtr m_EmptyFrame;
 };
+
 #endif

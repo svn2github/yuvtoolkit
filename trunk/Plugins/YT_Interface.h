@@ -214,10 +214,17 @@ typedef void* HANDLE;
 struct SourceInfo
 {
 	FormatPtr format;
-	float fps;
+	float maxFps;
 	unsigned int num_frames;
 	unsigned int duration; // in ms
 	unsigned int lastPTS; // PTS of last frame
+
+	SourceInfo() {
+		maxFps = 0;
+		num_frames = 0;
+		duration = 0;
+		lastPTS = 0;
+	}
 };
 
 class Source;
@@ -228,7 +235,7 @@ public:
 	virtual ~SourceCallback() {}
 
 	// Signals when GUI is needed and should be popped up
-	virtual void GuiNeeded(Source*) = 0;
+	virtual void ShowGui(Source*, bool show) = 0;
 
 	// Signals when video format was changed and new frame should be requested
 	virtual void VideoFormatReset() = 0;
@@ -250,20 +257,22 @@ public:
 	virtual RESULT Init(SourceCallback* callback, const QString& path) = 0;
 	virtual RESULT UnInit() = 0;
 
+	// Requesting source info
+	virtual RESULT GetInfo(SourceInfo& info) = 0;
+
 	// if PTS != 0xFFFFFFFE, seek to PTS
 	// PTS might be larger than the duration, then returns the last frame
 	// Else get next frame
 	virtual RESULT GetFrame(FramePtr frame, unsigned int seekingPts=INVALID_PTS) = 0;
 
-	// Requesting source info
-	virtual RESULT GetInfo(SourceInfo& info) = 0;
+	// Receive a list of source time stamps
+	virtual RESULT GetTimeStamps(QList<unsigned int>& timeStamps) = 0;
+	
+	// Set custom time stamps
+	virtual RESULT SetTimeStamps(QList<unsigned int> timeStamps) = 0;
 
 	// Convert frame index to PTS
 	virtual unsigned int IndexToPTS(unsigned int frame_idx) = 0;
-
-	// Convert seeking PTS to nearest frame PTS
-	// This function is used to sync video of different FPS and irregular FPS
-	virtual unsigned int SeekPTS(unsigned int pts) = 0;
 
 	virtual bool HasGUI() = 0;
 	virtual QWidget* CreateGUI(QWidget* parent) = 0;

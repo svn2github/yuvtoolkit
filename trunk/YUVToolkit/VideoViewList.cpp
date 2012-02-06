@@ -54,7 +54,7 @@ VideoView* VideoViewList::NewVideoViewInternal( QString title, unsigned int view
 	m_RenderWidget->layout->AddView(vv);
 	m_VideoList.append(vv);	
 	
-	vv->SetTitle( title );
+	vv->setTitle( title );
 
 	OnUpdateRenderWidgetPosition();
 
@@ -360,12 +360,10 @@ void VideoViewList::UpdateDuration()
 		{
 			Source* source = st->GetSource();
 
-			SourceInfo info;
-			source->GetInfo(info);
-
-			if (info.duration>m_Duration)
+			SourceInfo* info = vv->GetSourceInfo();
+			if (info->duration>m_Duration)
 			{
-				m_Duration = info.duration;
+				m_Duration = info->duration;
 				m_LongestVideoView = vv;
 			}
 		}
@@ -530,6 +528,24 @@ void VideoViewList::VideoFormatReset()
 {
 	m_ProcessThread->Stop();
 	m_ProcessThread->Start();
+
+	// Recompute the time stamp list
+	m_MergedTimeStamps.clear();
+	m_MergedTimeStamps.append(0);
+	for (int i=0; i<size(); ++i) 
+	{
+		VideoView* vv = at(i);
+		if (vv->GetSourceThread())
+		{
+			QList<unsigned int> timeStamps;
+			vv->GetSourceThread()->GetSource()->GetTimeStamps(timeStamps);
+			m_MergedTimeStamps.append(timeStamps);
+
+			QSet<unsigned int> set = m_MergedTimeStamps.toSet();
+			m_MergedTimeStamps = set.toList();
+			qSort(m_MergedTimeStamps.begin(), m_MergedTimeStamps.end());
+		}
+	}
 }
 
 /*

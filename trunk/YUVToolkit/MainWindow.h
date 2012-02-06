@@ -37,16 +37,16 @@ signals:
 	void activeVideoViewChanged(VideoView*);
 	
 public slots:
-	void openFiles(const QStringList& fileList);
+	QList<VideoView*> openFiles(const QStringList& fileList);
 	void infoMsg(QString title, QString msg);
-	void openFile(QString strPath);
+	VideoView* openFile(QString strPath);
 	void play(bool play);
 	void stepVideo(int step);
 
 	void seekVideoFromSlider(); // change to pts
 protected:
 	void openScript(QString strPath, bool debug);
-	void openFileInternal(QString strPath);
+	VideoView* openFileInternal(QString strPath);
 	void updateSelectionSlider();
 private:
 	void UpdateStatusMessage(const QString& msg);

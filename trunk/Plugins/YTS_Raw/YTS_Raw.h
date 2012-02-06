@@ -39,10 +39,11 @@ public:
 
 	virtual RESULT GetFrame(FramePtr frame, unsigned int seekingPTS);
 
-	virtual RESULT GetInfo(SourceInfo& info);
+	virtual RESULT GetInfo( SourceInfo& info );
+	virtual RESULT GetTimeStamps(QList<unsigned int>& timeStamps);
+	virtual RESULT SetTimeStamps(QList<unsigned int> timeStamps);
 	virtual unsigned int IndexToPTS(unsigned int frame_idx);
-	virtual unsigned int SeekPTS(unsigned int pts);
-
+	
 	virtual bool HasGUI();
 	virtual QWidget* CreateGUI(QWidget* parent);
 
@@ -50,6 +51,7 @@ public:
 	const QString GetPath() {return m_Path;}
 protected:
 	unsigned int PTSToIndex(unsigned int PTS);
+	unsigned int IndexToPTSInternal(unsigned int frame_idx);
 
 	void InitInternal();
 private:
@@ -58,6 +60,7 @@ private:
 	
 	unsigned int	m_NumFrames;
 	unsigned int	m_Duration;
+	QList<unsigned int> m_TimeStamps; // custom time stamps
 
 	FILE* m_File;
 
