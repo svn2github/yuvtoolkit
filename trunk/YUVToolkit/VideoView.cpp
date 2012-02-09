@@ -58,12 +58,16 @@ void VideoView::Init( Transform* transform, VideoQueue* source, QString outputNa
 	// m_RefVideoQueue = source;
 	m_OutputName = outputName;
 
+	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
+
 	UpdateMenu();
 }
 
 void VideoView::Init(unsigned int source, unsigned int processed)
 {
 	m_Type = PLUGIN_MEASURE;
+
+	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
 
 	UpdateMenu();
 }
@@ -425,5 +429,21 @@ void VideoView::setTimeStamps( QList<unsigned int> lst)
 	if (m_SourceThread)
 	{
 		m_SourceThread->GetSource()->SetTimeStamps(lst);
+	}
+}
+
+void VideoView::SetLastFrame( FramePtr f )
+{
+	m_LastFrame = f;
+	if (!m_SourceInfo.format)
+	{
+		m_SourceInfo.format = FormatPtr(new FormatImpl);
+	}
+	
+	if (*(m_SourceInfo.format) != *(f->Format()))
+	{
+		*(m_SourceInfo.format) = *(f->Format());
+
+		emit NeedVideoFormatReset();
 	}
 }

@@ -63,7 +63,7 @@ public:
 	unsigned int GetID() {return m_ViewID;}
 
 	FramePtr GetLastFrame() {return m_LastFrame;}
-	void SetLastFrame(FramePtr f) {m_LastFrame = f;}
+	void SetLastFrame(FramePtr f);
 	void ClearLastFrame() {m_LastFrame.clear();}
 	
 	void GetVideoSize( QSize& actual, QSize& display);

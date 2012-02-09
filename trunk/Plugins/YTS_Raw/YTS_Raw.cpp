@@ -152,7 +152,8 @@ void YTS_Raw::InitInternal()
 
 RESULT YTS_Raw::GetInfo( SourceInfo& info )
 {
-	info.format = m_Format;
+	info.format = FormatPtr(GetHost()->NewFormat());
+	*info.format = *m_Format;
 	info.duration = m_Duration;
 	info.num_frames = m_NumFrames+m_InsertFrame0;
 	info.lastPTS = IndexToPTS(m_NumFrames-1);
