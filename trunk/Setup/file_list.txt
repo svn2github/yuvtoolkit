@@ -7,6 +7,7 @@ File "..\Release\QtGui4.dll"
 File "..\Release\QtOpenGL4.dll"
 File "..\Release\QtScript4.dll"
 File "..\Release\QtScriptTools4.dll"
+File "..\Release\phonon4.dll"
 File "..\Release\YT_MeasuresBasic.dll"
 File "..\Release\YT_GLRenderer.dll"
 File "..\Release\YTR_D3D.dll"
@@ -14,3 +15,5 @@ File "..\Release\YTS_Raw.dll"
 File "..\Release\YUVToolkit.exe"
 File "..\Doc\readme.txt"
 File "..\Doc\license.txt"
+File /r script
+File /r script_samples
