@@ -1,0 +1,11 @@
+v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv')
+
+ts = [];
+
+file = new TextFile('TextFile.txt');
+while (!file.atEnd()) {
+	line = file.readLine();
+	ts.push(parseInt(line, 10));
+}
+
+v1.setTimeStamps(ts);

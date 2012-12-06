@@ -9,6 +9,7 @@
 #include "RenderThread.h"
 #include "VideoViewList.h"
 #include "MeasureWindow.h"
+#include "ScoreWindow.h"
 #include "Options.h"
 #include "Settings.h"
 #include "TextFile.h"
@@ -39,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_ZoomLabel(0), m_ActionsButton(0), m_CompareButton(0),
 	m_ColorGroup(0), m_ZoomGroup(0), m_MeasureWindow(0),
 	m_MeasureDockWidget(0), m_ZoomMode(0), m_LastSliderValue(0),
-	m_IsPlaying(false), m_UpdateTimer(0)
+	m_IsPlaying(false), m_UpdateTimer(0), m_AllowContextMenu(true), m_Engine(NULL), m_Debugger(NULL)
 {
 	windowCounter++;
 
@@ -206,11 +207,26 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_MeasureWindow->GetToolBar()->addAction(ui.action_Select_Processed_1);
 	m_MeasureWindow->GetToolBar()->addAction(ui.action_Select_Processed_2);
 
+
+	m_ScoreDockWidget = new QDockWidget("Score", this );
+	m_ScoreDockWidget->setAllowedAreas(Qt::BottomDockWidgetArea);
+	m_ScoreDockWidget->setVisible(false);
+
+	m_ScoreWindow = new ScoreWindow(m_ScoreDockWidget);
+	m_ScoreDockWidget->setWidget(m_ScoreWindow);
+	addDockWidget(Qt::BottomDockWidgetArea, m_ScoreDockWidget);
+
 	EnableButtons(0);
 }
 
 MainWindow::~MainWindow()
 {
+	if (m_Debugger)
+	{
+		m_Debugger->detach();
+		SAFE_DELETE(m_Debugger);
+	}
+
 	delete m_VideoViewList;
 }
 
@@ -326,7 +342,6 @@ QList<VideoView*> MainWindow::openFiles( const QStringList& fileList )
 	return lst;
 }
 
-
 void MainWindow::on_action_Open_triggered()
 {
 	QSettings settings;
@@ -345,6 +360,17 @@ void MainWindow::on_action_Open_triggered()
 	{
 		QFileInfo fileInfo(files.first());
 		settings.SETTINGS_SET_FILE_PATH(fileInfo.path());
+
+
+		for ( int i=0; i<files.size(); i++) // if at least one QUrl is present in list
+		{
+			Phonon::MediaObject* s = new Phonon::MediaObject();
+			s->setCurrentSource(Phonon::MediaSource(files[i]));
+			m.append(s);
+			Phonon::createPath(s, &a);
+
+			s->play();
+		}
 	}
 
 	openFiles(files);
@@ -402,8 +428,6 @@ void MainWindow::on_action_Debug_Script_triggered()
 
 void MainWindow::on_action_Close_triggered()
 {
-	m_UpdateTimer->stop();
-
 	VideoView* vv = NULL;
 	if (m_ActiveVideoView)
 	{
@@ -415,12 +439,10 @@ void MainWindow::on_action_Close_triggered()
 
 	if (vv)
 	{
-		m_VideoViewList->CloseVideoView(vv);
-
-		m_UpdateTimer->start();
+		closeFile(vv);
 	}else
 	{
-		this->close();
+		QMainWindow::close();
 	}
 }
 
@@ -554,7 +576,8 @@ void MainWindow::infoMsg( QString title, QString msg )
 Q_DECLARE_METATYPE(VideoView*);
 Q_DECLARE_METATYPE(QList<VideoView*>);
 Q_DECLARE_METATYPE(QList<unsigned int>);
-Q_SCRIPT_DECLARE_QMETAOBJECT(TextFile, QString);
+// Q_DECLARE_METATYPE(TextFile);
+// Q_SCRIPT_DECLARE_QMETAOBJECT(TextFile, QString);
 
 QScriptValue VideoViewToScriptValue(QScriptEngine *engine, VideoView* const &in)
 { 
@@ -566,69 +589,102 @@ void VideoViewFromScriptValue(const QScriptValue &object, VideoView* &out)
 	out = qobject_cast<VideoView*>(object.toQObject()); 
 }
 
+QScriptValue TextFileConstructor(QScriptContext*context,QScriptEngine*engine)
+{
+	QString filename = context->argument(0).toString();
+	bool write = false;
+	if (context->argumentCount()>1) {
+		write = context->argument(1).toBool();
+	}
+	TextFile* file = new TextFile(filename, write);
+	return engine->newQObject(file,QScriptEngine::ScriptOwnership);
+}
+
 void MainWindow::openScript( QString strPath, bool debug )
 {
-	 QScriptEngineDebugger *debugger = NULL;
-	 QMainWindow* debuggerWindow = NULL;
-	 QScriptEngine engine(this);
-	 engine.setProcessEventsInterval(50);
+	if (m_Engine) {
+		delete m_Engine;
+		m_Engine = NULL;
+	}
+	
+	m_Engine = new QScriptEngine(this);
+	QMainWindow* debuggerWindow = NULL;
 
-	 QFile file(strPath);
-	 if (file.size()>1000000)
-	 {
-		 QMessageBox::warning(this, "Error", "File is too big. Cannot open it as script.");
-		 return;
-	 }
-	 file.open(QIODevice::ReadOnly);
-	 QString contents = file.readAll();
-	 file.close();
+	m_Engine->setProcessEventsInterval(50);
+	m_Engine->globalObject().setProperty("yt", m_Engine->newQObject(this));
 
-	 if (debug)
-	 {
-		 if (!debugger)
-		 {
-			 debugger = new QScriptEngineDebugger(this);
-			 debuggerWindow = debugger->standardWindow();
-			 debuggerWindow->setWindowModality(Qt::ApplicationModal);
-			 // debuggerWindow->resize(1280, 704);
-		 }
-		 debugger->attachTo(&engine);
-		 debugger->action(QScriptEngineDebugger::InterruptAction)->trigger();
-	 }
+	if (debug)
+	{
+		if (!m_Debugger)
+		{
+			m_Debugger = new QScriptEngineDebugger(this);
+		}
 
-	 QScriptValue scriptMainWindow = engine.newQObject(this);
-	 engine.globalObject().setProperty("yt", scriptMainWindow);
+		debuggerWindow = m_Debugger->standardWindow();
+		debuggerWindow->setWindowModality(Qt::ApplicationModal);
+		// debuggerWindow->resize(1280, 704);
+		m_Debugger->attachTo(m_Engine);
+		m_Debugger->action(QScriptEngineDebugger::InterruptAction)->trigger();
+	}
 
-	 // Register VideoView type
-	 qScriptRegisterMetaType(&engine, VideoViewToScriptValue, VideoViewFromScriptValue);
-	 qScriptRegisterSequenceMetaType<QList<VideoView*> >(&engine);
-	 qScriptRegisterSequenceMetaType<QList<unsigned int> >(&engine);
-	 QScriptValue fileClass = engine.scriptValueFromQMetaObject<TextFile>();
-	 engine.globalObject().setProperty("TextFile", fileClass);
-	 
-	 QString oldPath = QDir::currentPath();
-	 QFileInfo fileInfo(strPath);
-	 QDir::setCurrent(fileInfo.path());
-	 QScriptValue ret = engine.evaluate(contents, strPath);
-	 QDir::setCurrent(oldPath);
+	QScriptValue& scriptMainWindow = m_Engine->globalObject().property("yt");
+	scriptMainWindow.setProperty("scoreWindow", m_Engine->newQObject(m_ScoreWindow));
 
-	 if (debuggerWindow)
-	 {
-		 debuggerWindow->hide();
-	 }
+	scriptMainWindow.setProperty("actionScore", m_Engine->newQObject(m_ScoreDockWidget->toggleViewAction()));
+	scriptMainWindow.setProperty("actionCompare", m_Engine->newQObject(ui.action_Compare));
+	scriptMainWindow.setProperty("actionOptions", m_Engine->newQObject(ui.action_Options));
+	scriptMainWindow.setProperty("actionClose", m_Engine->newQObject(ui.action_Close));
 
-	 if (debugger)
-	 {
-		 debugger->detach();
-		 SAFE_DELETE(debugger);
-	 }
+	scriptMainWindow.setProperty("actionPlayPause", m_Engine->newQObject(ui.action_Play_Pause));
+	scriptMainWindow.setProperty("actionStepBack", m_Engine->newQObject(ui.action_Step_Back));
+	scriptMainWindow.setProperty("actionStepBackFast", m_Engine->newQObject(ui.action_Step_Back_Fast));
+	scriptMainWindow.setProperty("actionStepForward", m_Engine->newQObject(ui.action_Step_Forward));
+	scriptMainWindow.setProperty("actionStepForwardFast", m_Engine->newQObject(ui.action_Step_Forward_Fast));
 
-	 if (ret.isError())
-	 {
-		 QMessageBox::warning(this, tr("Context 2D"), tr("Line %0: %1")
-			 .arg(ret.property("lineNumber").toInt32())
-			 .arg(ret.toString()));
-	 }
+	scriptMainWindow.setProperty("actionSeekBeginning", m_Engine->newQObject(ui.action_Seek_Beginning));
+	scriptMainWindow.setProperty("actionSeekEnd", m_Engine->newQObject(ui.action_Seek_End));
+
+	scriptMainWindow.setProperty("actionZoom100", m_Engine->newQObject(ui.action_Zoom_100));
+	scriptMainWindow.setProperty("actionZoom200", m_Engine->newQObject(ui.action_Zoom_200));
+	scriptMainWindow.setProperty("actionZoom400", m_Engine->newQObject(ui.action_Zoom_400));
+	scriptMainWindow.setProperty("actionZoom50", m_Engine->newQObject(ui.action_Zoom_50));
+	scriptMainWindow.setProperty("actionZoomFit", m_Engine->newQObject(ui.action_Zoom_Fit));
+
+	scriptMainWindow.setProperty("actionY", m_Engine->newQObject(ui.action_Y));
+	scriptMainWindow.setProperty("actionU", m_Engine->newQObject(ui.action_U));
+	scriptMainWindow.setProperty("actionV", m_Engine->newQObject(ui.action_V));
+	scriptMainWindow.setProperty("actionColor", m_Engine->newQObject(ui.action_Color));
+
+	// Register VideoView type
+	qScriptRegisterMetaType(m_Engine, VideoViewToScriptValue, VideoViewFromScriptValue);
+	qScriptRegisterSequenceMetaType<QList<VideoView*> >(m_Engine);
+	qScriptRegisterSequenceMetaType<QList<unsigned int> >(m_Engine);
+
+	// Register TextFile
+	m_Engine->globalObject().setProperty("TextFile", m_Engine->newQMetaObject(&QObject::staticMetaObject, m_Engine->newFunction(TextFileConstructor)));
+
+	QString oldPath = QDir::currentPath();
+	QFileInfo fileInfo(strPath);
+	QDir::setCurrent(fileInfo.path());
+	
+	QFile file(strPath);
+	if (file.size()>1000000)
+	{
+		QMessageBox::warning(this, "Error", "File is too big. Cannot open it as script.");
+		return;
+	}
+	file.open(QIODevice::ReadOnly);
+	QString contents = file.readAll();
+	file.close();
+
+	QScriptValue ret = m_Engine->evaluate(contents, strPath);
+
+	if (ret.isError())
+	{
+		QMessageBox::warning(this, tr("Error evaluating script"), tr("Line %0: %1")
+			.arg(ret.property("lineNumber").toInt32())
+			.arg(ret.toString()));
+	} 
 }
 
 void MainWindow::autoResizeWindow()
@@ -909,6 +965,7 @@ void MainWindow::OnTimer()
 	}
 
 	
+	
 }
 
 void MainWindow::stepVideo( int step )
@@ -1058,6 +1115,11 @@ void MainWindow::UpdateStatusMessage( const QString& msg )
 
 void MainWindow::contextMenuEvent( QContextMenuEvent *event )
 {
+	if (!m_AllowContextMenu)
+	{
+		return;
+	}
+
 	UpdateActiveVideoView();
 
 	if (m_VideoViewList->size()==0 || m_ActiveVideoView == NULL)
@@ -1274,4 +1336,41 @@ void MainWindow::on_action_Enable_Measures_triggered()
 	}
 
 	o->exec(1);
+}
+
+void MainWindow::closeAll()
+{
+	while (m_VideoViewList->size() > 0) 
+	{
+		closeFile(m_VideoViewList->last());
+	}
+}
+
+void MainWindow::closeFile(VideoView* vv)
+{
+	m_UpdateTimer->stop();
+
+	m_VideoViewList->CloseVideoView(vv);
+
+	m_UpdateTimer->start();
+}
+
+void MainWindow::enableContextMenu( bool b)
+{
+	m_AllowContextMenu = b;
+}
+
+void MainWindow::importExtension( QString strPath )
+{
+	if (!m_Engine)
+		return;
+
+	QScriptValue ret = m_Engine->importExtension(strPath);
+	if (ret.isError())
+	{
+		QMessageBox::warning(this, tr("Error importing extension"), tr("Line %0: %1")
+			.arg(ret.property("lineNumber").toInt32())
+			.arg(ret.toString()));
+	} 
+
 }

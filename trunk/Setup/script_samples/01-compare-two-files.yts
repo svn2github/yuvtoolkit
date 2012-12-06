@@ -1,0 +1,7 @@
+yt.openFiles([
+	'yuv/sample-01-320x200-15fps.yuv',
+	'yuv/sample-01-encoded-320x200-15fps.yuv'
+	]);
+	
+yt.setWindowTitle("Compare two files");
+yt.actionCompare.trigger();

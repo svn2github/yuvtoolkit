@@ -1,0 +1,7 @@
+filename = 'New TextFile.txt'
+file = new TextFile(filename, true);
+file.writeLine("Line 1");
+file.writeLine("Line 2");
+file.close();
+
+yt.infoMsg('Message', filename + ' was created!');

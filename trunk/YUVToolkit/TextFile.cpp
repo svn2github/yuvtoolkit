@@ -5,9 +5,14 @@ void TextFile::close()
 	QFile::close();
 }
 
-TextFile::TextFile( QString fileName ) : QFile(fileName)
+TextFile::TextFile( QString fileName, bool write ) : QFile(fileName)
 {
-	open(QIODevice::ReadOnly | QIODevice::Text);
+	if (write) {
+		open(QIODevice::WriteOnly | QIODevice::Text);
+	}else {
+		open(QIODevice::ReadOnly | QIODevice::Text);
+	}
+	
 
 	stream.setDevice(this);
 }
@@ -25,5 +30,11 @@ bool TextFile::atEnd()
 TextFile::~TextFile()
 {
 	close();
+}
+
+void TextFile::writeLine( QString str)
+{
+	stream<<str<<endl;
+	stream.flush();
 }
 

@@ -2,6 +2,10 @@
 #define RAWVIDEOTOOLKIT_H
 
 #include <QtGui>
+#include <Phonon/MediaSource>
+#include <Phonon/MediaObject>
+#include <Phonon/AudioOutput>
+
 // #include <QtScript>
 #include "ui_MainWindow.h"
 
@@ -16,7 +20,10 @@ class QClickableSlider;
 struct Graph_Stats;
 struct SourceInfo;
 class MeasureWindow;
+class ScoreWindow;
 class QDockWidget;
+class QScriptEngine;
+class QScriptEngineDebugger;
 
 class MainWindow : public QMainWindow
 {
@@ -38,14 +45,17 @@ signals:
 	
 public slots:
 	QList<VideoView*> openFiles(const QStringList& fileList);
+	void importExtension(QString strPath);
+	void closeAll();
+	void closeFile(VideoView* vv);
 	void infoMsg(QString title, QString msg);
 	VideoView* openFile(QString strPath);
 	void play(bool play);
 	void stepVideo(int step);
 
 	void seekVideoFromSlider(); // change to pts
+	void enableContextMenu(bool);
 protected:
-	void openScript(QString strPath, bool debug);
 	VideoView* openFileInternal(QString strPath);
 	void updateSelectionSlider();
 private:
@@ -66,7 +76,7 @@ public slots:
 private slots:
 	void OnTimer();
 	void OnRendererSelected();
-
+	void openScript(QString strPath, bool debug);
 	void on_action_Play_Pause_triggered(bool play);
 	
 	void on_action_New_Window_triggered();
@@ -121,6 +131,9 @@ private:
 	QActionGroup* m_ZoomGroup;
 	MeasureWindow* m_MeasureWindow;
 	QDockWidget* m_MeasureDockWidget;
+
+	ScoreWindow* m_ScoreWindow;
+	QDockWidget* m_ScoreDockWidget;
 	
 	int m_ZoomMode;
 	unsigned int m_LastSliderValue;
@@ -132,6 +145,13 @@ private:
 	static int windowCounter;
 	QList<QAction*> m_RendererList;
 	QString m_RenderType;
+
+	QList<Phonon::MediaObject*> m;
+	Phonon::AudioOutput a;
+	bool m_AllowContextMenu;
+
+	QScriptEngine* m_Engine;
+	QScriptEngineDebugger *m_Debugger;
 };
 
 #endif // RAWVIDEOTOOLKIT_H
