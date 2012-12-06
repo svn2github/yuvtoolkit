@@ -12,20 +12,20 @@ New in 0.0.3 build X
 * New Features
 
 - Support for *.rgb file extension
-- Support for custom time stamps using YTS script
-- Allow changing of video title using YTS script
-
-file = yt.openFile('480p/David-12-iSight-LowLight-640x480-15fps.yuv')
-file.setTitle("My custom title")
-ts = [0, 60, 100, 500, 1000]
-file.setTimeStamps(ts)
+- Many improvements in YTS script engine
+  - Support for custom time stamps using YTS script
+  - Allow changing of video title using YTS script
+  - Support for Javascript extension in YTS
+  - Experimental "subjective" extension for subjective testing
+  - Support for reading and writing text using YTS script
+  - Sample scripts included
 
 
 * Bug fixes
 
 - Fixed that no file option pops up when resolution is missing 
   from file name
-- Fixed that video stoppes playing after changing the resolution
+- Fixed that video stops playing after changing the resolution
 
 New in 0.0.2
 =================================================
