@@ -182,7 +182,7 @@ void MeasuresBasic::Process(FramePtr source1, FramePtr source2, YUV_PLANE plane,
 			}
 		}
 
-		if (weightSum>0)
+		if (opPsnr && weightSum>0)
 		{
 			float mse_min = qMax<float>(mseResults[i], 0.001f);
 			opPsnr->results[i] = 20.0*log10(255.0) - 10.0*log10(mse_min);
