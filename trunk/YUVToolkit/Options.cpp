@@ -69,7 +69,15 @@ Options::Options( QWidget *parent, Qt::WFlags flags ) : QDialog(parent, flags)
 		m_MeasureOptions.insert(m, o);
 	}
 
-	LoadMeasureOptions(NULL);
+	if (measures.size()>0)
+	{
+		QListWidgetItem* item = ui.measureList->item(0);
+		ui.measureList->setCurrentItem(item);
+		LoadMeasureOptions(item);
+	}else
+	{
+		LoadMeasureOptions(NULL);
+	}
 }
 
 Options::~Options()
