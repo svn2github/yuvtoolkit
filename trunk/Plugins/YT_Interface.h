@@ -30,6 +30,8 @@ enum COLOR_FORMAT {
 	// Conversion needed
 	YUY2   = 0x32595559,
 	UYVY   = 0x59565955,
+	YVYU   = 0x55595659,
+	YUYV   = 0x56595559,   // Same as YUY2
 	NV12   = 0x3231564E,
 	RGB24  = 24,
 	RGBX32 = 32,

@@ -24,9 +24,12 @@ PixelFormat YT2FFMpegFormat(COLOR_FORMAT format)
 	case YV12:
 		return PIX_FMT_YUV420P;
 	case YUY2:
+	case YUYV:
 		return PIX_FMT_YUYV422;
 	case UYVY:
 		return PIX_FMT_UYVY422;
+	case YVYU:
+		return PIX_FMT_YUYV422;
 	case NV12:
 		return PIX_FMT_NV12;
 	default:

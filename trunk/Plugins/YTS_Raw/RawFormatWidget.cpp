@@ -1,7 +1,7 @@
 #include "RawFormatWidget.h"
 #include "YTS_Raw.h"
 
-#define COLOR_COUNT 9
+#define COLOR_COUNT 10
 
 COLOR_FORMAT colors[COLOR_COUNT] = 
 {
@@ -9,6 +9,7 @@ COLOR_FORMAT colors[COLOR_COUNT] =
 	YV12,
 	YUY2,
 	UYVY,
+	YVYU,
 	NV12,
 	Y800,
 	RGB24,
@@ -20,8 +21,9 @@ QString color_names[COLOR_COUNT] =
 {
 	"I420/IYUV",
 	"YV12",
-	"YUY2",
+	"YUY2/YUYV",
 	"UYVY",
+	"YVYU",
 	"NV12",
 	"Gray Scale (8 bits)",
 	"RGB (24 bits)",

@@ -94,7 +94,7 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 		m_FPS = fps.toFloat();
 	}
 
-	rx.setPattern("I420|IYUV|RGB24|UYVY|YUY2|YVYU|YV12|NV12|GRAY8");
+	rx.setPattern("I420|IYUV|RGB24|UYVY|YUY2|YVYU|YUYV|YV12|NV12|GRAY8");
 	if (rx.indexIn(path) != -1)
 	{
 		QString fourcc(*(rx.capturedTexts().end()-1));
