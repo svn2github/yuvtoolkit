@@ -1,6 +1,6 @@
 Bugs
 ===================
-- Fix when changing the renderer video starts playing, even if it was paused before that
+- When paused, change of resolution doesn't always apply
 - parsing of file name doesn't work with CIF, QCIF, VGA, QVGA, QQVGA
 - On Mac, drag in two videos, open compare menu, select show distortion map, click on U or V, crash.
 - On Mac, drag in two videos, open compare menu, videos are now cropped to keep the same window width including both videos, compare toolbar, and distortion map.

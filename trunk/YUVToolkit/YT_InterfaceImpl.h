@@ -221,6 +221,7 @@ public:
 	PlaybackControl();
 
 	void GetStatus(Status* status);
+	void SetStatus(Status* status);
 	void Reset();
 
 	void Play(bool play);

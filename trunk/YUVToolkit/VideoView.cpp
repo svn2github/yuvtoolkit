@@ -40,7 +40,7 @@ void VideoView::Init( const char* path)
 	m_Type = PLUGIN_SOURCE;
 	m_SourceThread = new SourceThread(this, m_ViewID, m_Control, path);
 
-	connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(ResolutionDurationChanged()));
+	// connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(ResolutionDurationChanged()));
 	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
 	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
 
@@ -349,6 +349,8 @@ void VideoView::ResolutionDurationChanged()
 	if (m_SourceThread)
 	{
 		m_SourceThread->GetSource()->GetInfo(m_SourceInfo);
+
+		m_SourceThread->ResetSource();
 	}
 
 	PlaybackControl::Status status = {0};

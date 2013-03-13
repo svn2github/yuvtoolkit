@@ -38,6 +38,9 @@ public:
 	
 	void UpdateRenderLayout();
 
+	void DestroyRenderer();
+	void CreateRenderer();
+
 	unsigned int NewVideoViewId();
 	VideoView* NewVideoViewSource(const char* path);
 	VideoView* NewVideoViewCompare(QString measureName, unsigned int viewId, unsigned int orig, unsigned int processed);

@@ -28,19 +28,7 @@ VideoView* VideoViewList::NewVideoViewInternal( QString title, unsigned int view
 {
 	if (m_RenderWidget->GetRenderer() == NULL)
 	{
-		QSettings settings;
-		QString renderType = settings.SETTINGS_GET_RENDERER();
-		m_RenderWidget->Init(renderType);
-
-		m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), &m_Control);
-		
-		connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
-			m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
-		connect(m_RenderThread, SIGNAL(sceneRendered(FrameListPtr, unsigned int, bool)), 
-			this, SLOT(OnSceneRendered(FrameListPtr, unsigned int, bool)));
-
-		m_RenderThread->Start();
-		m_ProcessThread->Start();
+		CreateRenderer();
 	}
 
 	// m_RenderThread->Stop();
@@ -99,11 +87,8 @@ void VideoViewList::CloseVideoView( VideoView* vv)
 
 	if (m_VideoList.isEmpty())
 	{
-		SAFE_DELETE(m_RenderThread);
-		m_ProcessThread->Stop();
+		DestroyRenderer();
 
-		m_RenderWidget->UnInit();
-		m_RenderWidget->repaint();
 		m_Control.Reset();
 	}else
 	{
@@ -504,4 +489,35 @@ void VideoViewList::VideoFormatReset()
 			qSort(m_MergedTimeStamps.begin(), m_MergedTimeStamps.end());
 		}
 	}
+}
+
+void VideoViewList::CreateRenderer()
+{
+	QSettings settings;
+	QString renderType = settings.SETTINGS_GET_RENDERER();
+	m_RenderWidget->Init(renderType);
+
+	m_RenderThread = new RenderThread(m_RenderWidget->GetRenderer(), &m_Control);
+
+	connect(m_ProcessThread, SIGNAL(sceneReady(FrameListPtr, unsigned int, bool)), 
+		m_RenderThread, SLOT(RenderScene(FrameListPtr, unsigned int, bool)));
+	connect(m_RenderThread, SIGNAL(sceneRendered(FrameListPtr, unsigned int, bool)), 
+		this, SLOT(OnSceneRendered(FrameListPtr, unsigned int, bool)));
+
+	m_RenderThread->Start();
+	m_ProcessThread->Start();
+}
+
+void VideoViewList::DestroyRenderer()
+{
+	if (m_RenderThread->isRunning())
+	{
+		m_RenderThread->Stop();
+	}	
+
+	SAFE_DELETE(m_RenderThread);
+	m_ProcessThread->Stop();
+
+	m_RenderWidget->UnInit();
+	m_RenderWidget->repaint();
 }

@@ -1050,20 +1050,9 @@ void MainWindow::OnRendererSelected()
 	QAction *action = qobject_cast<QAction *>(sender());
 	if (action)
 	{
-		QStringList fileList;
-		for (int j=0; j<m_VideoViewList->size(); ++j)
+		if (m_VideoViewList->size()>0)
 		{
-			SourceThread* graph = m_VideoViewList->at(j)->GetSourceThread();
-			if (graph)
-			{
-				fileList.append(graph->GetSourcePath());
-			}
-		}
-
-		while (m_VideoViewList->size()>0)
-		{
-			VideoView* vv = m_VideoViewList->first();
-			m_VideoViewList->CloseVideoView(vv);
+			m_VideoViewList->DestroyRenderer();
 		}
 
 		m_RenderType = action->objectName();
@@ -1071,9 +1060,26 @@ void MainWindow::OnRendererSelected()
 		QSettings settings;
 		settings.SETTINGS_SET_RENDERER(m_RenderType);
 
-		openFiles(fileList);
+		if (m_VideoViewList->size()>0)
+		{
+			m_VideoViewList->CreateRenderer();
+			m_VideoViewList->OnUpdateRenderWidgetPosition();
 
-		UpdateActiveVideoView();
+			PlaybackControl::Status status;
+			m_VideoViewList->GetControl()->GetStatus(&status);
+			if (!status.isPlaying)
+			{
+				// need to force source to deliver a new frame to renderer
+				// m_VideoViewList->GetControl()->Play(true);
+
+				for (int i=0; i<m_VideoViewList->size(); i++)
+				{
+					VideoView* vv = m_VideoViewList->at(i);
+					vv->ResolutionDurationChanged();
+					// vv->GetSourceThread()->VideoFormatReset();
+				}
+			}
+		}
 	}
 }
 

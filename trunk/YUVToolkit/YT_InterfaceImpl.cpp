@@ -993,6 +993,15 @@ void PlaybackControl::GetStatus( Status* status )
 	*status = m_Status;
 }
 
+
+void PlaybackControl::SetStatus( Status* status )
+{
+	QMutexLocker locker(&m_Mutex);
+
+	m_Status = *status;
+}
+
+
 void PlaybackControl::OnFrameProcessed( unsigned int pts, unsigned int seekingPTS )
 {
 	QMutexLocker locker(&m_Mutex);

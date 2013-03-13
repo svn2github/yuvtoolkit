@@ -25,6 +25,7 @@ public:
 
 	void Start();
 	void Stop();
+	void ResetSource(); // restart thread to ensure that source generate new frame
 
 	Source* GetSource() {return m_Source;}
 	QString& GetSourcePath() {return m_Path;}
@@ -36,7 +37,7 @@ public slots:
 
 private slots:
 	void ReadFrames();
-	void VideoFormatReset();
+	// void VideoFormatReset();
 
 private:
 	void run();
@@ -48,7 +49,6 @@ private:
 	QString m_Path;
 	Source* m_Source;
 	volatile bool m_EndOfFile;
-	volatile bool m_VideoFormatReset;
 	
 	FramePtr m_FrameOrig;
 	FormatPtr m_FormatNew;
