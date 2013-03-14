@@ -40,15 +40,17 @@ void VideoView::Init( const char* path)
 	m_Type = PLUGIN_SOURCE;
 	m_SourceThread = new SourceThread(this, m_ViewID, m_Control, path);
 
-	// connect(this, SIGNAL(NeedVideoFormatReset()), m_SourceThread, SLOT(ResolutionDurationChanged()));
-	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
+	// connect(this, SIGNAL(ResolutionChanged()), m_SourceThread, SLOT(ResolutionDurationChanged()));
+	connect(this, SIGNAL(ResolutionChanged()), m_MainWindow, SLOT(OnAutoResizeWindow()));
+	connect(this, SIGNAL(SourceReset(unsigned int)), m_ProcessThread, SLOT(CleanFrameQueue(unsigned int)));
 	connect(m_SourceThread, SIGNAL(frameReady(FramePtr)), m_ProcessThread, SLOT(ReceiveFrame(FramePtr)));
+	connect(m_SourceThread, SIGNAL(sourceReset()), this, SLOT(OnSourceReset()));
 
 	UpdateMenu();
 	
 	
 	m_SourceThread->GetSource()->GetInfo(m_SourceInfo);
-	emit NeedVideoFormatReset();
+	emit ResolutionChanged();
 }
 
 void VideoView::Init( Transform* transform, VideoQueue* source, QString outputName )
@@ -58,7 +60,7 @@ void VideoView::Init( Transform* transform, VideoQueue* source, QString outputNa
 	// m_RefVideoQueue = source;
 	m_OutputName = outputName;
 
-	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
+	connect(this, SIGNAL(ResolutionChanged()), m_MainWindow, SLOT(OnAutoResizeWindow()));
 
 	UpdateMenu();
 }
@@ -67,7 +69,7 @@ void VideoView::Init(unsigned int source, unsigned int processed)
 {
 	m_Type = PLUGIN_MEASURE;
 
-	connect(this, SIGNAL(NeedVideoFormatReset()), m_MainWindow, SLOT(OnAutoResizeWindow()));
+	connect(this, SIGNAL(ResolutionChanged()), m_MainWindow, SLOT(OnAutoResizeWindow()));
 
 	UpdateMenu();
 }
@@ -353,12 +355,15 @@ void VideoView::ResolutionDurationChanged()
 		m_SourceThread->ResetSource();
 	}
 
-	PlaybackControl::Status status = {0};
+	// Clean source queue in process thread
+	// so source thread can read new frames
+	emit SourceReset(m_ViewID);
+
+	/*PlaybackControl::Status status = {0};
 	m_Control->GetStatus(&status);
+	m_Control->Seek(status.lastDisplayPTS);*/
 
-	m_Control->Seek(status.lastDisplayPTS);
-
-	emit NeedVideoFormatReset();
+	emit ResolutionChanged();
 }
 
 
@@ -446,6 +451,15 @@ void VideoView::SetLastFrame( FramePtr f )
 	{
 		*(m_SourceInfo.format) = *(f->Format());
 
-		emit NeedVideoFormatReset();
+		emit ResolutionChanged();
 	}
+}
+
+void VideoView::OnSourceReset()
+{
+	PlaybackControl::Status status = {0};
+	m_Control->GetStatus(&status);
+
+	// Force Process Thread to load the last frame in the queue
+	m_Control->Seek(status.lastDisplayPTS);
 }

@@ -32,6 +32,7 @@ public:
 
 signals:
 	void frameReady(FramePtr frame);
+	void sourceReset();
 
 public slots:
 
@@ -55,6 +56,8 @@ private:
 	FramePool* m_FramePool;
 	PlaybackControl* m_Control;
 	PlaybackControl::Status m_Status;
+
+	bool m_SourceReset;
 };
 
 #endif

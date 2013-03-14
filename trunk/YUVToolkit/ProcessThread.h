@@ -29,6 +29,7 @@ signals:
 	
 public slots:
 	void ReceiveFrame(FramePtr frame);
+	void CleanFrameQueue(unsigned int viewId);
 
 private slots:
 	void ProcessFrameQueue();

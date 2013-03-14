@@ -13,9 +13,6 @@ New in 0.0.3 build X
 
 - Support for *.rgb file extension
 - Added support for YUYV/YVYU formats
-- Stability improvements
-  - Crashes when playing 4:2:2 files
-  - Fix video restarts after changing the renderer 
 - Many improvements in YTS script engine
   - Support for custom time stamps using YTS script
   - Allow changing of video title using YTS script
@@ -27,9 +24,13 @@ New in 0.0.3 build X
 
 * Bug fixes
 
-- Fixed that no file option pops up when resolution is missing 
+- No file option pops up when resolution is missing 
   from file name
-- Fixed that video stops playing after changing the resolution
+- Video stops playing after changing the resolution
+- Crashes when playing 4:2:2 files
+- Video restarts after changing the renderer 
+- When paused, change of resolution doesn't always apply
+
 
 New in 0.0.2
 =================================================

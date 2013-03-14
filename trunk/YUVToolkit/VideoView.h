@@ -86,7 +86,8 @@ signals:
 	void Close(VideoView*);
 	void TransformTriggered(QAction*, VideoView*, TransformActionData*);
 
-	void NeedVideoFormatReset();
+	void ResolutionChanged(); // Change of resolution during playback
+	void SourceReset(unsigned int); // Change of resolution by user, so there might be multi frames of same PTS
 public slots:
 	void close();
 	int width();
@@ -97,6 +98,7 @@ public slots:
 
 	void OnTransformTriggered();
 	void OnDockFloating(bool);
+	void OnSourceReset();
 protected:
 	void RenderPlane(FramePtr, int plane);
 	void RepositionVideo(bool emitSignal=false);

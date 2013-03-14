@@ -199,7 +199,9 @@ void ProcessThread::ReceiveFrame( FramePtr frame )
 	{
 		m_SourceFrames.insert(viewID, FrameList());
 	}
-	m_SourceFrames[viewID].append(frame);
+
+	FrameList& frameList = m_SourceFrames[viewID];
+	frameList.append(frame);
 }
 
 bool ProcessThread::CleanAndCheckQueue(UintList& sourceViewIds)
@@ -251,8 +253,25 @@ FrameListPtr ProcessThread::FastSeekQueue( unsigned int pts, UintList sourceView
 				frameList.removeFirst();
 			}else
 			{
-				found = true;
-				scene->append(frame);
+				// Find if there are more frames of same PTS, it can happen when user change resolution or file format
+				int j = 0;
+				for (j=frameList.count()-1; j>=0; j--)
+				{
+					FramePtr frameJ = frameList.at(j);
+					if (frameJ->Info(SEEKING_PTS).toUInt() == pts)
+					{
+						found = true;
+						scene->append(frameJ);
+						break;
+					}
+				}
+
+				while (j>0)
+				{
+					frameList.removeFirst();
+					j--;
+				}				
+				
 				break;
 			}
 		}
@@ -492,4 +511,15 @@ void ProcessThread::ProcessOperations(FrameListPtr scene, YUV_PLANE plane,
 	}
 	operations.clear();
 	viewIds.clear();
+}
+
+void ProcessThread::CleanFrameQueue( unsigned int viewId )
+{
+	if (!m_SourceFrames.contains(viewId))
+	{
+		return;
+	}
+
+	FrameList& frameList = m_SourceFrames[viewId];
+	frameList.clear();
 }

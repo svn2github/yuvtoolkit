@@ -10,7 +10,7 @@
 
 SourceThread::SourceThread(SourceCallback* cb, int id, PlaybackControl* c, const char* p) :
 	m_ViewID(id), m_LastSeekingPTS(INVALID_PTS), m_Path(p),
-	m_Source(0), m_EndOfFile(false), m_FramePool(0), m_Control(c)
+	m_Source(0), m_EndOfFile(false), m_FramePool(0), m_Control(c), m_SourceReset(false)
 {
 	moveToThread(this);
 
@@ -77,23 +77,28 @@ void SourceThread::ReadFrames()
 		}
 
 		m_Control->GetStatus(&m_Status);
-		if (m_Status.seekingPTS != INVALID_PTS && m_Status.seekingPTS == m_LastSeekingPTS)
-		{
-			// Seeking done already
-			return;
-		}
 
-		if (!m_Status.isPlaying && m_LastSeekingPTS != INVALID_PTS && m_Status.seekingPTS == INVALID_PTS)
+		if (!m_SourceReset)
 		{
-			// Just finished seeking and then paused
-			return;
-		}
+			if (m_Status.seekingPTS != INVALID_PTS && m_Status.seekingPTS == m_LastSeekingPTS)
+			{
+				// Seeking done already
+				return;
+			}
 
-		if (m_EndOfFile && m_Status.seekingPTS == INVALID_PTS)
-		{
-			// Finished reading to end of file
-			return;
+			if (!m_Status.isPlaying && m_LastSeekingPTS != INVALID_PTS && m_Status.seekingPTS == INVALID_PTS)
+			{
+				// Just finished seeking and then paused
+				return;
+			}
+
+			if (m_EndOfFile && m_Status.seekingPTS == INVALID_PTS)
+			{
+				// Finished reading to end of file
+				return;
+			}
 		}
+		
 
 		SourceInfo info;
 		m_Source->GetInfo(info);
@@ -140,6 +145,12 @@ void SourceThread::ReadFrames()
 
 			m_LastSeekingPTS = m_Status.seekingPTS;
 			m_EndOfFile = false;
+
+			if (m_SourceReset)
+			{
+				m_SourceReset = false;
+				emit sourceReset();
+			}
 		}else
 		{
 			if (res == END_OF_FILE)
@@ -176,6 +187,5 @@ void SourceThread::EnsureFrameFormat( FramePtr frame, FormatPtr format )
 
 void SourceThread::ResetSource()
 {
-	m_EndOfFile = false;
-	m_LastSeekingPTS = INVALID_PTS;
+	m_SourceReset = true;
 }

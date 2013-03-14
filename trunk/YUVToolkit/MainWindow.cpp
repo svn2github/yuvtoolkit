@@ -1075,10 +1075,15 @@ void MainWindow::OnRendererSelected()
 				for (int i=0; i<m_VideoViewList->size(); i++)
 				{
 					VideoView* vv = m_VideoViewList->at(i);
-					vv->ResolutionDurationChanged();
-					// vv->GetSourceThread()->VideoFormatReset();
+					vv->GetSourceThread()->ResetSource();
 				}
+
+				PlaybackControl::Status status = {0};
+				m_VideoViewList->GetControl()->GetStatus(&status);
+
+				m_VideoViewList->GetControl()->Seek(status.lastDisplayPTS);
 			}
+
 		}
 	}
 }
