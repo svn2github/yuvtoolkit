@@ -68,6 +68,11 @@ void FormatImpl::SetColor( COLOR_FORMAT value )
 	case RGB24:
 	case RGBX32:
 	case XRGB32:
+	case BGR24:
+	case BGRX32:
+	case XBGR32:
+	case RGB565:
+	case BGR565:
 		break;
 	}
 }
@@ -152,15 +157,18 @@ size_t FormatImpl::PlaneSize( int plane )
 			case UYVY:
 			case YVYU:
 			case YUYV:
+			case RGB565:
+			case BGR565:
 				stride[0] = width*2;
 				break;
 			case RGB24:
+			case BGR24:
 				stride[0] = width*3;
 				break;
 			case XRGB32:
-				stride[0] = width*4;
-				break;
 			case RGBX32:
+			case BGRX32:
+			case XBGR32:
 				stride[0] = width*4;
 				break;
 			case Y800:
@@ -193,6 +201,11 @@ size_t FormatImpl::PlaneSize( int plane )
 		case RGB24:
 		case RGBX32:
 		case XRGB32:
+		case BGR24:
+		case BGRX32:
+		case XBGR32:
+		case RGB565:
+		case BGR565:
 		case YUY2:
 		case UYVY:
 		case YVYU:
@@ -258,47 +271,8 @@ Format& FormatImpl::operator=( Format &f )
 	return *this;
 }
 
-bool FormatImpl::IsPlanar( int plane )
-{
-	switch(color)
-	{
-	case I444:
-	case I422:
-	case YV16:
-	case YV24:
-	case I420:
-	case IYUV:
-	case YV12:
-		return plane<=2;
-	case NV12:
-	case Y800:
-		return plane<=0;
-	case YUY2:
-	case UYVY:
-	case YVYU:
-	case YUYV:
-		return false;
-	default:
-		return false;
-	}
-}
-
-const char* FormatImpl::PlaneName( int plane )
-{
-	if (!IsPlanar(plane))
-	{
-		return NULL;
-	}
-	return name[plane];
-}
-
 int FormatImpl::PlaneWidth( int plane )
 {
-	if (!IsPlanar(plane))
-	{
-		return 0;
-	}
-
 	switch(color)
 	{
 	case Y800:
@@ -332,11 +306,6 @@ int FormatImpl::PlaneWidth( int plane )
 
 int FormatImpl::PlaneHeight( int plane )
 {
-	if (!IsPlanar(plane))
-	{
-		return 0;
-	}
-
 	switch(color)
 	{
 	case Y800:
@@ -986,8 +955,7 @@ void PlaybackControl::ShowPlane( YUV_PLANE p )
 	WARNING_LOG("Show plane %d", p);
 }
 
-void PlaybackControl::GetStatus( Status* status )
-{
+void PlaybackControl::GetStatus( Status* status ){
 	QMutexLocker locker(&m_Mutex);
 
 	*status = m_Status;

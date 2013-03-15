@@ -39,8 +39,6 @@ public:
 	virtual int* Stride() const;
 
 	virtual size_t PlaneSize(int plane);
-	virtual bool IsPlanar(int plane);
-	virtual const char* PlaneName(int plane);
 	virtual int PlaneWidth(int plane);
 	virtual int PlaneHeight(int plane);
 

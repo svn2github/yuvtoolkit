@@ -94,7 +94,8 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 		m_FPS = fps.toFloat();
 	}
 
-	rx.setPattern("I420|IYUV|RGB24|UYVY|YUY2|YVYU|YUYV|YV12|NV12|GRAY8");
+	rx.setPattern("I420|IYUV|UYVY|YUY2|YVYU|YUYV|YV12|NV12|Y800|RGB24|BGR24|RGBX32|XRGB32|BGRX32|XBGR32|RGBA32|ARGB32|BGRA32|ABGR32|RGB565|BGR565|GRAY8");
+		
 	if (rx.indexIn(path) != -1)
 	{
 		QString fourcc(*(rx.capturedTexts().end()-1));
@@ -102,6 +103,30 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 		if (fourcc == "RGB24")
 		{
 			m_Format->SetColor(RGB24);
+		}else if (fourcc == "BGR24")
+		{
+			m_Format->SetColor(BGR24);
+		}else if (fourcc == "BGR24")
+		{
+			m_Format->SetColor(BGR24);
+		}else if (fourcc == "RGBX32" || fourcc == "RGBA32")
+		{
+			m_Format->SetColor(RGBX32);
+		}else if (fourcc == "XRGB32" || fourcc == "ARGB32")
+		{
+			m_Format->SetColor(XRGB32);
+		}else if (fourcc == "BGRX32" || fourcc == "BGRA32")
+		{
+			m_Format->SetColor(BGRX32);
+		}else if (fourcc == "XBGR32" || fourcc == "ABGR32")
+		{
+			m_Format->SetColor(XBGR32);
+		}else if (fourcc == "RGB565")
+		{
+			m_Format->SetColor(RGB565);
+		}else if (fourcc == "BGR565")
+		{
+			m_Format->SetColor(BGR565);
 		}else if (fourcc == "GRAY8")
 		{
 			m_Format->SetColor(Y800);

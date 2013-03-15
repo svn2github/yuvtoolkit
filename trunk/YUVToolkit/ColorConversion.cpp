@@ -156,6 +156,11 @@ bool IsFormatSupported( unsigned int fourcc )
 	case RGB24:
 	case RGBX32:
 	case XRGB32:
+	case BGR24:
+	case BGRX32:
+	case XBGR32:
+	case RGB565:
+	case BGR565:
 		return true;
 	}
 	return false;
@@ -179,6 +184,11 @@ COLOR_FORMAT GetNativeFormat( unsigned int fourcc )
 	case RGB24:
 	case RGBX32:
 	case XRGB32:
+	case BGR24:
+	case BGRX32:
+	case XBGR32:
+	case RGB565:
+	case BGR565:
 		return I444;
 	}
 	return I420;

@@ -34,8 +34,13 @@ enum COLOR_FORMAT {
 	YUYV   = 0x56595559,   // Same as YUY2
 	NV12   = 0x3231564E,
 	RGB24  = 24,
+	BGR24  = 241,
 	RGBX32 = 32,
 	XRGB32 = 321,
+	BGRX32 = 322,
+	XBGR32 = 323,	
+	RGB565 = 16,
+	BGR565 = 161,
 };
 
 enum INFO_KEY {
@@ -83,8 +88,6 @@ public:
 
 	// Get the data length of each plane
 	virtual size_t PlaneSize(int plane) = 0;
-	virtual bool IsPlanar(int plane) = 0;
-	virtual const char* PlaneName(int plane) = 0;
 	virtual int PlaneWidth(int plane) = 0;
 	virtual int PlaneHeight(int plane) = 0;
 

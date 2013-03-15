@@ -13,6 +13,16 @@ PixelFormat YT2FFMpegFormat(COLOR_FORMAT format)
 		return PIX_FMT_RGB32;
 	case Y800:
 		return PIX_FMT_GRAY8;
+	case BGR24:
+		return PIX_FMT_BGR24;
+	case BGRX32:
+		return PIX_FMT_BGR32_1;
+	case XBGR32:
+		return PIX_FMT_BGR32;
+	case RGB565:
+		return PIX_FMT_RGB565;
+	case BGR565:
+		return PIX_FMT_BGR565;
 	case I444:
 	case YV24:
 		return PIX_FMT_YUV444P;
@@ -61,6 +71,16 @@ COLOR_FORMAT FFMpeg2YTFormat(PixelFormat ffmpeg_format)
 		return UYVY;
 	case PIX_FMT_NV12:
 		return NV12;
+	case PIX_FMT_BGR24:
+		return BGR24;
+	case PIX_FMT_BGR32_1:
+		return BGRX32;
+	case PIX_FMT_BGR32:
+		return XBGR32;
+	case PIX_FMT_RGB565:
+		return RGB565;
+	case PIX_FMT_BGR565:
+		return BGR565;
 	default:
 		return NODATA;
 	}

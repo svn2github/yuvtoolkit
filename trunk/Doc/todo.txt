@@ -7,6 +7,7 @@ Bugs
 - Workaround for Apply button only 50% shown in VideoSourceOption dialog, due to QT bug: https://bugreports.qt.nokia.com/browse/QTBUG-17877
 - when playing 480x360 under win8, picture seems to be pixelated, like downsampled and upsampled again
 - given this path C:\XXXX\640x360\XXX_1280x720_30fps2.yuv player opens video in 640x360 resolution, ie parses it from folder, not from file name
+- files >2Gb not working
 
 
 0.0.3
