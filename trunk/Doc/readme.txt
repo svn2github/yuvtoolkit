@@ -32,6 +32,7 @@ New in 0.0.3 build X
 - Crashes when playing 4:2:2 files
 - Video restarts after changing the renderer 
 - When paused, change of resolution doesn't always apply
+- Files >2Gb not working
 
 New in 0.0.2
 =================================================

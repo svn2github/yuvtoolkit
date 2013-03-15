@@ -67,7 +67,7 @@ private:
 	QList<unsigned int> m_TimeStamps; // custom time stamps
 	int             m_InsertFrame0; // first timestamp is not zero, insert frame 0
 
-	FILE* m_File;
+	QSharedPointer<QFile> m_File;
 
 	FormatPtr m_Format;
 	QString m_Path;

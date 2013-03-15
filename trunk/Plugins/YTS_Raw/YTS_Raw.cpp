@@ -63,7 +63,7 @@ void RawPlugin::ReleaseSource( Source* source)
 
 
 YTS_Raw::YTS_Raw() : m_FPS(30), m_FrameIndex(0), m_InsertFrame0(0),
-	m_NumFrames(0), m_Duration(0), m_File(0), m_RawFormatWidget(0), m_Callback(0)
+	m_NumFrames(0), m_Duration(0), m_RawFormatWidget(0), m_Callback(0)
 {
 }
 
@@ -232,7 +232,8 @@ void YTS_Raw::InitInternal()
 		m_Duration = IndexToPTS(m_NumFrames);
 	}
 
-	m_File = fopen(m_Path.toAscii(), "rb");
+	m_File = QSharedPointer<QFile>(new QFile(m_Path));
+	m_File->open(QIODevice::ReadOnly);
 	m_FrameIndex = 0;
 }
 
@@ -255,7 +256,10 @@ RESULT YTS_Raw::GetInfo( SourceInfo& info )
 
 RESULT YTS_Raw::UnInit()
 {
-	fclose(m_File);
+	if (m_File)
+	{
+		m_File->close();
+	}
 
 	return OK;
 }
@@ -263,6 +267,11 @@ RESULT YTS_Raw::UnInit()
 RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 {
 	QMutexLocker locker(&m_Mutex);
+
+	if (!m_File)
+	{
+		return E_UNKNOWN;
+	}
 
 	if (seekingPTS < INVALID_PTS)
 	{
@@ -281,23 +290,24 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 	frame->SetFormat(m_Format);
 	frame->Allocate();
 
-	int file_status = 0;
+	bool file_status = true;
 	if (m_FrameIndex>0 || !m_InsertFrame0)
 	{
-		unsigned int frameIdx = m_FrameIndex - m_InsertFrame0;
+		qint64 frameIdx = m_FrameIndex - m_InsertFrame0;
+		qint64 readPos =  frame_size*frameIdx; 
 		
-		if (ftell(m_File) != (int) (frame_size * frameIdx))
+		if (m_File->pos() != readPos)
 		{
-			file_status = fseek(m_File, frame_size*frameIdx, SEEK_SET);
+			file_status = m_File->seek(readPos);
 		}
 
-		for (int i=0; i<4 && file_status == 0; i++)
+		for (int i=0; i<4 && file_status; i++)
 		{
 			unsigned int plane_size = m_Format->PlaneSize(i);
 
 			if (plane_size>0)
 			{
-				file_status = (fread(frame->Data(i), 1, plane_size, m_File ) == plane_size)? 0 : -1;
+				file_status = m_File->read((char*)frame->Data(i), plane_size) == plane_size;
 			}
 		}
 	}else
@@ -314,7 +324,7 @@ RESULT YTS_Raw::GetFrame( FramePtr frame, unsigned int seekingPTS )
 	}
 
 	
-	if (file_status == 0)
+	if (file_status)
 	{
 		unsigned int pts = IndexToPTS(m_FrameIndex);
 		frame->SetPTS(pts);
