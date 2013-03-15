@@ -20,6 +20,7 @@ New in 0.0.3 build X
   - Experimental "subjective" extension for subjective testing
   - Support for reading and writing text using YTS script
   - Sample scripts included
+- File name parsing is based on the last matching string in file path
 
 
 * Bug fixes
@@ -30,7 +31,6 @@ New in 0.0.3 build X
 - Crashes when playing 4:2:2 files
 - Video restarts after changing the renderer 
 - When paused, change of resolution doesn't always apply
-
 
 New in 0.0.2
 =================================================

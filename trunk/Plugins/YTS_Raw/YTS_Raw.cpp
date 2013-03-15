@@ -67,6 +67,7 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 	QString ext = path.right(4);
 
 	bool unknownResolution = true;
+	int pos = 0;
 	m_Format->SetWidth(640);
 	m_Format->SetHeight(480);
 	m_Format->SetColor(I420);
@@ -74,12 +75,14 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 
 	// Parse resolution
 	QRegExp rx;
-	rx.setCaseSensitivity(Qt::CaseInsensitive);
-	
+	rx.setCaseSensitivity(Qt::CaseInsensitive);	
 	rx.setPattern("(\\d\\d+)(X)(\\d\\d+)");
-	if (rx.indexIn(path) != -1)
+	
+	pos = 0;
+	while ((pos = rx.indexIn(path, pos)) !=-1) 
 	{
-		// QStringList lst = (*(rx.capturedTexts().end()-1)).split("X");
+		pos += rx.matchedLength();
+
 		m_Format->SetWidth(rx.cap(1).toInt());
 		m_Format->SetHeight(rx.cap(3).toInt());
 
@@ -88,16 +91,22 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 
 	// match 30Hz 30FPS
 	rx.setPattern("([0-9]+)(\\.[0-9]+){0,1}(HZ|FPS)");
-	if (rx.indexIn(path) != -1)
+	pos = 0;
+	while ((pos = rx.indexIn(path, pos)) !=-1) 
 	{
+		pos += rx.matchedLength();
+
 		QString fps = rx.cap(1)+rx.cap(2);
 		m_FPS = fps.toFloat();
 	}
 
 	rx.setPattern("I420|IYUV|UYVY|YUY2|YVYU|YUYV|YV12|NV12|Y800|RGB24|BGR24|RGBX32|XRGB32|BGRX32|XBGR32|RGBA32|ARGB32|BGRA32|ABGR32|RGB565|BGR565|GRAY8");
-		
-	if (rx.indexIn(path) != -1)
+	
+	pos = 0;
+	while ((pos = rx.indexIn(path, pos)) !=-1)
 	{
+		pos += rx.matchedLength();
+
 		QString fourcc(*(rx.capturedTexts().end()-1));
 		fourcc = fourcc.toUpper();
 		if (fourcc == "RGB24")
