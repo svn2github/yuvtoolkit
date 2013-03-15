@@ -1,11 +1,9 @@
 Bugs
 ===================
-- parsing of file name doesn't work with CIF, QCIF, VGA, QVGA, QQVGA
 - On Mac, drag in two videos, open compare menu, select show distortion map, click on U or V, crash.
 - On Mac, drag in two videos, open compare menu, videos are now cropped to keep the same window width including both videos, compare toolbar, and distortion map.
 - Crash when wrong stride is used
 - Workaround for Apply button only 50% shown in VideoSourceOption dialog, due to QT bug: https://bugreports.qt.nokia.com/browse/QTBUG-17877
-- when playing 480x360 under win8, picture seems to be pixelated, like downsampled and upsampled again
 - files >2Gb not working
 
 

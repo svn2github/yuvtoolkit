@@ -21,6 +21,10 @@ public:
 	virtual void ReleaseSource(Source*);
 };
 
+
+#define RESOLUTION_COUNT 13
+extern QString resolution_names[RESOLUTION_COUNT];
+
 class YTS_Raw : public QObject, public Source
 {
 	Q_OBJECT;

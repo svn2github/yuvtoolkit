@@ -21,6 +21,7 @@ New in 0.0.3 build X
   - Support for reading and writing text using YTS script
   - Sample scripts included
 - File name parsing is based on the last matching string in file path
+- File name parsing now supports CIF, QCIF, VGA, QVGA, QQVGA, 1080P etc
 
 
 * Bug fixes

@@ -5,6 +5,24 @@
 #include <math.h>
 #include <assert.h>
 
+QString resolution_names[RESOLUTION_COUNT] = 
+{
+	"QQVGA   (160 x 120)",
+	"QCIF    (176 x 144)",
+	"QVGA    (320 x 240)",
+	"CIF     (352 x 288)",
+	"VGA     (640 x 480)",	
+	"480P    (720 x 480)",
+	"4CIF    (704 x 576)",
+	"576P    (720 x 576)", 
+	"720P   (1280 x 720)",
+	"1080P  (1920 x 1080)",
+	"2160P  (3840 x 2160)",
+	"4320P  (7680 x 4320)",
+	"8640P (15360 x 8640)",
+};
+
+
 Q_EXPORT_PLUGIN2(YTS_Raw, RawPlugin)
 
 #ifndef MyMin
@@ -87,6 +105,40 @@ RESULT YTS_Raw::Init(SourceCallback* callback, const QString& path)
 		m_Format->SetHeight(rx.cap(3).toInt());
 
 		unknownResolution = false;
+	}
+
+	if (unknownResolution)
+	{
+		// Parse resolution in text
+		QStringList resolutionList;
+		QList<int> widthList;
+		QList<int> heightList;
+		for (int i=0; i<RESOLUTION_COUNT; i++)
+		{
+			rx.setPattern("([0-9a-zA-Z]+) +\\(([0-9]+) x ([0-9]+)\\)");
+			if (rx.indexIn(resolution_names[i]) != -1)
+			{
+				resolutionList.append(rx.cap(1).toUpper());
+				widthList.append(rx.cap(2).toInt());
+				heightList.append(rx.cap(3).toInt());
+			}			
+		}
+
+		rx.setPattern("(" + resolutionList.join("|") + ")");
+		pos = 0;
+		while ((pos = rx.indexIn(path, pos)) !=-1) 
+		{
+			pos += rx.matchedLength();
+
+			int j = resolutionList.indexOf(rx.cap(1).toUpper());
+			int w = widthList.at(j);
+			int h = heightList.at(j);
+
+			m_Format->SetWidth(w);
+			m_Format->SetHeight(h);
+
+			unknownResolution = false;
+		}
 	}
 
 	// match 30Hz 30FPS
