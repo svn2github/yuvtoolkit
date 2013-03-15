@@ -11,8 +11,10 @@ New in 0.0.3 build X
 =================================================
 * New Features
 
-- Support for *.rgb file extension
-- Added support for YUYV/YVYU formats
+- Added support for more formats: YUYV, YVYU, BGR (24 and 32 bits) and RGB565
+- File name parsing improvements
+  - based on the last matching string in file path
+  - supports CIF, QCIF, VGA, QVGA, QQVGA, 1080P etc
 - Many improvements in YTS script engine
   - Support for custom time stamps using YTS script
   - Allow changing of video title using YTS script
@@ -20,16 +22,14 @@ New in 0.0.3 build X
   - Experimental "subjective" extension for subjective testing
   - Support for reading and writing text using YTS script
   - Sample scripts included
-- File name parsing is based on the last matching string in file path
-- File name parsing now supports CIF, QCIF, VGA, QVGA, QQVGA, 1080P etc
-
+- Support for *.rgb file extension
 
 * Bug fixes
 
-- No file option pops up when resolution is missing 
-  from file name
+- No file option pops up when resolution is missing from file name
 - Video stops playing after changing the resolution
-- Crashes when playing 4:2:2 files
+- Crash when playing 4:2:2 files
+- Crash when displaying distortion map with MSE only
 - Video restarts after changing the renderer 
 - When paused, change of resolution doesn't always apply
 - Files >2Gb not working
