@@ -52,6 +52,8 @@ void FormatImpl::SetColor( COLOR_FORMAT value )
 		strcpy(name[2], "U");
 		break;
 	case NV12:
+	case IMC2:
+	case IMC4:
 		strcpy(name[0], "Y");
 		strcpy(name[1], "UV");
 		break;
@@ -150,6 +152,8 @@ size_t FormatImpl::PlaneSize( int plane )
 				stride[2] = width/2;
 				break;
 			case NV12:
+			case IMC2:
+			case IMC4:
 				stride[0] = width;
 				stride[1] = width;
 				break;
@@ -192,9 +196,13 @@ size_t FormatImpl::PlaneSize( int plane )
 		case I420:
 		case IYUV:
 		case YV12:
-		case NV12:
 			vstride[1] = height/2;
 			vstride[2] = height/2;
+			break;
+		case NV12:
+		case IMC2:
+		case IMC4:
+			vstride[1] = height/2;
 			break;
 		case NODATA:
 		case Y800:
@@ -292,6 +300,8 @@ int FormatImpl::PlaneWidth( int plane )
 	case IYUV:
 	case YV12:
 	case NV12:
+	case IMC2:
+	case IMC4:
 		if (plane == 0)
 		{
 			return width;
@@ -325,6 +335,8 @@ int FormatImpl::PlaneHeight( int plane )
 	case IYUV:
 	case YV12:
 	case NV12:
+	case IMC2:
+	case IMC4:
 		if (plane == 0)
 		{
 			return height;
@@ -454,9 +466,11 @@ RESULT FrameImpl::Allocate()
 	{
 		while (((unsigned long)d) & (DEFAULT_ALIGNMENT-1))
 			d ++;
-		data[i] = d;
-
-		d += format->PlaneSize(i);
+		if (format->PlaneSize(i)>0)
+		{
+			data[i] = d;
+			d += format->PlaneSize(i);
+		}
 	}
 
 	return OK;

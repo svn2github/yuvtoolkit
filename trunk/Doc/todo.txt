@@ -1,5 +1,6 @@
 Bugs
 ===================
+- Show distortion map, change renderer leads to crash
 - On Mac, drag in two videos, open compare menu, select show distortion map, click on U or V, crash.
 - On Mac, drag in two videos, open compare menu, videos are now cropped to keep the same window width including both videos, compare toolbar, and distortion map.
 - Crash when wrong stride is used

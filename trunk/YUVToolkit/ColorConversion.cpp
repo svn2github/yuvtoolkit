@@ -68,11 +68,17 @@ void ColorConversion(const Frame& in, Frame& out)
 	COLOR_FORMAT color_in  = format_in->Color();
 	COLOR_FORMAT color_out = format_out->Color();
 
-	
-	PrepareCC(color_in, data_in);
-	PrepareCC(color_out, data_out);
-
-	if (color_in == YVYU)
+	if (color_in == IMC2)
+	{
+		color_in = YV12;
+		data_in[2] = data_in[1]+format_in->Width()/2;
+		step_in[2] = step_in[1];
+	}else if (color_in == IMC4)
+	{
+		color_in = I420;
+		data_in[2] = data_in[1]+format_in->Width()/2;
+		step_in[2] = step_in[1];
+	}else if (color_in == YVYU)
 	{
 		// Special case since ffmpeg converter doesn't have this by default
 		// Swap chroma plans
@@ -81,6 +87,11 @@ void ColorConversion(const Frame& in, Frame& out)
 		data_out[2] = data_out[3];
 		data_out[3] = 0;
 	}
+
+	PrepareCC(color_in, data_in);
+	PrepareCC(color_out, data_out);
+
+	
 
 	bool ok = false;
 	if (!ok)
@@ -146,6 +157,8 @@ bool IsFormatSupported( unsigned int fourcc )
 	case I444:
 	case IYUV:
 	case YV12:
+	case IMC2:
+	case IMC4:
 	case YV16:
 	case YV24:
 	case YUY2:
@@ -179,6 +192,8 @@ COLOR_FORMAT GetNativeFormat( unsigned int fourcc )
 	case YV12:
 	case NV12:
 	case IYUV:
+	case IMC2:
+	case IMC4:
 		return I420;
 	case YV24:
 	case RGB24:

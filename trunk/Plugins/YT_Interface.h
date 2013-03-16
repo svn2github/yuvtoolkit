@@ -27,6 +27,8 @@ enum COLOR_FORMAT {
 	YV12   = 0x32315659,   // Planar 420, U,V flipped
 	YV16   = 0x36315659,   // Planar 422, U,V flipped	
 	YV24   = 0x34325659,   // Planar 444, U,V flipped
+	IMC2   = 0x32434D49,
+	IMC4   = 0x34434D49,
 	// Conversion needed
 	YUY2   = 0x32595559,
 	UYVY   = 0x59565955,

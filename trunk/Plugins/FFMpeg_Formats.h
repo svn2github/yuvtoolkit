@@ -32,6 +32,8 @@ PixelFormat YT2FFMpegFormat(COLOR_FORMAT format)
 	case I420:
 	case IYUV:
 	case YV12:
+	case IMC2:
+	case IMC4:
 		return PIX_FMT_YUV420P;
 	case YUY2:
 	case YUYV:
