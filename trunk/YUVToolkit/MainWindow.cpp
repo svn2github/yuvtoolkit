@@ -1075,7 +1075,10 @@ void MainWindow::OnRendererSelected()
 				for (int i=0; i<m_VideoViewList->size(); i++)
 				{
 					VideoView* vv = m_VideoViewList->at(i);
-					vv->GetSourceThread()->ResetSource();
+					if (vv->GetSourceThread())
+					{
+						vv->GetSourceThread()->ResetSource();
+					}
 				}
 
 				PlaybackControl::Status status = {0};
