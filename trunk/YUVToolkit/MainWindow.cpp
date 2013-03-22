@@ -1401,3 +1401,29 @@ void MainWindow::importExtension( QString strPath )
 	} 
 
 }
+
+QVariant MainWindow::getSetting( QString s)
+{
+	QSettings settings;
+	if (settings.contains(s))
+	{
+		return settings.value(s, NULL);
+	}else
+	{
+		return QVariant();
+	}
+	
+}
+
+void MainWindow::setSetting( QString s, QVariant v)
+{
+	QSettings settings;
+
+	if (v.isNull())
+	{
+		settings.remove(s);
+	}else
+	{
+		settings.setValue(s, v);
+	}
+}

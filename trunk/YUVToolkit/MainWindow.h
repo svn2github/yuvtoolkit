@@ -55,6 +55,9 @@ public slots:
 
 	void seekVideoFromSlider(); // change to pts
 	void enableContextMenu(bool);
+
+	QVariant getSetting(QString);
+	void setSetting(QString, QVariant);
 protected:
 	VideoView* openFileInternal(QString strPath);
 	void updateSelectionSlider();
