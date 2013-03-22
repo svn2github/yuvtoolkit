@@ -112,6 +112,8 @@ void ProcessThread::ProcessFrameQueue()
 			{
 				if (m_IsLastFrame)
 				{
+					emit lastFrameDisplayed();
+
 					QSettings settings;
 					if (settings.SETTINGS_GET_PLAYBACK_LOOP())
 					{
@@ -122,6 +124,9 @@ void ProcessThread::ProcessFrameQueue()
 						{
 							m_Control->Seek(0);
 						}
+					}else
+					{
+						m_Control->PlayPause();
 					}
 				}
 				return;

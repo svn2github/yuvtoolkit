@@ -42,6 +42,7 @@ public:
 
 signals:
 	void activeVideoViewChanged(VideoView*);
+	void lastFrameDisplayed();
 	
 public slots:
 	QList<VideoView*> openFiles(const QStringList& fileList);
@@ -51,6 +52,7 @@ public slots:
 	void infoMsg(QString title, QString msg);
 	VideoView* openFile(QString strPath);
 	void play(bool play);
+	void seek(int pts);
 	void stepVideo(int step);
 
 	void seekVideoFromSlider(); // change to pts
@@ -81,6 +83,7 @@ private slots:
 	void OnRendererSelected();
 	void openScript(QString strPath, bool debug);
 	void on_action_Play_Pause_triggered(bool play);
+	void OnLastFrameDisplayed();
 	
 	void on_action_New_Window_triggered();
 	void on_action_Open_triggered();

@@ -26,6 +26,7 @@ public:
 signals:
 	// Signals that one scene is ready for render
 	void sceneReady(FrameListPtr scene, unsigned int pts, bool seeking);
+	void lastFrameDisplayed();
 	
 public slots:
 	void ReceiveFrame(FramePtr frame);

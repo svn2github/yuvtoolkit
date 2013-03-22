@@ -1,0 +1,27 @@
+v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv')
+
+// Get settings
+oldPlaybackLoop = yt.getSetting("main/playbackloop");
+yt.setSetting("main/playbackloop", false);
+
+playback_control = function () {
+	this.counter = 0;
+	this.lastFrameDisplayed = function() {
+		this.counter ++;
+		if (this.counter == 1) {
+			yt.infoMsg('', 'Play again');
+			yt.seek(0);
+			yt.play(true);
+		}else {
+			yt.infoMsg('', 'Close');
+			
+			yt.closeAll();
+			
+			// Restore settings
+			yt.setSetting("main/playbackloop", oldPlaybackLoop);
+		}
+	};
+};
+
+playback = new playback_control()
+yt.lastFrameDisplayed.connect(playback, "lastFrameDisplayed");

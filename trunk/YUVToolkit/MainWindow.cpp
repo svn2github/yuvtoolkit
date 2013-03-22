@@ -195,6 +195,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_MeasureDockWidget->setWidget(m_MeasureWindow);
 	addDockWidget(Qt::LeftDockWidgetArea, m_MeasureDockWidget);
 	connect(m_VideoViewList, SIGNAL(VideoViewSourceListChanged()), m_MeasureWindow, SLOT(OnVideoViewSourceListChanged()));
+	connect(m_VideoViewList->GetProcessThread(), SIGNAL(lastFrameDisplayed()), this, SLOT(OnLastFrameDisplayed()));
 	connect(ui.action_Distortion_Map, SIGNAL(toggled(bool)), m_MeasureWindow, SLOT(OnShowDistortionMap(bool)));
 	
 	bool showDistMap = settings.SETTINGS_GET_SHOW_DIST_MAP();
@@ -1426,4 +1427,14 @@ void MainWindow::setSetting( QString s, QVariant v)
 	{
 		settings.setValue(s, v);
 	}
+}
+
+void MainWindow::OnLastFrameDisplayed()
+{
+	emit lastFrameDisplayed();
+}
+
+void MainWindow::seek( int pts )
+{
+	m_VideoViewList->GetControl()->Seek(pts);
 }
