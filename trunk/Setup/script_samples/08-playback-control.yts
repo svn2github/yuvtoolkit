@@ -1,4 +1,4 @@
-v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv')
+v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv');
 
 // Get settings
 oldPlaybackLoop = yt.getSetting("main/playbackloop");

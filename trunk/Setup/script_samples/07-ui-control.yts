@@ -1,12 +1,4 @@
-v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv')
-
-// Get settings
-oldPlaybackLoop = yt.getSetting("main/playbackloop");
-yt.setSetting("main/playbackloop", false);
-
-// Restore settings
-// Should be done after playback
-// yt.setSetting("main/playbackloop", oldPlaybackLoop);
+v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv');
 
 // 
 yt.actionZoom100.trigger();
