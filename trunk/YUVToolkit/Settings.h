@@ -32,4 +32,6 @@
 #define SETTINGS_GET_AUTO_RESIZE()     value("main/autoresize", true).toBool()
 #define SETTINGS_SET_AUTO_RESIZE(v)    setValue("main/autoresize", v)
 
+#define SETTINGS_GET_PLAYBACK_LOOP()   value("main/playbackloop", true).toBool()
+#define SETTINGS_SET_PLAYBACK_LOOP(v)  setValue("main/playbackloop", v)
 #endif

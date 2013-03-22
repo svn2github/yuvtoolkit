@@ -1,6 +1,7 @@
 #include <assert.h>
 #include "ProcessThread.h"
 #include "ColorMap.h"
+#include "Settings.h"
 
 ProcessThread::ProcessThread(PlaybackControl* c) : m_Control(c), m_IsLastFrame(false), m_DistMapFramePool(NULL)
 {
@@ -111,12 +112,16 @@ void ProcessThread::ProcessFrameQueue()
 			{
 				if (m_IsLastFrame)
 				{
-					if (status.selectionFrom != INVALID_PTS)
+					QSettings settings;
+					if (settings.SETTINGS_GET_PLAYBACK_LOOP())
 					{
-						m_Control->Seek(status.selectionFrom);
-					}else
-					{
-						m_Control->Seek(0);
+						if (status.selectionFrom != INVALID_PTS)
+						{
+							m_Control->Seek(status.selectionFrom);
+						}else
+						{
+							m_Control->Seek(0);
+						}
 					}
 				}
 				return;

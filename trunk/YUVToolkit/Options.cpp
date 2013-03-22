@@ -40,6 +40,7 @@ Options::Options( QWidget *parent, Qt::WFlags flags ) : QDialog(parent, flags)
 
 	QSettings settings;
 	ui.check_Auto_Resize->setChecked(settings.SETTINGS_GET_AUTO_RESIZE());
+	ui.check_Playback_Loop->setChecked(settings.SETTINGS_GET_PLAYBACK_LOOP());
 
 	QStringList enabledMeasures = settings.SETTINGS_GET_MEASURES();
 	QStringList distMaps = settings.SETTINGS_GET_DIST_MAP();
@@ -110,6 +111,7 @@ void Options::OnAccepted()
 	SET_SETTING(AUTO_RESIZE, ui.check_Auto_Resize->isChecked());
 	SET_SETTING(MEASURES, measureList);
 	SET_SETTING(DIST_MAP, distMapList);
+	SET_SETTING(PLAYBACK_LOOP, ui.check_Playback_Loop->isChecked());
 
 	emit OptionChanged();
 }
