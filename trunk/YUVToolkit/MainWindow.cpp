@@ -79,15 +79,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	// ui.action_Step_Forward->setEnabled(true);
 	// connect(ui.action_Step_Forward, SIGNAL(clicked()), m_Slider, SLOT(setSingleStep(1)));
 
+	m_RenderSpeedLabel = new QLabel(this);
+	ui.statusBar->addPermanentWidget(m_RenderSpeedLabel);
 	m_TimeLabel1 = new QLabel(this);
 	ui.statusBar->addPermanentWidget(m_TimeLabel1);
 	m_TimeLabel2 = new QLabel(this);
 	ui.statusBar->addPermanentWidget(m_TimeLabel2);
 	m_ZoomLabel = new QLabel(this);
 	ui.statusBar->addPermanentWidget(m_ZoomLabel);
-	m_RenderSpeedLabel = new QLabel(this);
-	ui.statusBar->addPermanentWidget(m_RenderSpeedLabel);
-
+	
 	QSettings settings;
 	m_RenderType = settings.SETTINGS_GET_RENDERER();
 
@@ -893,6 +893,14 @@ void MainWindow::OnTimer()
 	UpdateActiveVideoView();
 	VideoView* active = m_ActiveVideoView;
 	OnUpdateSlider(tsLst.last(), status.lastProcessPTS);
+
+	if (!active)
+	{
+		if (m_VideoViewList->size()==1)
+		{
+			active = m_VideoViewList->at(0);
+		}
+	}
 
 	QString str;
 	if (active)
