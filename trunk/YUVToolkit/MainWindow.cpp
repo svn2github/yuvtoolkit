@@ -655,6 +655,11 @@ void MainWindow::openScript( QString strPath, bool debug )
 	scriptMainWindow.setProperty("actionV", m_Engine->newQObject(ui.action_V));
 	scriptMainWindow.setProperty("actionColor", m_Engine->newQObject(ui.action_Color));
 
+	scriptMainWindow.setProperty("mainToolbar", m_Engine->newQObject(ui.mainToolBar));
+	scriptMainWindow.setProperty("playbackToolbar", m_Engine->newQObject(ui.playbackToolBar));
+	scriptMainWindow.setProperty("statusBar", m_Engine->newQObject(ui.statusBar));
+	scriptMainWindow.setProperty("menuBar", m_Engine->newQObject(ui.menuBar));
+
 	// Register VideoView type
 	qScriptRegisterMetaType(m_Engine, VideoViewToScriptValue, VideoViewFromScriptValue);
 	qScriptRegisterSequenceMetaType<QList<VideoView*> >(m_Engine);

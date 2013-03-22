@@ -1,0 +1,37 @@
+v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv')
+
+yt.actionZoom100.trigger();
+yt.enableContextMenu(false);
+
+// Disable playback controls
+yt.actionClose.setEnabled(false);
+yt.actionScore.setEnabled(false);
+yt.actionCompare.setEnabled(false);
+yt.actionOptions.setEnabled(false);
+yt.actionClose.setEnabled(false);
+
+yt.actionPlayPause.setEnabled(false);
+yt.actionStepBack.setEnabled(false);
+yt.actionStepBackFast.setEnabled(false);
+yt.actionStepForward.setEnabled(false);
+yt.actionStepForwardFast.setEnabled(false);
+
+yt.actionSeekBeginning.setEnabled(false);
+yt.actionSeekEnd.setEnabled(false);
+
+yt.actionZoom100.setEnabled(false);
+yt.actionZoom200.setEnabled(false);
+yt.actionZoom400.setEnabled(false);
+yt.actionZoom50.setEnabled(false);
+yt.actionZoomFit.setEnabled(false);
+
+yt.actionY.setEnabled(false);
+yt.actionU.setEnabled(false);
+yt.actionV.setEnabled(false);
+yt.actionColor.setEnabled(false);
+
+yt.menuBar.hide();
+yt.mainToolbar.hide();
+yt.playbackToolbar.hide();
+yt.statusBar.hide();
+
