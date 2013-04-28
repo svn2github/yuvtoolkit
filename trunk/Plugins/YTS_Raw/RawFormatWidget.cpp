@@ -35,14 +35,14 @@ QString color_names[COLOR_COUNT] =
 	"IMC2",
 	"IMC4",
 	"Gray Scale (8 bits)",
-	"RGB (24 bits)",
-	"GBR (24 bits)",
-	"RGBX (32 bits)",
-	"XRGB (32 bits)",
-	"BGRX (32 bits)",
-	"XBGR (32 bits)",
-	"RGB565 (16 bits)",
-	"BGR565 (16 bits)",
+	"RGB (24 bits Little Endian) ",
+	"BGR (24 bits Little Endian)",
+	"RGBX (32 bits Little Endian)",
+	"XRGB (32 bits Little Endian)",
+	"BGRX (32 bits Little Endian)",
+	"XBGR (32 bits Little Endian)",
+	"RGB565 (16 bits Little Endian)",
+	"BGR565 (16 bits Little Endian)",
 };
 
 

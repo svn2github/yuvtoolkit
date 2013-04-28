@@ -6,7 +6,7 @@ PixelFormat YT2FFMpegFormat(COLOR_FORMAT format)
 	switch (format)
 	{
 	case RGB24:
-		return PIX_FMT_RGB24;
+		return PIX_FMT_BGR24; // On little endian machines, #00RRGGBB is stored as #BBGGRR since B is least significant number
 	case RGBX32:
 		return PIX_FMT_RGB32_1;
 	case XRGB32:
@@ -14,7 +14,7 @@ PixelFormat YT2FFMpegFormat(COLOR_FORMAT format)
 	case Y800:
 		return PIX_FMT_GRAY8;
 	case BGR24:
-		return PIX_FMT_BGR24;
+		return PIX_FMT_RGB24;
 	case BGRX32:
 		return PIX_FMT_BGR32_1;
 	case XBGR32:
@@ -54,7 +54,7 @@ COLOR_FORMAT FFMpeg2YTFormat(PixelFormat ffmpeg_format)
 	switch (ffmpeg_format)
 	{
 	case PIX_FMT_RGB24:
-		return RGB24;
+		return BGR24;
 	case PIX_FMT_RGB32_1:
 		return RGBX32;
 	case PIX_FMT_RGB32:
@@ -74,7 +74,7 @@ COLOR_FORMAT FFMpeg2YTFormat(PixelFormat ffmpeg_format)
 	case PIX_FMT_NV12:
 		return NV12;
 	case PIX_FMT_BGR24:
-		return BGR24;
+		return RGB24;
 	case PIX_FMT_BGR32_1:
 		return BGRX32;
 	case PIX_FMT_BGR32:
