@@ -1,0 +1,11 @@
+yt.importExtension("paircomparison_slider");
+
+videoList = [
+	['yuv/sample-01-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv'], 
+	['yuv/sample-01-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv'],
+	['yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-320x200-15fps.yuv'],
+	['yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-320x200-15fps.yuv'], 
+];
+
+test = new paircomparison_slider.test()
+test.start(videoList);

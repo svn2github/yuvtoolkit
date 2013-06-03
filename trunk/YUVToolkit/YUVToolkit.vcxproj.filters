@@ -208,6 +208,18 @@
     <ClCompile Include="GeneratedFiles\Template\moc_ScoreWindow.cpp">
       <Filter>Generated Files\Template</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_NameInput.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_NameInput.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Template\moc_NameInput.cpp">
+      <Filter>Generated Files\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="NameInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorConversion.h">
@@ -232,6 +244,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_ScoreWindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_NameInput.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -301,7 +316,13 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ScoreWindow.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="NameInput.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="NameInput.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

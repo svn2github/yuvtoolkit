@@ -24,6 +24,7 @@ class ScoreWindow;
 class QDockWidget;
 class QScriptEngine;
 class QScriptEngineDebugger;
+class NameInput;
 
 class MainWindow : public QMainWindow
 {
@@ -60,6 +61,8 @@ public slots:
 
 	QVariant getSetting(QString);
 	void setSetting(QString, QVariant);
+	void PopNameInputWindow();
+	QString getNameInputUserName();
 protected:
 	VideoView* openFileInternal(QString strPath);
 	void updateSelectionSlider();
@@ -140,13 +143,13 @@ private:
 
 	ScoreWindow* m_ScoreWindow;
 	QDockWidget* m_ScoreDockWidget;
+	NameInput* m_NameInput;
 	
 	int m_ZoomMode;
 	unsigned int m_LastSliderValue;
 	bool m_IsPlaying;
 	QTimer* m_UpdateTimer;
 	QTime m_StepTime;
-
 
 	static int windowCounter;
 	QList<QAction*> m_RendererList;
@@ -158,6 +161,7 @@ private:
 
 	QScriptEngine* m_Engine;
 	QScriptEngineDebugger *m_Debugger;
+
 };
 
 #endif // RAWVIDEOTOOLKIT_H

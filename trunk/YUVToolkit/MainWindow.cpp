@@ -13,6 +13,7 @@
 #include "Options.h"
 #include "Settings.h"
 #include "TextFile.h"
+#include "NameInput.h"
 
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
@@ -49,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	setMinimumHeight(MINIMUM_HEIGHT);
 	setCentralWidget(ui.rendererWidget);
 	setAcceptDrops(TRUE);
+
+	m_NameInput = new NameInput;
 
 	m_Slider = new QClickableSlider(ui.playbackToolBar);
 	m_Slider->setMinimumSize(32, 10);
@@ -1437,4 +1440,14 @@ void MainWindow::OnLastFrameDisplayed()
 void MainWindow::seek( int pts )
 {
 	m_VideoViewList->GetControl()->Seek(pts);
+}
+
+void MainWindow::PopNameInputWindow()
+{
+	m_NameInput->exec();
+}
+
+QString MainWindow::getNameInputUserName()
+{
+	return m_NameInput->getUserName();
 }
