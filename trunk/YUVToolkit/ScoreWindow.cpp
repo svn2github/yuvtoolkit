@@ -90,6 +90,58 @@ void ScoreWindow::createSlider(int num,int min, int max, QString name, QString s
 	ui.widget_score->show();
 }
 
+void ScoreWindow::createSliderandButton(int num,int min, int max, QString name, QString scale)
+{
+	SliderNameList = name.split(',');
+	ScaleNameList = scale.split(',');
+
+	QGridLayout *box = new QGridLayout;
+	SliderList = (QSlider **) malloc (num * sizeof (QSlider));
+	label_cur_selected_list = (QLabel **) malloc (num * sizeof(QLabel));
+	NumOfConditions = num;
+	box->setAlignment(Qt::AlignHCenter);
+	QSignalMapper *sigmapper = new QSignalMapper(this);
+	for (int i=0;i<num;i++)
+	{
+		QWidget *scale_widget = new QWidget;
+		QVBoxLayout *scale_box = new QVBoxLayout;
+		QPushButton *scale_button = new QPushButton;
+		scale_button->setText(QString("%1").arg(i));
+		connect(scale_button,SIGNAL(clicked()),sigmapper,SLOT(map()));
+		sigmapper->setMapping(scale_button,i);
+		connect(sigmapper,SIGNAL(mapped(int)),this,SLOT(playVideo(int)));
+		for (int j=0;j<ScaleNameList.size();j++)
+		{
+			QLabel* label_cur = new QLabel(ScaleNameList[j]);
+			scale_box->addWidget(label_cur);
+		}
+		scale_widget->setLayout(scale_box);
+		QLabel* label_cur = new QLabel("Not_rated");
+		QSlider* slider= new QSlider();
+		slider->setObjectName(SliderNameList[i]);
+		slider->setRange(min, max);
+		slider->setTickPosition(QSlider::TicksRight);
+		slider->setTickInterval((max-min)/ScaleNameList.size());
+		box->addWidget(scale_button,0,i*2);
+		box->addWidget(label_cur,1,i*2);
+		box->addWidget(slider,2,i*2);
+		box->addWidget(scale_widget,2,i*2+1);
+		connect(slider,SIGNAL(valueChanged(int)),label_cur,SLOT(setNum(int)));
+		connect(slider,SIGNAL(valueChanged(int)),this,SLOT(updateCurSlider()));
+		SliderList[i] = slider;
+		label_cur_selected_list[i] = label_cur;
+	};
+	ui.widget_score->setLayout(box);
+	ui.widget_score->show();
+}
+
+void ScoreWindow::playVideo(int i)
+{
+	//QMessageBox::information( this, "Information", VideoListInCurrentScene[i]);
+	emit playVideoInMainWindow(VideoListInCurrentScene[i]);
+	enableSlider(i);
+}
+
 void ScoreWindow::updateCurSelect()
 {
 	for (int i=0; i < NumOfConditions; i++)
@@ -129,13 +181,19 @@ void ScoreWindow::initButton()
 	label_cur_selected->setText("Not_rated");
 }
 
-void ScoreWindow::initSlider()
+void ScoreWindow::initSlider(bool slider_status)
 {
 	for (int i=0; i < NumOfConditions; i++)
 		{
 			SliderList[i]->setValue(0);
+			SliderList[i]->setDisabled(slider_status);
 			label_cur_selected_list[i]->setText("Not_rated");
 	}
+}
+
+void ScoreWindow::enableSlider(int i)
+{
+	SliderList[i]->setDisabled(false);
 }
 
 QString ScoreWindow::getCurSliderResults(const QStringList& fileList)
@@ -252,4 +310,10 @@ QVariant ScoreWindow::shuffleList(QVariant origin, bool shuffle_scene, bool shuf
 	}
 
 	return QVariant(output);	
+}
+
+
+void ScoreWindow::SetVideoListInCurrentScene(QStringList cur)
+{
+	VideoListInCurrentScene = cur;
 }

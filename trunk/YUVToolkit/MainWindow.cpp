@@ -218,7 +218,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 
 	m_ScoreWindow = new ScoreWindow(m_ScoreDockWidget);
 	m_ScoreDockWidget->setWidget(m_ScoreWindow);
+	connect(m_ScoreWindow,SIGNAL(playVideoInMainWindow(QString)),this,SLOT(openFile(QString)));
 	addDockWidget(Qt::BottomDockWidgetArea, m_ScoreDockWidget);
+
 
 	EnableButtons(0);
 }

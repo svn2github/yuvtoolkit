@@ -24,25 +24,28 @@ public slots:
 	void enableButtons(bool, bool, bool);
 	void createButton(int num, QString name);
 	void createSlider(int num,int min, int max, QString name, QString scale);
+	void createSliderandButton(int num,int min, int max, QString name, QString scale);
 	void updateCurSelect();
 	void updateCurSlider();
 	void initButton();
-	void initSlider();
+	void initSlider(bool slider_status = false);
+	void enableSlider(int i);
 	QString getCurButtonResults(const QStringList& fileList);
 	QString getCurSliderResults(const QStringList& fileList);
 	void openResultsFile(QString fname, int mode);
 	void writeResultsFile(QString results);
 	void closeResultsFile();
 	void changeButtonName(QString a, QString b, QString c);
-#ifdef SHUFFLE  
-	void regMetaType();
-#endif
+	void playVideo(int i);
+	void SetVideoListInCurrentScene(QStringList cur);
 	QVariant shuffleList(QVariant origin, bool shuffle_scene, bool shuffle_vide, bool keep_ref);
 
 signals:
 	void onNext();
 	void onPrevious();
 	void onFinish();
+	void playVideoInMainWindow(QString filename);
+
 private:
 	Ui::ScoreWindow ui;
 	QStringList ButtonNameList;
@@ -54,7 +57,8 @@ private:
 	QSlider** SliderList;
 	int NumOfConditions;
 	QFile * FileHandle;
-	QScriptEngine engine;
+	QStringList VideoListInCurrentScene;
+	QString currentVideo;
 };
 
 #endif // ScoreWindow_H

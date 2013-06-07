@@ -1,0 +1,11 @@
+yt.importExtension("SAMVIQ");
+
+videoList = [
+	['yuv/sample-01-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv'], 
+	['yuv/sample-01-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv'], 
+  ['yuv/sample-01-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv'], 
+  ['yuv/sample-01-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv','yuv/sample-01-encoded-320x200-15fps.yuv'], 
+];
+
+test = new SAMVIQ.test()
+test.start(videoList);
