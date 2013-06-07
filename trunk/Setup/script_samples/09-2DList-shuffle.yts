@@ -1,0 +1,35 @@
+videoList = [
+	['1','2','3','4'], 
+	['a','b','c','d'],
+	['I','II','III','IV'],
+	['one','two','three','four'],
+	['ref','video-1','video-2','video-3']
+];
+
+//shuffleList(QVariant origin, bool shuffle_scene, bool shuffle_vide, bool keep_ref);
+yt.infoMsg("example 1","Randomize only the video inside each scene, and keep the first one as ref");
+shuffled_videolist = yt.scoreWindow.shuffleList(videoList, false, true, true); 
+len = shuffled_videolist.length;
+for (i=0; i<len; i++)
+{
+yt.infoMsg(i, shuffled_videolist[i]);
+}
+yt.infoMsg('', shuffled_videolist);
+
+yt.infoMsg("example 2","Randomize only the scene order");
+shuffled_videolist = yt.scoreWindow.shuffleList(videoList, true, false, false); 
+len = shuffled_videolist.length;
+for (i=0; i<len; i++)
+{
+yt.infoMsg(i, shuffled_videolist[i]);
+}
+yt.infoMsg('', shuffled_videolist);
+
+yt.infoMsg("example 2","Randomize both the scene order and video inside each scene, but keep the ref");
+shuffled_videolist = yt.scoreWindow.shuffleList(videoList, true, true, true); 
+len = shuffled_videolist.length;
+for (i=0; i<len; i++)
+{
+yt.infoMsg(i, shuffled_videolist[i]);
+}
+yt.infoMsg('', shuffled_videolist);
