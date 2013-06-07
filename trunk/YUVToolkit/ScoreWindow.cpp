@@ -208,54 +208,48 @@ void ScoreWindow::closeResultsFile()
 	FileHandle->close();
 }
 
-#ifdef SHUFFLE
-
-void objFromScriptValue(const QScriptValue& obj, SceneVideo& s)
+QVariant ScoreWindow::shuffleList(QVariant origin, bool shuffle_scene, bool shuffle_video, bool keep_ref)
 {
-	int len = obj.property("length").toInteger(); 
-	for(int i =0; i< len; i ++)
+	std::srand(std::time(0));
+	QList<QVariant> videoList = origin.toList();
+	int size = videoList.size();
+	QList<QStringList> c_videoList;
+
+	for(int i=0; i<size; i++)
 	{
-		QStringList ql = obj.property(i).toVariant().toStringList();
-		s.append(ql);
+		QStringList temp = videoList[i].toStringList();
+		c_videoList.append(temp);
 	}
-}
-
-QScriptValue ScriptValueFromobj(QScriptEngine* eng, const SceneVideo& s)
-{
-	QScriptValue a = eng->newObject();
-	int len=s.size();
-	a.setProperty("length",len);
-	for(int i=0; i< len; i ++)
-	{
-		QScriptValue temp;
-		int len_s = s[i].size();
-		temp.setProperty("length",len_s);
-		for(int j=0; j< len_s; j ++)
-		{
-			temp.setProperty(quint32(j), s[i][j]);
-		}
-		a.setProperty(quint32(i),temp);
-	}
-	return a;
-}
-
-void ScoreWindow::regMetaType()
-{
-	qScriptRegisterMetaType<SceneVideo>(&engine, ScriptValueFromobj,objFromScriptValue);
-}
-
-void ScoreWindow::shuffleList(SceneVideo origin, bool shuffle_scene, bool shuffle_video)
-{
+	
 	if (shuffle_scene == true)
-		std::random_shuffle(origin.begin(),origin.end());
+		std::random_shuffle(c_videoList.begin(),c_videoList.end());
 	if (shuffle_video == true)
 		{
-			int len = origin.size();
+			int len = origin.toList().size();
 			for (int i = 0; i< len; i++)
 			{
-				std::random_shuffle(origin[i].begin(),origin[i].end());
+				if (keep_ref == true)
+				{
+					int video_size = c_videoList[i].size();
+					QStringList temp;
+					for (int j = 1; j < video_size; j++)
+						temp.append(c_videoList[i][j]);
+					std::random_shuffle(temp.begin(),temp.end());
+					for (int j = 1; j < video_size; j++)
+						c_videoList[i][j] = temp[j-1];
+				}
+				else
+					std::random_shuffle(c_videoList[i].begin(),c_videoList[i].end());
 			}
 	}
-	return origin;	
+
+	QList<QVariant> output;
+	
+	for(int i=0; i<size; i++)
+	{
+		QVariant temp(c_videoList[i]);
+		output.append(temp);
+	}
+
+	return QVariant(output);	
 }
-#endif

@@ -8,14 +8,9 @@
 #include <algorithm>    // std::random_shuffle
 #include <QScriptEngine>
 #include <QScriptValue>
-
-#ifdef SHUFFLE 
-class SceneVideo : public QList<QStringList> {
-}; // work around because typedefs do not register correctly.
-
-Q_DECLARE_METATYPE(SceneVideo);
-
-#endif
+#include <QVariant>
+#include <cstdlib>
+#include <ctime>
 
 
 class ScoreWindow : public QWidget
@@ -40,9 +35,9 @@ public slots:
 	void closeResultsFile();
 	void changeButtonName(QString a, QString b, QString c);
 #ifdef SHUFFLE  
-	SceneVideo shuffleList(SceneVideo origin, bool shuffle_scene, bool shuffle_vide);
 	void regMetaType();
 #endif
+	QVariant shuffleList(QVariant origin, bool shuffle_scene, bool shuffle_vide, bool keep_ref);
 
 signals:
 	void onNext();

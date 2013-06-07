@@ -1,35 +1,8 @@
 __setupPackage__("ss");
 
 ss.test = function () {
-    this.myRandom = function(){
-        //To be implemented
-        return 0;
-    };
-    this.randomShuffle = function(orig, chang, List){
-        var temp = List[orig];
-        List[orig] = List[chang];
-        List[chang] = temp;
-        return List;
-    };
-    this.randomizeList = function(ListScenes, lastFixedVideo){
-		var last = lastFixedVideo || 0;
-        len_test = ListScenes.length;
-        len_scene = ListScenes[0].length;
-        for (var i = len_test - 1; i > 0; i--) {
-            //Randomize scene order
-            var j = Math.floor(Math.random() * (i + 1));            
-            ListScenes = this.randomShuffle(i, j, ListScenes);
-            for (var k = len_scene - 1; k > last; k--){
-                //Randomize video order. If lastFixedVideo != 0, only randomize videos between lastFixedVideo and end.
-                var p = Math.max(Math.floor(Math.random() * (k + 1)), last+1);
-                ListScenes[i] = this.randomShuffle(k, p, ListScenes[i]);
-            }
-        }
-        return ListScenes;
-    };
-    
 	this.start = function(InputList) {
-		this.videoList = this.randomizeList(InputList);
+		this.videoList = yt.scoreWindow.shuffleList(InputList, true, false, false);
 		this.current = -1;
 		
 		yt.PopNameInputWindow();
