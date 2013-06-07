@@ -6,15 +6,23 @@
 
 #include <assert.h>
 
+#define SUBJECTIVETEST 0
+
 void RendererWidget::paintEvent( QPaintEvent* )
 {
 	if (m_Renderer)
 	{
+
 	}else
 	{
 		QRect rcClient = this->rect();
 
 		QPainter painter(this);
+
+#if SUBJECTIVETEST
+		painter.setBrush(Qt::darkGray);
+		painter.drawRect(rcClient);
+#else
 		painter.setBrush(Qt::black);
 		painter.drawRect(rcClient);
 
@@ -23,6 +31,7 @@ void RendererWidget::paintEvent( QPaintEvent* )
 		pt.setY((rcClient.height()-m_Background.height())/2);
 
 		painter.drawImage(pt, m_Background);
+#endif
 /*
 		if (m_RenderWindow)
 		{

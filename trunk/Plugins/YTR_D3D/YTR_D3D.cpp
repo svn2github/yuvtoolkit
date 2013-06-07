@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #define RENDER_FREQ	60
+#define SUBJECTIVETEST 0 
 
 Q_EXPORT_PLUGIN2(YTR_D3D, YTR_D3DPlugin)
 
@@ -89,8 +90,13 @@ RESULT YTR_D3D::RenderScene(const FrameList& frames)
 	}
 
 	HRESULT hr = S_OK;
+#if SUBJECTIVETEST
 	hr = d3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,
-		D3DCOLOR_XRGB(0,0,0), 1.0f, 0 );
+		D3DCOLOR_XRGB(128,128,128), 1.0f, 0 );
+#else
+	hr = d3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,
+	D3DCOLOR_XRGB(0,0,0), 1.0f, 0 );
+#endif
 	assert(SUCCEEDED(hr));
 
 	IDirect3DSurface9* pRT = 0;
