@@ -3,10 +3,10 @@
 #include "SourceThread.h"
 #include "YT_InterfaceImpl.h"
 #include "Layout.h"
+#include "BuildControl.h"
 
 #include <assert.h>
 
-#define SUBJECTIVETEST 0
 
 void RendererWidget::paintEvent( QPaintEvent* )
 {

@@ -249,6 +249,9 @@
     <ClInclude Include="GeneratedFiles\ui_NameInput.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="BuildControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="YUVToolkit.ico" />

@@ -1,8 +1,8 @@
 #include "YTR_D3D.h"
 #include <assert.h>
+#include "..\..\YUVToolkit\BuildControl.h"
 
-#define RENDER_FREQ	60
-#define SUBJECTIVETEST 0 
+#define RENDER_FREQ	60 
 
 Q_EXPORT_PLUGIN2(YTR_D3D, YTR_D3DPlugin)
 

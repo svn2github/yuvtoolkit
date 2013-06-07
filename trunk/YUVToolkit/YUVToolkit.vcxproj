@@ -322,6 +322,7 @@ REM copy /y "$(VCInstallDir)\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.ma
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Plugins\YT_Interface.h" />
+    <ClInclude Include="BuildControl.h" />
     <ClInclude Include="ColorMap.h" />
     <ClInclude Include="GeneratedFiles\ui_NameInput.h" />
     <ClInclude Include="GeneratedFiles\ui_Options.h" />

@@ -1,7 +1,11 @@
 #include "YT_GLRenderer.h"
 #include <assert.h>
+#include "..\..\YUVToolkit\BuildControl.h"
 
 #define RENDER_FREQ	60
+
+
+
 
 Q_EXPORT_PLUGIN2(OpenGLRenderer, OpenGLRendererPlugin)
 
@@ -75,8 +79,11 @@ RESULT OpenGLRenderer::RenderScene(const FrameList& frames)
 			glDisable(GL_DEPTH_TEST);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
-
+#if SUBJECTIVETEST
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);      // Background => dark gray
+#else
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);     // Background => dark blue
+#endif
 		for (int i=0; i<frames.size(); ++i) 
 		{
 			FramePtr frame = frames.at(i);
