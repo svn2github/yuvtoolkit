@@ -1,14 +1,14 @@
-__setupPackage__("SAMVIQ");
+__setupPackage__("SSCQE");
 
-SAMVIQ.test = function () {
+SSCQE.test = function () {
 	this.start = function(InputList) {
 		this.videoList = yt.scoreWindow.shuffleList(InputList, true, false, false);
 		this.current = -1;
 		
 		yt.PopNameInputWindow();
 		this.username = yt.getNameInputUserName();
-		this.resultfilename = this.username + "_SAMVIQ_result.txt";
-		
+		this.resultfilename = this.username + "_SSCQE_result.txt";
+		yt.enableSubjectiveTest(true);
 		yt.actionClose.setEnabled(false);
 		yt.enableContextMenu(false);
 		yt.actionScore.trigger();
@@ -16,7 +16,7 @@ SAMVIQ.test = function () {
 		yt.playbackToolBar.setDisabled(true);
 		yt.menuBar.setDisabled(true);
 		yt.mainToolBar.setDisabled(true);
-		yt.statusBar.hide();
+		//yt.statusBar.hide();
 		yt.showMaximized();
 		yt.setSetting("main/playbackloop", false);
 		
@@ -36,10 +36,9 @@ SAMVIQ.test = function () {
 		yt.scoreWindow.onFinish.connect(this, "finish");
 		
 		//enable rate Button, set number and their names
+		yt.scoreWindow.createSlider(1,0,100,"left,right","Excellent,good,fair,poor,bad");
+		//yt.scoreWindow.enableRestrictMouse(true);
 		//enable rate scale, set scale range and level names
-		yt.scoreWindow.SetVideoListInCurrentScene(this.videoList[0]);
-		videoNumPerScene = this.videoList[0].length;
-		yt.scoreWindow.createSliderandButton(videoNumPerScene,0,100,"ref,video1,video2,video3","Excellent,good,fair,poor,bad");
 		
 		this.nextVideo();
 	};
@@ -51,7 +50,7 @@ SAMVIQ.test = function () {
 		
 		line = yt.scoreWindow.getCurSliderResults(this.videoList[this.current]);
 		yt.scoreWindow.openResultsFile(this.resultfilename, 2);
-		yt.scoreWindow.writeResultsFile(line);
+		yt.scoreWindow.writeSSCQEResultsFile();
 		yt.scoreWindow.closeResultsFile();
 		
 		yt.actionScore.trigger();
@@ -64,22 +63,20 @@ SAMVIQ.test = function () {
 	};
 	
 	this.openVideo = function() {
-		yt.scoreWindow.SetVideoListInCurrentScene(this.videoList[this.current]);
-		yt.scoreWindow.initSlider(true);
+		yt.scoreWindow.initSlider();
+		yt.scoreWindow.setCurrentVideo(this.videoList[this.current][0]);
 		yt.scoreWindow.enableButtons(true, false, this.current==this.videoList.length-1);
-		yt.openFile(this.videoList[this.current][0]);
+		yt.openFiles(this.videoList[this.current]);
 		yt.setWindowTitle("Video " + (this.current+1) + " of " + this.videoList.length);
 	};
 	
 	this.nextVideo = function() {
 		if (this.current==0)
 		{
-			line = yt.scoreWindow.getCurSliderResults(this.videoList[this.current]);
 			yt.scoreWindow.openResultsFile(this.resultfilename, 0);
-			yt.scoreWindow.writeResultsFile(line);
+			yt.scoreWindow.writeSSCQEResultsFile();
 			yt.scoreWindow.closeResultsFile();
 		}
-		
 		if (this.current==this.videoList.length-1) 
 		{
 			yt.infoMsg('Message','Already the last video! Please press the Finish Button');
@@ -91,7 +88,7 @@ SAMVIQ.test = function () {
 		{
 			line = yt.scoreWindow.getCurSliderResults(this.videoList[this.current]);
 			yt.scoreWindow.openResultsFile(this.resultfilename, 2);
-			yt.scoreWindow.writeResultsFile(line);
+			yt.scoreWindow.writeSSCQEResultsFile();
 			yt.scoreWindow.closeResultsFile();
 		}
 		

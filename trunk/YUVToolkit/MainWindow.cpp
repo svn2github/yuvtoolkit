@@ -219,10 +219,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	m_ScoreWindow = new ScoreWindow(m_ScoreDockWidget);
 	m_ScoreDockWidget->setWidget(m_ScoreWindow);
 	connect(m_ScoreWindow,SIGNAL(playVideoInMainWindow(QString)),this,SLOT(openFile(QString)));
+	connect(this,SIGNAL(Timestamp(QString)), m_ScoreWindow, SLOT(getCurSliderResultsPlusTimestamp(QString)));
 	addDockWidget(Qt::BottomDockWidgetArea, m_ScoreDockWidget);
 
 
 	EnableButtons(0);
+	isSubjectiveTest = false;
 }
 
 MainWindow::~MainWindow()
@@ -932,6 +934,13 @@ void MainWindow::OnTimer()
 			str.clear();
 			QTextStream(&str) << frame->PTS() << " / " << info->duration << " ms";
 			m_TimeLabel2->setText(str);
+			if (isSubjectiveTest == true)
+			{
+				QString temp_str;
+				QTextStream(&temp_str) << frame->PTS();
+				emit Timestamp(temp_str);
+			}
+
 		}
 	}else
 	{
@@ -1452,4 +1461,9 @@ void MainWindow::PopNameInputWindow()
 QString MainWindow::getNameInputUserName()
 {
 	return m_NameInput->getUserName();
+}
+
+void MainWindow::enableSubjectiveTest(bool status)
+{
+	isSubjectiveTest = status;
 }

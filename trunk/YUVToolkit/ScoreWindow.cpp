@@ -1,6 +1,13 @@
 ﻿#include "YT_InterfaceImpl.h"
 #include "ScoreWindow.h"
 
+#ifndef MAX
+#define MAX(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef MIN
+#define MIN(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 ScoreWindow::ScoreWindow( QWidget *parent, Qt::WFlags flags ) : QWidget(parent, flags)
 {
@@ -9,6 +16,8 @@ ScoreWindow::ScoreWindow( QWidget *parent, Qt::WFlags flags ) : QWidget(parent, 
 	connect(ui.buttonNext, SIGNAL(clicked()), this, SIGNAL(onNext()));
 	connect(ui.buttonPrevious, SIGNAL(clicked()), this, SIGNAL(onPrevious()));
 	connect(ui.buttonFinish, SIGNAL(clicked()), this, SIGNAL(onFinish()));
+	this->setMouseTracking(true);
+	restrictMouse = false;
 }
 
 ScoreWindow::~ScoreWindow()
@@ -216,6 +225,27 @@ QString ScoreWindow::getCurSliderResults(const QStringList& fileList)
 	return Results;
 }
 
+void ScoreWindow::getCurSliderResultsPlusTimestamp(QString timestamp)
+{
+	QString SingleResult;
+	QString cur_label = label_cur_selected_list[0]->text();	
+	SingleResult = "(" +  cur_label + ":" + timestamp + "),"; 
+	sscqeresult.append(SingleResult);
+}
+
+void ScoreWindow::writeSSCQEResultsFile()
+{
+	QTextStream out(FileHandle);
+	out<<"{\"" + currentVideo + "\":" + sscqeresult + "}";
+	out.flush();
+	sscqeresult.clear();
+}
+
+void ScoreWindow::setCurrentVideo(QString cur)
+{
+	currentVideo = cur;
+}
+
 QString ScoreWindow::getCurButtonResults(const QStringList& fileList)
 {
 	QString Results;
@@ -316,4 +346,40 @@ QVariant ScoreWindow::shuffleList(QVariant origin, bool shuffle_scene, bool shuf
 void ScoreWindow::SetVideoListInCurrentScene(QStringList cur)
 {
 	VideoListInCurrentScene = cur;
+}
+
+void ScoreWindow::wheelEvent(QWheelEvent *event)
+{
+	int numDegree = event->delta() /8;
+	int numSteps = numDegree /15;
+
+	if (event->orientation() == Qt:: Vertical)
+	{
+		int curSliderValue = SliderList[0]->value();
+		int value = curSliderValue + numSteps * 10;
+		value = MIN(MAX(value,0),100);
+		SliderList[0]->setValue(value);
+	}
+}
+
+void ScoreWindow::mouseMoveEvent(QMouseEvent * event)
+{
+	if (restrictMouse == true)
+	{
+		int min_x = this->mapToGlobal(this->pos()).x();
+		int min_y = this->mapToGlobal(this->pos()).y();
+		int height = this->height();
+		int width = this->width();
+		int cur_x = event->x();
+		int cur_y = event->y();
+		int new_x, new_y;
+		new_x = MIN(MAX(min_x,cur_x),min_x+width);
+		new_y = MIN(MAX(min_y,cur_y),min_y+height);
+		QCursor::setPos(new_x, new_y);
+	}
+}
+
+void ScoreWindow::enableRestrictMouse(bool status)
+{
+	restrictMouse = true;
 }

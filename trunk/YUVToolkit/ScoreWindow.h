@@ -11,7 +11,7 @@
 #include <QVariant>
 #include <cstdlib>
 #include <ctime>
-
+#include <QWheelEvent>
 
 class ScoreWindow : public QWidget
 {
@@ -32,19 +32,27 @@ public slots:
 	void enableSlider(int i);
 	QString getCurButtonResults(const QStringList& fileList);
 	QString getCurSliderResults(const QStringList& fileList);
+	void getCurSliderResultsPlusTimestamp(QString timestamp);
 	void openResultsFile(QString fname, int mode);
 	void writeResultsFile(QString results);
 	void closeResultsFile();
+	void writeSSCQEResultsFile();
 	void changeButtonName(QString a, QString b, QString c);
 	void playVideo(int i);
 	void SetVideoListInCurrentScene(QStringList cur);
 	QVariant shuffleList(QVariant origin, bool shuffle_scene, bool shuffle_vide, bool keep_ref);
+	void setCurrentVideo(QString cur);
+	void enableRestrictMouse(bool status = true);
 
 signals:
 	void onNext();
 	void onPrevious();
 	void onFinish();
 	void playVideoInMainWindow(QString filename);
+
+protected:
+	void wheelEvent(QWheelEvent *event);
+	void mouseMoveEvent(QMouseEvent * event);
 
 private:
 	Ui::ScoreWindow ui;
@@ -59,6 +67,8 @@ private:
 	QFile * FileHandle;
 	QStringList VideoListInCurrentScene;
 	QString currentVideo;
+	QString sscqeresult;
+	bool restrictMouse;
 };
 
 #endif // ScoreWindow_H

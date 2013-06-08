@@ -44,6 +44,7 @@ public:
 signals:
 	void activeVideoViewChanged(VideoView*);
 	void lastFrameDisplayed();
+	void Timestamp(QString);
 	
 public slots:
 	QList<VideoView*> openFiles(const QStringList& fileList);
@@ -55,6 +56,7 @@ public slots:
 	void play(bool play);
 	void seek(int pts);
 	void stepVideo(int step);
+	void enableSubjectiveTest(bool status = true);
 
 	void seekVideoFromSlider(); // change to pts
 	void enableContextMenu(bool);
@@ -162,6 +164,7 @@ private:
 	QScriptEngine* m_Engine;
 	QScriptEngineDebugger *m_Debugger;
 
+	bool isSubjectiveTest;
 };
 
 #endif // RAWVIDEOTOOLKIT_H
