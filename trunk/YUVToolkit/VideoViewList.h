@@ -61,6 +61,8 @@ signals:
 	void VideoViewClosed(VideoView*);
 	void VideoViewSourceListChanged();
 	void VideoViewListChanged();
+	void fullscreen();
+
 private:
 	RendererWidget* m_RenderWidget;
 	QList<VideoView*> m_VideoList;

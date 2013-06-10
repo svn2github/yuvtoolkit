@@ -8,15 +8,10 @@ SSCQE.test = function () {
 		yt.PopNameInputWindow();
 		this.username = yt.getNameInputUserName();
 		this.resultfilename = this.username + "_SSCQE_result.txt";
-		yt.enableSubjectiveTest(true);
-		yt.actionClose.setEnabled(false);
-		yt.enableContextMenu(false);
-		yt.actionScore.trigger();
-		yt.actionZoom100.trigger();
-		yt.playbackToolBar.setDisabled(true);
-		yt.menuBar.setDisabled(true);
-		yt.mainToolBar.setDisabled(true);
-		//yt.statusBar.hide();
+		yt.isEmitTimestampSignal(true);
+
+		yt.enableSubjectiveTestInterface(true);
+
 		yt.showMaximized();
 		yt.setSetting("main/playbackloop", false);
 		
@@ -52,13 +47,8 @@ SSCQE.test = function () {
 		yt.scoreWindow.openResultsFile(this.resultfilename, 2);
 		yt.scoreWindow.writeSSCQEResultsFile();
 		yt.scoreWindow.closeResultsFile();
-		
-		yt.actionScore.trigger();
+
 		yt.closeAll();
-		
-		yt.actionClose.setEnabled(true);
-		yt.enableContextMenu(true);
-		
 		yt.close();
 	};
 	

@@ -17,6 +17,7 @@ VideoViewList::VideoViewList(QMainWindow* mainWindow, RendererWidget* rw) :
 	m_EndOfFile(false)
 {
 	m_ProcessThread = new ProcessThread(&m_Control);
+	connect(m_RenderWidget,SIGNAL(fullscreen()),this,SIGNAL(fullscreen()));
 }
 
 VideoViewList::~VideoViewList()

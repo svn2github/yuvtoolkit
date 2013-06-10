@@ -56,7 +56,7 @@ public slots:
 	void play(bool play);
 	void seek(int pts);
 	void stepVideo(int step);
-	void enableSubjectiveTest(bool status = true);
+	void isEmitTimestampSignal(bool status = true);
 
 	void seekVideoFromSlider(); // change to pts
 	void enableContextMenu(bool);
@@ -65,6 +65,10 @@ public slots:
 	void setSetting(QString, QVariant);
 	void PopNameInputWindow();
 	QString getNameInputUserName();
+
+	void fullscreen();
+	void enableSubjectiveTestInterface(bool status);
+
 protected:
 	VideoView* openFileInternal(QString strPath);
 	void updateSelectionSlider();
@@ -164,7 +168,7 @@ private:
 	QScriptEngine* m_Engine;
 	QScriptEngineDebugger *m_Debugger;
 
-	bool isSubjectiveTest;
+	bool emitTimestampsignal;
 };
 
 #endif // RAWVIDEOTOOLKIT_H

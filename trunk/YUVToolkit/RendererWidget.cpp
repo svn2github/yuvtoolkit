@@ -139,3 +139,8 @@ void RendererWidget::moveEvent( QMoveEvent * )
 {
 	emit repositioned();
 }
+
+void RendererWidget::mouseDoubleClickEvent(QMouseEvent *)
+{
+	emit fullscreen();
+}

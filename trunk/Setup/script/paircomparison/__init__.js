@@ -8,16 +8,9 @@ paircomparison.test = function () {
 		yt.PopNameInputWindow();
 		this.username = yt.getNameInputUserName();
 		this.resultfilename = this.username + "_paircomp_result.txt";
-		yt.actionClose.setEnabled(false);
-		yt.enableContextMenu(false);
-		yt.actionScore.trigger();
-		yt.actionZoom100.trigger();
-		yt.playbackToolBar.setDisabled(true);
-		yt.menuBar.setDisabled(true);
-		yt.mainToolBar.setDisabled(true);
-		yt.statusBar.hide();
-		yt.showMaximized();
-    yt.setSetting("main/playbackloop", false);
+
+		yt.enableSubjectiveTestInterface(true);
+    		yt.setSetting("main/playbackloop", false);
 		
 		yt.scoreWindow.changeButtonName("Replay video", "Next", "Finish");
 		
@@ -42,12 +35,7 @@ paircomparison.test = function () {
 		yt.scoreWindow.writeResultsFile(line);
 		yt.scoreWindow.closeResultsFile();
 		
-		yt.actionScore.trigger();
 		yt.closeAll();
-		
-		yt.actionClose.setEnabled(true);
-		yt.enableContextMenu(true);
-		
 		yt.close();
 	};
 	

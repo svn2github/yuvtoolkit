@@ -25,12 +25,15 @@ public:
 
 signals:
 	void repositioned();
+	void fullscreen();
+
 protected:
 	virtual void mouseMoveEvent( QMouseEvent* );
 	virtual void mousePressEvent( QMouseEvent* );
 	virtual void mouseReleaseEvent( QMouseEvent* );
 	virtual void resizeEvent ( QResizeEvent* );
 	virtual void moveEvent (QMoveEvent *);
+	virtual void mouseDoubleClickEvent(QMouseEvent *);
 
 	Renderer* m_Renderer;
 	void paintEvent(QPaintEvent*);

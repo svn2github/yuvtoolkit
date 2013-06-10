@@ -222,9 +222,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WFlags flags) :
 	connect(this,SIGNAL(Timestamp(QString)), m_ScoreWindow, SLOT(getCurSliderResultsPlusTimestamp(QString)));
 	addDockWidget(Qt::BottomDockWidgetArea, m_ScoreDockWidget);
 
+	connect(m_VideoViewList, SIGNAL(fullscreen()), this, SLOT(fullscreen()));
+
 
 	EnableButtons(0);
-	isSubjectiveTest = false;
+	emitTimestampsignal = false;
 }
 
 MainWindow::~MainWindow()
@@ -934,7 +936,7 @@ void MainWindow::OnTimer()
 			str.clear();
 			QTextStream(&str) << frame->PTS() << " / " << info->duration << " ms";
 			m_TimeLabel2->setText(str);
-			if (isSubjectiveTest == true)
+			if (emitTimestampsignal == true)
 			{
 				QString temp_str;
 				QTextStream(&temp_str) << frame->PTS();
@@ -1463,7 +1465,45 @@ QString MainWindow::getNameInputUserName()
 	return m_NameInput->getUserName();
 }
 
-void MainWindow::enableSubjectiveTest(bool status)
+void MainWindow::isEmitTimestampSignal(bool status)
 {
-	isSubjectiveTest = status;
+	emitTimestampsignal = status;
 }
+
+void MainWindow::fullscreen()
+{
+	if (0)
+	{
+		if (this->isFullScreen())
+			this->showNormal();
+		else		
+			this->showFullScreen();
+	}
+}
+
+void MainWindow::enableSubjectiveTestInterface(bool status)
+{
+	if(status)
+	{
+		m_ScoreDockWidget->toggleViewAction()->trigger();
+		this->enableContextMenu(false);
+		ui.playbackToolBar->setVisible(false);
+		ui.menuBar->setVisible(false);
+		ui.mainToolBar->setVisible(false);
+		ui.statusBar->setVisible(false);
+		ui.action_Close->setEnabled(false);
+		ui.action_Zoom_100->trigger();
+		this->showMaximized();
+	}
+	else
+	{
+		ui.playbackToolBar->setVisible(true);
+		ui.menuBar->setVisible(true);
+		ui.mainToolBar->setVisible(true);
+		ui.statusBar->setVisible(true);
+		ui.action_Close->setVisible(true);
+		this->showNormal();
+	}
+
+}
+
