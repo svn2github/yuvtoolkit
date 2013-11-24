@@ -1,0 +1,11 @@
+yt.importExtension("SSCQE");
+
+videoList = [
+	['yuv/sample-01-320x200-15fps.yuv'], 
+	['yuv/sample-01-320x200-15fps.yuv'],
+	['yuv/sample-01-encoded-320x200-15fps.yuv'],
+	['yuv/sample-01-encoded-320x200-15fps.yuv'], 
+];
+
+test = new SSCQE.test()
+test.start(videoList);

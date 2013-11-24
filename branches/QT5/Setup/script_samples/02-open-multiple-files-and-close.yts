@@ -1,0 +1,12 @@
+v1 = yt.openFile('yuv/sample-01-320x200-15fps.yuv')
+v2 = yt.openFile('yuv/sample-01-encoded-320x200-15fps.yuv')
+
+yt.infoMsg('Multiple Files', 'Multiple files were open. Now pause and go to fist frame!')
+
+yt.play(false);
+yt.actionSeekBeginning.trigger();
+
+yt.infoMsg('Multiple Files', 'Now Close all files');
+
+v1.close()
+v2.close()

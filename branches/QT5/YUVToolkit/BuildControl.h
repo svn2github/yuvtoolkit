@@ -1,0 +1,1 @@
+#define SUBJECTIVETEST 0 

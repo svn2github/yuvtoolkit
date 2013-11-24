@@ -1,0 +1,944 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>562</width>
+    <height>491</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>YUV Toolkit</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="YUVToolkit.qrc">
+    <normaloff>:/RawVideoToolkit/Resources/YuvToolkit.png</normaloff>:/RawVideoToolkit/Resources/YuvToolkit.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QStatusBar {
+	background-color: rgb(0, 0, 0);
+	color: rgb(255, 255, 255);
+ }
+
+ QStatusBar QLabel {
+   background-color: rgb(64, 64, 64);
+   color: rgb(255, 255, 255);
+}
+
+ QStatusBar::item {
+  border: 1px solid rgb(127,127,127);
+  border-radius: 3px;
+}</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonTextBesideIcon</enum>
+  </property>
+  <widget class="RendererWidget" name="rendererWidget">
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralWidget{
+background-image: url(:/RawVideoToolkit/Resources/background.png);
+background-repeat: no-repeat;
+background-position: center;
+background-color: rgb(0, 0, 0);
+}</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>562</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="mouseTracking">
+    <bool>true</bool>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_New_Window"/>
+    <addaction name="separator"/>
+    <addaction name="action_Open"/>
+    <addaction name="action_Close"/>
+    <addaction name="separator"/>
+    <addaction name="action_Run_Script"/>
+    <addaction name="action_Debug_Script"/>
+    <addaction name="separator"/>
+    <addaction name="action_Exit"/>
+   </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>Vie&amp;w</string>
+    </property>
+    <widget class="QMenu" name="menu_Zoom">
+     <property name="title">
+      <string>&amp;Zoom</string>
+     </property>
+     <addaction name="action_Zoom_Switch"/>
+     <addaction name="separator"/>
+     <addaction name="action_Zoom_50"/>
+     <addaction name="action_Zoom_100"/>
+     <addaction name="action_Zoom_200"/>
+     <addaction name="action_Zoom_400"/>
+     <addaction name="separator"/>
+     <addaction name="action_Zoom_Fit"/>
+    </widget>
+    <widget class="QMenu" name="menu_Renderer">
+     <property name="title">
+      <string>&amp;Renderer</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menu_Show">
+     <property name="title">
+      <string>&amp;Show</string>
+     </property>
+     <addaction name="action_Color"/>
+     <addaction name="action_Y"/>
+     <addaction name="action_U"/>
+     <addaction name="action_V"/>
+    </widget>
+    <addaction name="menu_Zoom"/>
+    <addaction name="menu_Renderer"/>
+    <addaction name="menu_Show"/>
+   </widget>
+   <widget class="QMenu" name="menu_Play">
+    <property name="title">
+     <string>&amp;Playback</string>
+    </property>
+    <addaction name="action_Play_Pause"/>
+    <addaction name="separator"/>
+    <addaction name="action_Seek_Beginning"/>
+    <addaction name="action_Step_Back_Fast"/>
+    <addaction name="action_Step_Back"/>
+    <addaction name="action_Step_Forward"/>
+    <addaction name="action_Step_Forward_Fast"/>
+    <addaction name="action_Seek_End"/>
+    <addaction name="separator"/>
+    <addaction name="action_Select_From"/>
+    <addaction name="action_Select_To"/>
+    <addaction name="action_Clear_Selection"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_Homepage"/>
+    <addaction name="separator"/>
+    <addaction name="action_About"/>
+   </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <widget class="QMenu" name="menu_Actions">
+     <property name="title">
+      <string>&amp;Actions</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
+    <widget class="QMenu" name="menu_Logging">
+     <property name="title">
+      <string>&amp;Logging</string>
+     </property>
+     <addaction name="action_Enable_Logging"/>
+     <addaction name="actionShowLogging"/>
+    </widget>
+    <addaction name="menu_Actions"/>
+    <addaction name="action_Compare"/>
+    <addaction name="separator"/>
+    <addaction name="menu_Logging"/>
+    <addaction name="action_Options"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_View"/>
+   <addaction name="menu_Play"/>
+   <addaction name="menu_Tools"/>
+   <addaction name="menu_Help"/>
+  </widget>
+  <widget class="QToolBar" name="playbackToolBar">
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>20</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>BottomToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_Seek_Beginning"/>
+   <addaction name="action_Step_Back_Fast"/>
+   <addaction name="action_Step_Back"/>
+   <addaction name="action_Play_Pause"/>
+   <addaction name="action_Step_Forward"/>
+   <addaction name="action_Step_Forward_Fast"/>
+   <addaction name="action_Seek_End"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="sizeGripEnabled">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>22</width>
+     <height>22</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_Open"/>
+  </widget>
+  <action name="action_Open">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/document-open.png</normaloff>:/RawVideoToolkit/Resources/document-open.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open ...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open supported video files (Ctrl+O)</string>
+   </property>
+   <property name="statusTip">
+    <string>Open supported video files (Ctrl+O)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_Convert">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Convert ...</string>
+   </property>
+   <property name="statusTip">
+    <string>Co</string>
+   </property>
+  </action>
+  <action name="action_Batch_Convert">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Batch Convert ...</string>
+   </property>
+  </action>
+  <action name="action_Exit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit the application</string>
+   </property>
+   <property name="statusTip">
+    <string>Quit the application</string>
+   </property>
+  </action>
+  <action name="action_Show_option_panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/video-x-generic.png</normaloff>:/RawVideoToolkit/Resources/video-x-generic.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Show Tuning panel</string>
+   </property>
+  </action>
+  <action name="action_Play_Pause">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/media-playback-start.png</normaloff>:/RawVideoToolkit/Resources/media-playback-start.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Play/Pause</string>
+   </property>
+   <property name="toolTip">
+    <string>Play/Pause video playback (Space)</string>
+   </property>
+   <property name="statusTip">
+    <string>Play/Pause video playback (Space)</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="action_Step_Back">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/go-previous.png</normaloff>:/RawVideoToolkit/Resources/go-previous.png</iconset>
+   </property>
+   <property name="text">
+    <string>Step &amp;Back</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek one frame in the past (Left)</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek one frame in the past (Left)</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="action_Step_Back_Fast">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/media-seek-backward.png</normaloff>:/RawVideoToolkit/Resources/media-seek-backward.png</iconset>
+   </property>
+   <property name="text">
+    <string>Step Back Fast</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek 10 frames in the past (Ctrl+Left)</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek 10 frames in the past (Ctrl+Left)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Left</string>
+   </property>
+  </action>
+  <action name="action_Step_Forward">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/go-next.png</normaloff>:/RawVideoToolkit/Resources/go-next.png</iconset>
+   </property>
+   <property name="text">
+    <string>Step &amp;Forward</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek one frame in the future (Right)</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek one frame in the future (Right)</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="action_Step_Forward_Fast">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/media-seek-forward.png</normaloff>:/RawVideoToolkit/Resources/media-seek-forward.png</iconset>
+   </property>
+   <property name="text">
+    <string>Step Forward Fast</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek 10 frames in the future (Ctrl+Right)</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek 10 frames in the future (Ctrl+Right)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="action_Close">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+   <property name="toolTip">
+    <string>Close the active video (Ctrl+W)</string>
+   </property>
+   <property name="statusTip">
+    <string>Close the active video (Ctrl+W)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="action_Zoom_100">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;100%</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom to 100% (Alt+2)</string>
+   </property>
+   <property name="statusTip">
+    <string>Zoom to 100% (Alt+2)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+2</string>
+   </property>
+  </action>
+  <action name="action_Zoom_200">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;200%</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom to 200% (Alt+3)</string>
+   </property>
+   <property name="statusTip">
+    <string>Zoom to 200% (Alt+3)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+3</string>
+   </property>
+  </action>
+  <action name="action_Zoom_50">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;50%</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom to 50% (Alt+1)</string>
+   </property>
+   <property name="statusTip">
+    <string>Zoom to 50% (Alt+1)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+1</string>
+   </property>
+  </action>
+  <action name="action_Zoom_Switch">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/system-search.png</normaloff>:/RawVideoToolkit/Resources/system-search.png</iconset>
+   </property>
+   <property name="text">
+    <string>Switch &amp;Zoom Mode (+)</string>
+   </property>
+   <property name="iconText">
+    <string>Switch Zoom Mode</string>
+   </property>
+   <property name="statusTip">
+    <string>Switch Zoom Mode (+)</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="action_Zoom_Fit">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Auto Fit</string>
+   </property>
+   <property name="toolTip">
+    <string>Auto zoom to fit to the window size (Alt+5)</string>
+   </property>
+   <property name="statusTip">
+    <string>Auto zoom to fit to the window size (Alt+5)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+5</string>
+   </property>
+  </action>
+  <action name="action_New_Window">
+   <property name="text">
+    <string>&amp;New Window</string>
+   </property>
+   <property name="toolTip">
+    <string>Open new window</string>
+   </property>
+   <property name="statusTip">
+    <string>Open new window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>&amp;About YUV Toolkit</string>
+   </property>
+   <property name="statusTip">
+    <string>About YUV Toolkit</string>
+   </property>
+  </action>
+  <action name="action_Tips_and_Tricks">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Tips and Tricks</string>
+   </property>
+  </action>
+  <action name="actionShowLogging">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Show Logging Directory</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Logging Directory</string>
+   </property>
+   <property name="statusTip">
+    <string>Show Logging</string>
+   </property>
+  </action>
+  <action name="action_File_Association">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;File Association</string>
+   </property>
+  </action>
+  <action name="action_Zoom_400">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;400%</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom to 400% (Alt+4)</string>
+   </property>
+   <property name="statusTip">
+    <string>Zoom to 400% (Alt+4)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+4</string>
+   </property>
+  </action>
+  <action name="action_Run_Script">
+   <property name="text">
+    <string>Run &amp;Script ...</string>
+   </property>
+  </action>
+  <action name="action_Debug_Script">
+   <property name="text">
+    <string>Run Script with &amp;Debugger ...</string>
+   </property>
+  </action>
+  <action name="action_Enable_Logging">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Enable Logging</string>
+   </property>
+  </action>
+  <action name="action_Seek_Beginning">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/go-first.png</normaloff>:/RawVideoToolkit/Resources/go-first.png</iconset>
+   </property>
+   <property name="text">
+    <string>Seek Be&amp;ginning</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek beginning of video (Home)</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek beginning of video (Home)</string>
+   </property>
+   <property name="shortcut">
+    <string>Home</string>
+   </property>
+  </action>
+  <action name="action_Seek_End">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/go-last.png</normaloff>:/RawVideoToolkit/Resources/go-last.png</iconset>
+   </property>
+   <property name="text">
+    <string>Seek &amp;End</string>
+   </property>
+   <property name="toolTip">
+    <string>Seek end of video (End)</string>
+   </property>
+   <property name="statusTip">
+    <string>Seek end of video (End)</string>
+   </property>
+   <property name="shortcut">
+    <string>End</string>
+   </property>
+  </action>
+  <action name="action_Quality_Measures">
+   <property name="text">
+    <string>&amp;Quality Measures (MSE etc)</string>
+   </property>
+   <property name="statusTip">
+    <string>Quality Measures (MSE etc)</string>
+   </property>
+  </action>
+  <action name="action_Play_After_Seeking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Continue play after seeking using mouse</string>
+   </property>
+   <property name="toolTip">
+    <string>Continue play after seeking using mouse</string>
+   </property>
+  </action>
+  <action name="action_Homepage">
+   <property name="text">
+    <string>Visit &amp;home page</string>
+   </property>
+  </action>
+  <action name="action_Save_As">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/document-save.png</normaloff>:/RawVideoToolkit/Resources/document-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save As ...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save video to new format</string>
+   </property>
+   <property name="statusTip">
+    <string>Open supported video files</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_Overlay">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/overlay.png</normaloff>:/RawVideoToolkit/Resources/overlay.png</iconset>
+   </property>
+   <property name="text">
+    <string>Overlay &amp;Visualization</string>
+   </property>
+   <property name="toolTip">
+    <string>Overlay Visualization</string>
+   </property>
+  </action>
+  <action name="action_Y">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/y.png</normaloff>:/RawVideoToolkit/Resources/y.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Y Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Y component (Ctrl+2)</string>
+   </property>
+   <property name="statusTip">
+    <string>Show Y component (Ctrl+2)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="action_U">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/u.png</normaloff>:/RawVideoToolkit/Resources/u.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;U Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Show U component (Ctrl+3)</string>
+   </property>
+   <property name="statusTip">
+    <string>Show U component (Ctrl+3)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="action_V">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/v.png</normaloff>:/RawVideoToolkit/Resources/v.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;V Component</string>
+   </property>
+   <property name="toolTip">
+    <string>Show V component (Ctrl+4)</string>
+   </property>
+   <property name="statusTip">
+    <string>Show V component (Ctrl+4)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="action_Color">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/color.png</normaloff>:/RawVideoToolkit/Resources/color.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Color</string>
+   </property>
+   <property name="toolTip">
+    <string>Show colors (Ctrl+1)</string>
+   </property>
+   <property name="statusTip">
+    <string>Show colors (Ctrl+1)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="action_Compare">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare.png</normaloff>:/RawVideoToolkit/Resources/compare.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Compare</string>
+   </property>
+   <property name="iconText">
+    <string>Compare</string>
+   </property>
+   <property name="toolTip">
+    <string>Compare frame by frame (Alt+C)</string>
+   </property>
+   <property name="statusTip">
+    <string>Compare frame by frame (Alt+C)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+C</string>
+   </property>
+  </action>
+  <action name="action_Select_From">
+   <property name="text">
+    <string>Select From</string>
+   </property>
+   <property name="statusTip">
+    <string>Select playback range from current playback position (Ctrl+Home)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Home</string>
+   </property>
+  </action>
+  <action name="action_Select_To">
+   <property name="text">
+    <string>Select To</string>
+   </property>
+   <property name="statusTip">
+    <string>Select playback range to current playback position (Ctrl+End)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+End</string>
+   </property>
+  </action>
+  <action name="action_Clear_Selection">
+   <property name="text">
+    <string>Clear Selection</string>
+   </property>
+   <property name="iconText">
+    <string>Clear Selection (Esc)</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
+  <action name="action_Enable_Measures">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/list-add.png</normaloff>:/RawVideoToolkit/Resources/list-add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enable/Disable Distortion Measures</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/Disable Distortion Measures</string>
+   </property>
+   <property name="statusTip">
+    <string>Enable/Disable Distortion Measures</string>
+   </property>
+  </action>
+  <action name="action_Distortion_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/distortion-map.png</normaloff>:/RawVideoToolkit/Resources/distortion-map.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Distortion Map</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Distortion Map</string>
+   </property>
+   <property name="statusTip">
+    <string>Show Distortion Map</string>
+   </property>
+  </action>
+  <action name="action_Select_Original">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-0.png</normaloff>:/RawVideoToolkit/Resources/compare-0.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Original Video</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Original Video</string>
+   </property>
+   <property name="statusTip">
+    <string>Select Original Video</string>
+   </property>
+  </action>
+  <action name="action_Select_Processed_1">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-1.png</normaloff>:/RawVideoToolkit/Resources/compare-1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Processed Video 1</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Processed Video 1</string>
+   </property>
+   <property name="statusTip">
+    <string>Select Processed Video 1</string>
+   </property>
+  </action>
+  <action name="action_Select_Processed_2">
+   <property name="icon">
+    <iconset resource="YUVToolkit.qrc">
+     <normaloff>:/RawVideoToolkit/Resources/compare-2.png</normaloff>:/RawVideoToolkit/Resources/compare-2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select Processed Video 2</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Processed Video 2</string>
+   </property>
+   <property name="statusTip">
+    <string>Select Processed Video 2</string>
+   </property>
+  </action>
+  <action name="action_Options">
+   <property name="text">
+    <string>&amp;Options</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>RendererWidget</class>
+   <extends>QWidget</extends>
+   <header>RendererWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="YUVToolkit.qrc"/>
+ </resources>
+ <connections/>
+</ui>
